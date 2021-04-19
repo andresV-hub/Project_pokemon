@@ -1,0 +1,212 @@
+@import "bootstrap/functions";
+@import "bootstrap/variables";
+
+$theme-colors: (
+  "primary": rgba(0, 73, 151, 0.9),
+  "secondary": rgb(250, 159, 22)
+);
+
+
+
+@import "bootstrap";
+
+html,body{
+	margin: 0;
+	height:100%;
+}
+body{
+	text-align: center;
+	height:100%;
+	background-color:rgb(220, 220, 220);
+}
+
+.navegador{
+	position: relative;
+	background-color:rgba(0, 73, 151, 0.9);
+	color: #ECF0F1;
+	padding: 8px 5px;
+	border-bottom:1px solid rgb(250, 159, 22);
+	padding-right: 0;
+	padding-top: 10px; 
+}
+ul{
+	list-style: none;
+}
+.link{
+	outline: none !important;
+	text-decoration: none !important;
+
+}
+.link:visited{
+	color: rgba(237, 237, 237, 0.9)  !important;
+}
+.link:hover{
+	background-color : inherit  !important;
+	color : rgb(240, 160, 22) !important;
+}
+a{
+	outline: none !important;
+	text-decoration: none !important;
+}
+a:visited{
+	color:  rgba(237, 237, 237, 0.9)  !important;
+}
+#logo{
+	font-size: 1.2em;
+	color : rgb(240, 160, 22);
+	margin: 0;
+}
+.list{
+	border-left: 1px solid rgb(250, 159, 22);
+}
+.field{
+	margin-top: 1em;
+}
+.form-control{
+	border:none;
+	border-bottom:1px solid;
+	outline:none;
+	width:100%;
+	display:block;
+	padding:10px 0px;
+	font-size:1.2em;
+}
+.btn{
+	background-color: rgb(250, 159, 22);
+	color: #ECF0F1;
+	border: none;
+	outline:none;
+	text-transform:uppercase;
+	cursor:pointer;
+	font-size: 1.2em;
+
+	padding: 20px 30px;
+	padding-bottom: 15px !important;
+	border-radius: 2px;
+	box-shadow: 0  17px 10px -10px rgba(0, 0, 0, 0.4);
+	transition: all ease-in-out 300ms;
+	padding-bottom: 1em;
+}
+.btn:hover{
+	box-shadow: 0  37px 20px -20px rgba(0, 0, 0, 0.2);
+    transform: translate(0, -10px);
+}
+.mrg-top,.actions{
+	margin-top: 1.2em
+}
+.red{
+	color : rgb(240, 160, 22) !important;
+}
+.text-left{
+	text-align: left;
+}
+.box{
+
+}
+#page{
+	min-height: 100vh;
+}
+#footer{
+	position:fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	text-align: left;
+	margin-right: 0;
+	background-color:rgba(0, 73, 151, 0.9);
+	color: #ECF0F1;
+	border-top:1px solid rgb(250, 159, 22);
+}
+.img-pokemon-index{
+	height: 200px ;
+	border: 1px solid rgb(250, 159, 22);
+	background: linear-gradient(to bottom,rgba(0, 73, 151, 0.9)  , white);
+	margin-bottom: 1.2em;
+}
+.np-padding{
+	padding: 0;
+}
+.no-margin{
+	margin: 0;
+}
+.center {
+  margin: auto;
+  border: 1px solid rgb(250, 159, 22);
+  margin: 15px;
+}
+.text-primary{
+	color: rgba(0, 73, 151, 0.9) !important;
+}
+.text-secondary{
+	color: rgb(250, 159, 22) !important;
+}
+.center-elements{
+  	justify-content: center;
+}
+
+.margin-root-text{
+	margin-top: 2%;
+	margin-right: 20% ;
+	margin-left: 20% ;
+}
+.card-width{
+	background: linear-gradient(to bottom, rgba(237, 237, 237, 0.9) , white);
+	width: 22rem;
+}
+.button-primary{
+	background-color:rgba(0, 73, 151, 0.9) !important;
+	color: white !important;
+	height: 45px ;
+	
+}	
+.button-secondary{
+	background-color: rgb(250, 159, 22);
+	color: rgba(0, 73, 151, 0.9);
+}
+.card-show{
+	height: 35rem;
+	width:75%;
+	display: flex;
+	justify-content: center;
+	border: 1px solid rgb(250, 159, 22);
+	background: linear-gradient(to right, rgba(237, 237, 237, 0.9) , white);
+	margin: 0 auto;
+	margin-top: 5%;
+}
+.show-pokemon{
+	text-align: left;
+}
+.vertical-middle-align{
+	align-self: center;
+  	justify-self: center;
+}
+#nickname-pokemon-field{
+	width: 160%;
+}
+.be-primary{
+	background-color:rgba(0, 73, 151, 0.9) !important ;
+}
+#label-nickname-catched{
+	margin-left: -15px;
+}
+.padded{
+	padding-left: 3em !important;
+	padding-top: 5em !important;
+}
+.fa{
+	color:rgba(0, 73, 151, 0.9) ;
+	font-size : 85%;
+	margin-bottm:1%;
+}
+.fa:hover{
+	color: rgb(250, 159, 22);
+}
+.btn-white:hover{
+	color:white;
+}
+#label-nickname-edit{
+	margin-left: 3px;	
+}
+#label-compare{
+	margin-left: -60% !important;
+}

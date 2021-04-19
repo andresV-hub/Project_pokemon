@@ -1,0 +1,26 @@
+<header>
+      <nav class="navegador">
+        <ul class="no-list row center-xs middle-xs mr-0">
+          <li class="col-md"><h2 id="logo">PROJECT POKEMON</h2></li>
+          <li class="col-md list"><%=link_to "Information", root_path, class:"link"%></li>
+          <%if user_signed_in?%>
+            <li class="col-md list">
+              <%=link_to "Pokedex", user_pokedex_index_path(user_id: current_user.id), class:"link"%>
+            </li>
+            <li class="col-md list">
+              <%=link_to "My PC", user_pokemon_index_path(user_id: current_user.id), class:"link"%>
+            </li>
+            <li class="col-md list">
+              <%=link_to "Logout", destroy_user_session_path,method: :delete, class:"link"%>
+            </li>
+          <%else%>
+            <li class="col-md list">
+              <%=link_to "Login", new_user_session_path, class:"link"%>
+            </li>
+            <li class="col-md list">
+              <%=link_to "Sign up", new_user_registration_path, class:"link"%>
+            </li>
+          <%end%>
+        </ul>
+      </nav>
+    </header>

@@ -1,0 +1,26 @@
+<div class="modal inmodal mt-5" id="block_user_modal" role="dialog" aria-hidden="true" data-backdrop="false" style="display: none;">
+  <div class="modal-dialog">
+    <%=form_with :url => add_pokemon_to_team_user_pokedex_index_path, id: "form-catch-pokemon" do |f|%>
+      <div class="modal-content animated fadeIn">
+        <div class="modal-header">
+          <h4 class="modal-title text-primary">Congratulations. You catch a <%=@pokemon.name%>!</h4>
+        </div>
+        <div class="modal-body">
+          <div id="error-send" class="text-danger"></div>
+          <div class="row">
+            <div class="form-group">
+              <div class="col-sm-12">
+                <%= f.label "Select a nickname to #{@pokemon.name}", class: "text-primary mt-3", id: "label-nickname-catched"%>
+                <%= f.text_field :nickname, class: "form-control input-lg ",id: "nickname-pokemon-field", placeholder: "Choose its nickname" %>
+              	<%= hidden_field_tag 'pokemon_id', @pokemon.num_pokedex %>
+              </div>
+            </div>
+          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-white" data-dismiss="modal">Free it</button>
+          <%= button_tag "Catch it", type:"button", class: 'btn btn-primary be-primary', id: 'catch-pokemon' %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

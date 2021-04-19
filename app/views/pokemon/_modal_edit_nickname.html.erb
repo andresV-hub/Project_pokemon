@@ -1,0 +1,26 @@
+<div class="modal inmodal mt-5" id="edit_pokemon_modal" role="dialog" aria-hidden="true" data-backdrop="false" style="display: none;">
+  <div class="modal-dialog">
+    <%=form_with model: @pokemon, :url => edit_nickname_user_pokemon_path(user_id:current_user.id,id: @pokemon.id), id: "form-edit-pokemon", format: :js, method: :patch, remote: true do |f|%>
+      <div class="modal-content animated fadeIn">
+        <div class="modal-header">
+          <h4 class="modal-title text-primary">Do you want to change the nickname?</h4>
+        </div>
+        <div class="modal-body">
+          <div id="error-send" class="text-danger"></div>
+          <div class="row">
+            <div class="form-group">
+              <div class="col-sm-12">
+                <%= f.label "Are you sure that you want to change the nickname of #{@pokemon.name}", class: " mt-3 m-left", id: "label-nickname-edit"%>
+                <%= f.text_field :nickname, class: "form-control input-lg ",id: "edit-nickname-pokemon-field", placeholder: "Choose its nickname" %>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-white" data-dismiss="modal">Cancel</button>
+            <%= button_tag "Edit", type:"button", class: 'btn btn-primary be-primary', id: 'edit-pokemon' %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

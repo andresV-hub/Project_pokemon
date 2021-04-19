@@ -1,0 +1,26 @@
+<div class="modal inmodal mt-5" id="delete_pokemon_modal" role="dialog" aria-hidden="true" data-backdrop="false" style="display: none;">
+  <div class="modal-dialog">
+      <div class="modal-content animated fadeIn">
+        <div class="modal-header">
+          <h4 class="modal-title text-primary">Free <%=@pokemon.nickname%></h4>
+        </div>
+        <div class="modal-body">
+          <div id="error-send" class="text-danger"></div>
+          <div class="row">
+            <div class="form-group">
+              <div class="col-sm-12">
+                <div>Are you sure you want to change the nickname of <%=@pokemon.nickname%>?</div>
+              </div>
+            </div>
+          </div>
+        <div class="modal-footer">
+          <%=form_with model: @pokemon, :url => liberate_pokemon_user_pokemon_path(user_id:current_user.id,id: @pokemon.id), id: "form-destroy-pokemon" do |f|%>
+            <button type="button" class="btn btn-white" data-dismiss="modal">Cancel</button>
+            <%= button_tag "Free #{@pokemon.nickname}", type:"button", class: 'btn btn-primary be-primary', id: 'delete-pokemon' %>
+          <% end %>
+        </div>
+      </div>
+
+  </div>
+</div>
+</div>

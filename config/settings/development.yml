@@ -1,0 +1,11 @@
+app_name: ProyectoPokemonDEV
+app_domain: http://localhost:3000
+
+database:
+  db_adapter:  mysql2
+  db_host:     127.0.0.1
+  db_port:     3306
+  db_name: project_pokemon_dev
+  db_username: andres
+  db_socket:   /tmp/mysql.sock
+  db_timeout: 5000

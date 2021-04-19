@@ -1,0 +1,83 @@
+<div class="card card center-xs card-show container-fluid ">
+	<h2 class="card-title text-primary "><%=@pokemon.name%>  Nº: <%=@pokemon.num_pokedex%></h2>
+	<h3 class="text-secondary text-center mb-2">-</h3>
+	<div class="row text-primary">
+		<div class=" show-pokemon ml-5 col-lg-3">
+			<span class=" text-primary">
+				<%=image_tag @pokemon.image, title: @pokemon.name, 
+							id: @pokemon.name, class: "img-pokemon-index"%>
+			</span>
+			<span class=" text-primary">
+				<p>Type: <%= @pokemon.type_of_pokemon%></p>
+				<p>Habitat: <%= @description.habitat%></p>
+				<p>Capture rate: <%= @description.capture_rate%>%</p>
+				<p>Base Happiness: <%= @description.base_happiness%></p>
+			</span>
+		</div>
+		<div class=" show-pokemon  col-lg-8 text-center">
+			<h2 class="text-secondary mb-3">Description</h2>
+			<p><%= @description.description%></p>
+			<h2 class="text-secondary mb-3">Base Stats</h2>
+			<div class="row" style="text-align: center;">
+				<% stats = ["HP","Attack","Special attack","Defense","Special defense","Speed "]%>
+				<% num =0%>
+				<% stats.each do |stat| %>
+					<span class="col-lg-4"><%=stat%>: <%= @pokemon.stats(num: num)%></span>
+					<% num = num+1%>
+				<% end %>
+			</div>
+			<div class="row" style="text-align: center;">
+				<div class=" col-lg-8">
+					<h2 class="text-secondary mb-3 mt-5">Attacks</h2>
+					<div class="row">
+						<% attacks = ["First attack","Second attack","Third attack","Fourth attack"]%>
+						<% num2 =0%>
+						<% attacks.each do |attack| %>
+							<span class="col-lg-6 mt-3"><%=attack%>: <%= @pokemon.attacks(num: num2)%></span>
+							<% num2 = num2+1%>
+						<% end %>
+					</div>
+				</div>
+				<div class=" mt-5 col-lg-4 vertical-middle-align padded">
+				    <%=link_to "Capture", user_pokedex_path(user_id: current_user.id, id: @pokemon.id), class:"btn button-primary p-3 align-middle vertical-middle-align", id:"try-catch-pokemon"%>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<%= render 'modal_form_catch_pokemon'%>
+
+<script>
+
+
+    $(function () {
+        $('#try-catch-pokemon').on('click', function (e) {
+        	e.preventDefault();
+            $('#block_user_modal').modal('show');
+        });
+
+        $('#catch-pokemon').on('click', function (e){
+        	if ($('#nickname-pokemon-field').val() == ""){
+        		$('#error-send').html("Choose a name to <%=@pokemon.name%>");
+        	}
+        	else{
+        		$('#form-catch-pokemon').submit();
+        	}
+        });
+
+        $(document).keyup(function(e) {
+		  if (e.keyCode === 13){
+		  	if ($('#nickname-pokemon-field').val() == ""){
+        		$('#error-send').html("Choose a nickname to <%=@pokemon.name%>");
+        	}
+        	else{
+        		$('#form-catch-pokemon').submit();
+        	} 	
+		  }
+		  if (e.keyCode === 27) $('#block_user_modal').modal('hide');
+		});
+
+    });
+
+</script>

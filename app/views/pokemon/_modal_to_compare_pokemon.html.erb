@@ -1,0 +1,26 @@
+<div class="modal inmodal mt-5" id="compare_pokemon_modal" role="dialog" aria-hidden="true" data-backdrop="false" style="display: none;">
+  <div class="modal-dialog">
+    <%=form_with model: @pokemon, :url => compare_with_user_pokemon_path(user_id:current_user.id,id: @pokemon.id), id: "form-compare-pokemon" do |f|%>
+      <div class="modal-content animated fadeIn">
+        <div class="modal-header">
+          <h4 class="modal-title text-primary">Select a pokemon to compare</h4>
+        </div>
+        <div class="modal-body">
+          <div id="error-send-compare" class="text-danger"></div>
+          <div class="row">
+            <div class="form-group">
+              <div class="col-sm-12">
+                <%= f.label "Num pokedex", class: "mt-3", id: "label-compare"%>
+                <%= f.text_field :id, class: "form-control input-lg ",id: "edit-nickname-pokemon-field", placeholder: "Choose its nickname" %>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-white" data-dismiss="modal">Cancel</button>
+            <%= button_tag "Compare", type:"button", class: 'btn btn-primary be-primary', id: 'compare-pokemon' %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

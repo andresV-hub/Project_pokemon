@@ -1,0 +1,20 @@
+<div>
+	<h1 class="text-primary pt-3">Revive the first generation</h1>
+	<h2 class="text-secondary">-</h2>
+	<div class="row no-margin center-elements pb-3">
+		<%@pokemons.each do |pokemon| #TODO Habria que hacer otro render%>
+			<div class="card center card-width">
+			   <h2 class="card-title text-primary pt-3"><%=pokemon.name%>  Nº:<%=pokemon.num_pokedex%></h2>
+			   <h3 class="text-primary">-</h3>
+			  <div class="card-body">
+				<%=image_tag pokemon.image, title: pokemon.name, 
+					class: "img-pokemon-index"%>
+			    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+			  </div>
+			</div>
+		<%end%>	
+	</div>
+		<p class="text-wrap margin-root-text text-primary">The video games that start this generation and the entire Pokémon history, Pokémon Red and Pokémon Green, were released on February 27, 1996, taking the first step in the great franchise that we know today. A turn-based battle game mode that has long been on the video game market.</p>
+		<p class="text-wrap text-primary ">Here is the place to remeber this whole generation of pokemon, access to all their information and test this kind of combats.</p>
+	</div>
+</div>

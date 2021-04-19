@@ -1,0 +1,23 @@
+<div>
+	<h1 class="text-primary pt-3">Pokedex</h1>
+	<h2 class="text-secondary">-</h2>
+	<div class="row no-margin center-elements pb-5">
+		<% num = 0%>
+		<%@pokemons.each do |pokemon| #TODO Habria que hacer otro render%>
+			<div class="card center card-width">
+			   <h2 class="card-title text-primary pt-3"><%=pokemon.name%>  Nº:<%=pokemon.num_pokedex%></h2>
+			   <h3 class="text-primary">-</h3>
+			  <div class="card-body">
+				<%=image_tag pokemon.image, title: pokemon.name, 
+					class: "img-pokemon-index"%>
+			    <div class="card-text"><%= @descriptions.at(num).description %></div>
+			    <%#TODO boton a show del pokemon%>
+			    <div class="mb-3 mt-5">
+			    	<%=link_to "Show", user_pokedex_path(user_id: current_user.id, id: pokemon.id), class:"btn button-primary p-3"%>
+				</div>
+			  </div>
+			</div>
+			<% num= num+1 %>
+		<%end%>	
+
+</div>

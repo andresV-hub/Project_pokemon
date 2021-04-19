@@ -1,0 +1,41 @@
+<%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+  <%= render "devise/shared/error_messages", resource: resource %>
+  <h1 class="text-primary pt-3">Sign up</h1>
+  <h2 class="text-secondary">-</h2>
+  <div class="row no-margin center-elements pb-2">
+    <div class="field pr-4">
+      <%= f.label :name %><br />
+      <%= f.text_field :name, autocomplete: "name",placeholder: "Insert your name" %>
+    </div>
+
+    <div class="field">
+      <%= f.label :last_name %><br />
+      <%= f.text_field :last_name, autocomplete: "last_name", placeholder: "Insert your last name" %>
+    </div>
+  </div>
+  <div class="row no-margin center-elements pb-2">
+    <div class="field pr-4">
+      <p><%= f.label :email %></p>
+      <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "Insert your email" %>
+    </div>
+    <div class="field">
+      <p><%= f.label :phone %></p>
+      <%= f.text_field :phone, autocomplete: "phone", placeholder: "Insert your phone number" %>
+    </div>
+  </div>
+  <div class="row no-margin center-elements pb-2">
+    <div class="field pr-4">
+      <p><%= f.label :password %></p>
+      <%= f.password_field :password, autocomplete: "new-password", placeholder: "Insert your password" %>
+    </div>
+    <div class="field">
+      <p><%= f.label :password_confirmation %></p>
+      <%= f.password_field :password_confirmation, autocomplete: "new-password", placeholder: "Insert your password" %>
+    </div>
+  </div>
+  <div class="row no-margin center-elements pt-4 actions">
+    <%= f.submit "SIGN UP", class: "button-primary mb-4" %>
+  </div>
+<% end %>
+
+<%= render "devise/shared/links" %>

@@ -1,0 +1,88 @@
+<div class="card card center-xs card-show container-fluid ">
+	<h2 class="card-title text-primary "><%=@pokemon.nickname%><%= link_to liberate_pokemon_user_pokemon_path(user_id: current_user.id), method: :patch, data: {confirm: '¿La comanda ha sido entregada?'} do %>
+    <i class="fa fa-pencil"></i>
+  <% end %></h2>
+	<h3 class="text-secondary text-center mb-4"><%=@pokemon.name%>  Nº: <%=@pokemon.num_pokedex%></h3>
+	<div class="row text-primary">
+		<div class=" show-pokemon ml-5 col-lg-3">
+			<span class=" text-primary">
+				<%=image_tag @pokemon.image, title: @pokemon.name, 
+							id: @pokemon.name, class: "img-pokemon-index"%>
+			</span>
+			<span class=" text-primary">
+				<p>Type: <%= @pokemon.type_of_pokemon%></p>
+				<p>Habitat: <%= @pokemon.habitat%></p>
+				<p>Base Happiness: <%= @pokemon.base_happiness%></p>
+			</span>
+		</div>
+		<div class=" show-pokemon  col-lg-8 text-center">
+			<h2 class="text-secondary mb-3">Description</h2>
+			<p><%= @pokemon.description%></p>
+			<h2 class="text-secondary mb-3">Base Stats</h2>
+			<div class="row" style="text-align: center;">
+				<span class="col-lg-4">HP: <%=@pokemon.hp%></span>
+				<span class="col-lg-4">Attack: <%=@pokemon.atack%></span>
+				<span class="col-lg-4">Special Attack: <%=@pokemon.special_atack%></span>
+				<span class="col-lg-4">Defense: <%=@pokemon.defense%></span>
+				<span class="col-lg-4">Special Defense: <%=@pokemon.special_defense%></span>
+				<span class="col-lg-4">Speed: <%=@pokemon.speed%></span>
+			</div>
+			<div class="row" style="text-align: center;">
+				<div class=" col-lg-7">
+					<h2 class="text-secondary mb-3 mt-5">Attacks</h2>
+					<div class="row">
+						<span class="col-lg-6 mt-3">First attack: <%=@pokemon.atack0%></span>
+						<span class="col-lg-6 mt-3">Second attack: <%=@pokemon.atack1%></span>
+						<span class="col-lg-6 mt-3">Third attack: <%=@pokemon.atack2%></span>
+						<span class="col-lg-6 mt-3">Fourth attack: <%=@pokemon.atack3%></span>
+					</div>
+				</div>
+				<div class=" mt-5 col-lg-5 vertical-middle-align padded row">
+					<div class="col-lg-6">
+						<%=link_to "Liberate",liberate_pokemon_user_pokemon_path(user_id: current_user.id,id: @pokemon.id), id: "pokemon-#{@pokemon.id}", class:"btn btn-primary p-3 align-middle vertical-middle-align ", id:"button-to-modal-delete-pokemon"%>
+					</div>
+					<div class="col-lg-6">
+						<%=link_to "Compare",liberate_pokemon_user_pokemon_path(user_id: current_user.id,id: @pokemon.id), id: "pokemon-#{@pokemon.id}", class:"btn btn-white p-3 align-middle vertical-middle-align be-primary", id:"button-to-modal-delete-pokemon"%>
+					</div>				    
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<%= render 'modal_delete_pokemon'%>
+
+<script>
+
+
+    $(function () {
+        $('#button-to-modal-delete-pokemon').on('click', function (e) {
+        	e.preventDefault();
+            $('#delete_pokemon_modal').modal('show');
+        });
+
+        $('#edit-nickname-pokemon').on('click', function (e){
+        	if ($('#nickname-pokemon-field').val() == ""){
+        		$('#error-send').html("Choose a nickname to <%=@pokemon.name%>");
+        	}
+        	else{
+        		$('#form-destroy-pokemon').submit();
+        	}
+        });
+
+        $(document).keyup(function(e) {
+		  if (e.keyCode === 13){
+		  	if ($('#nickname-pokemon-field').val() == ""){
+        		$('#error-send').html("Choose a nickname to <%=@pokemon.name%>");
+        	}
+        	else{
+        		$('#form-destroy-pokemon').submit();
+        	} 	
+		  }
+		  if (e.keyCode === 27) $('#block_user_modal').modal('hide');
+		});
+
+    });
+
+</script>

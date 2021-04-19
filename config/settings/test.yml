@@ -1,0 +1,6 @@
+app_name: ProyectoPokemon
+app_domain: http://localhost:3000
+
+database:
+  db_adapter:  sqlite3
+  db_name: project_pokemon

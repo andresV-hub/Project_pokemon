@@ -28,6 +28,9 @@ Rails.application.routes.draw do
 		resources :pokedex, only: [:show, :index] do
 			collection do
 				get :information
+				# La captura son dos pasos: primero la tirada, y sólo si sale bien
+				# se pide el apodo y se guarda.
+				post :attempt_capture
 				post :add_pokemon_to_team
 			end
 		end

@@ -1,40 +1,61 @@
-<%# Modal de captura (styles.md §6.9). Capturar es reversible, así que NO usa la
-    variante `dex-confirm`, que está reservada a liberar.
-    JS hooks: #block_user_modal, #form-catch-pokemon, #error-send,
-    #nickname-pokemon-field y #catch-pokemon los consulta el script de show. %>
+<%# Captura en dos estados (styles.md §6.20): primero la tirada, y sólo si sale
+    bien se pide el apodo. Antes el modal pedía el apodo de entrada y la captura
+    no podía fallar. %>
 <div class="modal dex-modal" id="block_user_modal" tabindex="-1" role="dialog"
-     aria-hidden="true" aria-labelledby="catch-modal-title" data-bs-backdrop="false">
+     aria-hidden="true" aria-labelledby="catch-modal-title" data-bs-backdrop="false"
+     data-controller="capture"
+     data-capture-attempt-url-value="<%= attempt_capture_user_pokedex_index_path(user_id: current_user.id) %>"
+     data-capture-pokemon-id-value="<%= @pokemon.num_pokedex %>"
+     data-capture-name-value="<%= @pokemon.name %>">
   <div class="modal-dialog modal-dialog-centered">
-    <%= form_with url: add_pokemon_to_team_user_pokedex_index_path, id: 'form-catch-pokemon' do |f| %>
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="dex-modal__title" id="catch-modal-title">
-            You caught <%= @pokemon.name %>!
-          </h2>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="dex-modal__title" id="catch-modal-title">
+          Wild <%= @pokemon.name %>
+        </h2>
+      </div>
+
+      <div class="modal-body">
+        <%# La Poké Ball: se anima al lanzar y se queda quieta al resolverse. %>
+        <div class="dex-ball" data-capture-target="ball" aria-hidden="true">
+          <svg viewBox="0 0 64 64" width="64" height="64">
+            <circle cx="32" cy="32" r="29" fill="var(--dex-gray-0)" stroke="var(--dex-gray-900)" stroke-width="3"/>
+            <path d="M3 32a29 29 0 0 1 58 0z" fill="var(--dex-danger)" stroke="var(--dex-gray-900)" stroke-width="3"/>
+            <line x1="3" y1="32" x2="61" y2="32" stroke="var(--dex-gray-900)" stroke-width="3"/>
+            <circle cx="32" cy="32" r="9" fill="var(--dex-gray-0)" stroke="var(--dex-gray-900)" stroke-width="3"/>
+          </svg>
         </div>
 
-        <div class="modal-body">
-          <div id="error-send" class="dex-modal__error" role="alert"></div>
+        <%# Caja de diálogo: el único sitio con tipografía propia (§3). %>
+        <p class="dex-dialog" data-capture-target="message" role="status" aria-live="polite">
+          Throwing a Poké Ball…
+        </p>
 
-          <p class="dex-modal__text">Give it a nickname to store it in your PC. You can change it later.</p>
+        <p class="dex-modal__text" data-capture-target="attempts"></p>
 
-          <div class="dex-field">
-            <%# `for:` explícito: el campo lleva un id propio porque lo consulta el
-                script de la ficha, y sin esto el label apuntaría a `nickname`. %>
-            <%= f.label :nickname, 'Nickname', for: 'nickname-pokemon-field',
-                        class: 'dex-field__label', id: 'label-nickname-catched' %>
-            <%= f.text_field :nickname, id: 'nickname-pokemon-field',
-                             placeholder: "For example, Sparky", autofocus: true %>
+        <%# Estado 2: sólo aparece tras una tirada ganada. %>
+        <div data-capture-target="nicknameStep" hidden>
+          <%= form_with url: add_pokemon_to_team_user_pokedex_index_path(user_id: current_user.id),
+                        id: 'form-catch-pokemon', data: { turbo: false } do |f| %>
+            <div class="dex-field">
+              <%= f.label :nickname, 'Nickname', for: 'nickname-pokemon-field',
+                          class: 'dex-field__label' %>
+              <%= f.text_field :nickname, id: 'nickname-pokemon-field',
+                               placeholder: "For example, Sparky" %>
+              <p class="dex-field__hint">Leave it blank to keep its species name.</p>
+            </div>
             <%= hidden_field_tag 'pokemon_id', @pokemon.num_pokedex %>
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="dex-btn dex-btn--ghost" data-bs-dismiss="modal">Cancel</button>
-          <%= button_tag 'Save to my PC', type: 'button',
-                         class: 'dex-btn dex-btn--accent', id: 'catch-pokemon' %>
+          <% end %>
         </div>
       </div>
-    <% end %>
+
+      <div class="modal-footer">
+        <button type="button" class="dex-btn dex-btn--ghost" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="dex-btn dex-btn--ghost" data-capture-target="retry"
+                data-action="capture#throwBall" hidden>Throw again</button>
+        <button type="button" class="dex-btn dex-btn--accent" data-capture-target="save"
+                data-action="capture#save" hidden>Save to my PC</button>
+      </div>
+    </div>
   </div>
 </div>

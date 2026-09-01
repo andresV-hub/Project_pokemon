@@ -31,9 +31,40 @@ class PokedexController < ApplicationController
 		@descriptions = descriptions_for(@pokemons)
 	end
 
+	# Paso 1 de la captura: la tirada. Responde en JSON porque el modal cambia de
+	# estado sin recargar la página.
+	def attempt_capture
+		pokemon = ::Pokeapi::FindPokemon.execute(id: params[:pokemon_id]).value
+		description = ::Pokeapi::FindDescription.execute(id: params[:pokemon_id]).value
+
+		if pokemon.nil? || description.nil?
+			return render json: { error: 'We could not reach the PokeAPI.' }, status: :service_unavailable
+		end
+
+		result = ::Pokemons::AttemptCapture.execute(capture_rate: description.capture_rate).value
+
+		# El éxito se anota en la sesión: es lo que autoriza el paso 2. Sin esto,
+		# bastaría con llamar directamente a `add_pokemon_to_team` para saltarse
+		# la tirada.
+		session[:pending_capture] = pokemon.num_pokedex if result[:caught]
+
+		render json: {
+			caught: result[:caught],
+			name: pokemon.name,
+			probability: (result[:probability] * 100).round
+		}
+	end
+
+	# Paso 2: sólo se llega aquí con una tirada ganada en la sesión.
 	def add_pokemon_to_team
 		@pokemon = ::Pokeapi::FindPokemon.execute(id: params[:pokemon_id]).value
 		@description = ::Pokeapi::FindDescription.execute(id: params[:pokemon_id]).value
+
+		if session[:pending_capture] != params[:pokemon_id].to_i
+			return redirect_to user_pokedex_index_path(user_id: params[:user_id]),
+				alert: 'You have to catch that Pokémon first.',
+				status: :see_other
+		end
 
 		# Si la PokeAPI no responde, el cliente devuelve nil y aquí no hay nada que
 		# guardar: sin esta guarda se intentaría leer las estadísticas de un nil.
@@ -47,9 +78,12 @@ class PokedexController < ApplicationController
 			pokemon: @pokemon,
 			user: params[:user_id],
 			description: @description,
-			nickname: params[:nickname]
+			# El modelo exige apodo, y el formulario permite dejarlo en blanco: en ese
+			# caso se queda con el nombre de la especie, como en el juego.
+			nickname: params[:nickname].presence || @pokemon.name
 		)
 
+		session.delete(:pending_capture)
 		redirect_to user_pokemon_index_path(user_id: params[:user_id]), status: :see_other
 	end
 

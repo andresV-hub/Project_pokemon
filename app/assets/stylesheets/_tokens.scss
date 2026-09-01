@@ -6,6 +6,30 @@
 // Ningún componente debe declarar un hexadecimal literal: todo color sale de
 // esta hoja (styles.md §2, Reglas duras).
 
+// Tipografía de la caja de diálogo (styles.md §3, excepción acotada).
+//
+// Es la ÚNICA familia autoalojada y la única fuera de las tres de §3. Se sirve
+// desde el propio repositorio y no desde Google Fonts porque aparece justo en
+// mitad de la animación de captura: si llegara tarde, el diálogo parpadearía.
+// Licencia OFL, incluida junto a los ficheros.
+//
+// **Su uso fuera de `.dex-dialog` es un error.**
+@font-face {
+	font-family: 'Pixelify Sans';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url('pixelify-sans-400.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Pixelify Sans';
+	font-style: normal;
+	font-weight: 700;
+	font-display: swap;
+	src: url('pixelify-sans-700.woff2') format('woff2');
+}
+
 :root {
 	// ---- Azul Dex — color primario (styles.md §2) -------------------------
 	--dex-blue-50: #EEF4FC;
@@ -67,6 +91,10 @@
 	--dex-font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 	--dex-font-brand: 'Space Grotesk', 'Inter', system-ui, sans-serif;
 	--dex-font-data: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+	// Sólo para `.dex-dialog` (§3). Las fuentes de píxel se rompen fuera de los
+	// múltiplos de su tamaño de diseño, así que el componente fija su tamaño en
+	// lugar de heredarlo de la escala tipográfica.
+	--dex-font-dialog: 'Pixelify Sans', 'JetBrains Mono', ui-monospace, monospace;
 
 	// ---- Espaciado (styles.md §4) -----------------------------------------
 	--dex-space-1: 4px;

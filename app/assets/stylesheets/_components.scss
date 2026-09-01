@@ -4,16 +4,18 @@
 // Cada bloque cita la sección que lo justifica. No añadir clases `dex-*` nuevas
 // sin proponerlo antes (styles.md §9, antipatrón 22).
 //
-// JS hooks preserved: los modales se abren desde los scripts en línea de
-// `pokedex/show.html.erb` y `pokemon/show.html.erb` por ID, no por clase. NO
-// renombrar: #try-catch-pokemon, #catch-pokemon, #block_user_modal,
-// #form-catch-pokemon, #nickname-pokemon-field, #error-send,
+// JS hooks preserved: los modales de `pokemon/show.html.erb` se abren desde un
+// script en línea por ID, no por clase. NO renombrar:
+// #block_user_modal, #form-catch-pokemon, #nickname-pokemon-field,
 // #button-to-modal-delete-pokemon, #delete-pokemon, #form-destroy-pokemon,
 // #button-edit-nickname, #edit-pokemon, #form-edit-pokemon,
 // #edit-nickname-pokemon-field, #button-to-modal-compare-pokemon,
 // #compare-pokemon, #form-compare-pokemon, #error-send-compare,
 // #delete_pokemon_modal, #edit_pokemon_modal, #compare_pokemon_modal.
 // Tampoco tocar los `data-bs-dismiss` / `data-bs-*` de Bootstrap.
+//
+// La captura ya no usa script en línea: la lleva el controlador Stimulus
+// `capture`, que se engancha por `data-capture-target`, no por id.
 
 // ============================================================================
 // Base
@@ -1597,4 +1599,75 @@ a {
 	transition: background-color var(--dex-motion-fast) var(--dex-ease);
 
 	&:hover { background-color: var(--dex-surface-sunken); }
+}
+
+// ============================================================================
+// Captura: caja de diálogo y Poké Ball (styles.md §6.20)
+// ============================================================================
+
+// La ÚNICA excepción tipográfica del sistema (§3). El tamaño se fija aquí y no
+// se hereda de la escala: las fuentes de píxel se rompen fuera de los múltiplos
+// de su tamaño de diseño.
+.dex-dialog {
+	margin: var(--dex-space-4) 0 var(--dex-space-2);
+	padding: var(--dex-space-3) var(--dex-space-4);
+	border: 2px solid var(--dex-border-strong);
+	border-radius: var(--dex-radius-md);
+	background-color: var(--dex-surface-sunken);
+	// El color se fija en lugar de heredarlo: dentro del `.modal-content` de
+	// Bootstrap el párrafo tomaba un gris que sobre la superficie hundida del
+	// modo oscuro quedaba prácticamente ilegible.
+	color: var(--dex-text-primary);
+	font-family: var(--dex-font-dialog);
+	font-size: 16px;
+	line-height: 24px;
+	text-align: center;
+	min-height: 72px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.dex-ball {
+	display: flex;
+	justify-content: center;
+	padding-top: var(--dex-space-2);
+
+	svg { display: block; }
+
+	// Lanzamiento y tres sacudidas, la secuencia del juego.
+	&--throwing svg {
+		animation: dex-ball-throw .5s var(--dex-ease),
+				   dex-ball-shake .45s var(--dex-ease) .5s 3;
+	}
+
+	&--caught svg {
+		animation: dex-ball-caught .4s var(--dex-ease);
+	}
+
+	&--escaped svg {
+		animation: dex-ball-escaped .4s var(--dex-ease);
+	}
+}
+
+@keyframes dex-ball-throw {
+	from { transform: translateY(-40px) scale(.6) rotate(-90deg); opacity: 0; }
+	to { transform: none; opacity: 1; }
+}
+
+@keyframes dex-ball-shake {
+	0%, 100% { transform: rotate(0); }
+	25% { transform: rotate(-16deg) translateX(-4px); }
+	75% { transform: rotate(16deg) translateX(4px); }
+}
+
+@keyframes dex-ball-caught {
+	0% { transform: scale(1); }
+	50% { transform: scale(1.18); }
+	100% { transform: scale(1); }
+}
+
+@keyframes dex-ball-escaped {
+	0% { transform: scale(1); opacity: 1; }
+	100% { transform: scale(.85); opacity: .45; }
 }

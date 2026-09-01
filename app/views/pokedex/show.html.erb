@@ -2,11 +2,12 @@
            locals: { eyebrow: 'Pokédex', title: @pokemon.name } do %>
   <%= link_to 'Back to catalog', user_pokedex_index_path(user_id: current_user.id),
               class: 'dex-btn dex-btn--ghost' %>
-  <%# Abre el modal de captura: el script de esta vista engancha por ID. %>
-  <%= link_to 'Catch',
-              user_pokedex_path(user_id: current_user.id, id: @pokemon.id),
-              id: 'try-catch-pokemon',
-              class: 'dex-btn dex-btn--accent' %>
+  <%# Abre el modal de captura. La lógica vive en el controlador Stimulus
+      `capture`, no en un script en línea. %>
+  <button type="button" class="dex-btn dex-btn--accent"
+          data-bs-toggle="modal" data-bs-target="#block_user_modal">
+    Catch
+  </button>
 <% end %>
 
 <section class="dex-surface dex-surface--padded">
@@ -86,39 +87,3 @@
 
 <%= render 'modal_form_catch_pokemon' %>
 
-<script>
-  // Turbo vuelve a ejecutar este bloque en cada visita, por eso se engancha
-  // a turbo:load en lugar de a DOMContentLoaded.
-  document.addEventListener("turbo:load", function () {
-    const openButton  = document.getElementById("try-catch-pokemon");
-    const catchButton = document.getElementById("catch-pokemon");
-    const modalEl     = document.getElementById("block_user_modal");
-    const form        = document.getElementById("form-catch-pokemon");
-    const nickname    = document.getElementById("nickname-pokemon-field");
-    const errorBox    = document.getElementById("error-send");
-
-    if (!modalEl || !form) return;
-
-    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-
-    function submitIfNamed() {
-      if (nickname.value.trim() === "") {
-        errorBox.textContent = "Choose a nickname for <%= j @pokemon.name %>";
-      } else {
-        form.requestSubmit();
-      }
-    }
-
-    openButton?.addEventListener("click", function (e) {
-      e.preventDefault();
-      modal.show();
-    });
-
-    catchButton?.addEventListener("click", submitIfNamed);
-
-    document.addEventListener("keyup", function (e) {
-      if (e.key === "Enter" && modalEl.classList.contains("show")) submitIfNamed();
-      if (e.key === "Escape") modal.hide();
-    });
-  });
-</script>

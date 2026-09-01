@@ -55,6 +55,10 @@ class EncountersController < ApplicationController
 		                                     wild: wild)
 		state = result.value
 
+		# Derribar a un rival da experiencia, sea salvaje o de entrenador: es lo
+		# que hace que combatir sirva para algo aunque no captures nada.
+		state = award_experience(state) if state['over'] == 'wild_fainted'
+
 		# Contra un entrenador, derribar a uno no acaba el combate: sale el
 		# siguiente, y sólo al agotar el equipo se cobra.
 		if state['kind'] == 'trainer' && state['over'] == 'wild_fainted'
@@ -128,6 +132,27 @@ class EncountersController < ApplicationController
 
 	def encounter_state
 		session[:encounter]
+	end
+
+	def award_experience(state)
+		fighter = current_user.pokemon.find_by(id: state['trainer_pokemon_id'])
+		return state if fighter.nil?
+
+		amount = ::Pokemons::LevelStats.experience_from(
+			base_experience: state['base_experience'],
+			level: state['level']
+		)
+		result = ::Pokemons::GainExperience.execute(pokemon: fighter, amount: amount).value
+
+		log = state['log'] + ["#{fighter.nickname} gained #{amount} EXP."]
+		Array(result[:events]).each do |event|
+			log << case event[:type]
+			       when :level_up then "#{fighter.nickname} grew to Lv. #{event[:to]}!"
+			       when :evolution then "#{fighter.nickname} evolved into #{event[:into]}!"
+			       end
+		end
+
+		state.merge('log' => log.compact)
 	end
 
 	# Quien está combatiendo: durante un combate lo dice el estado, porque puede

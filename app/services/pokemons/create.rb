@@ -44,6 +44,8 @@ module Pokemons
         capture_rate: @description.capture_rate,
         base_happiness: @description.base_happiness,
         num_pokedex: @pokemon.num_pokedex,
+        level: LevelStats::STARTING_LEVEL,
+        experience: LevelStats.experience_for(LevelStats::STARTING_LEVEL),
         shiny: shiny,
         # El sprite se congela en la captura: si salió variocolor, lo que se
         # guarda es la variante shiny y la ficha ya no depende de la marca.

@@ -20,6 +20,7 @@ module Encounters
 
       rival = NAMES.sample
       first = team.first
+      own_hp = ::Pokemons::LevelStats.hp(@trainer_pokemon.hp, @trainer_pokemon.level)
 
       ServiceResult.new(value: {
         'kind' => 'trainer',
@@ -31,9 +32,12 @@ module Encounters
         'num_pokedex' => first['num_pokedex'],
         'wild_hp' => first['hp'],
         'wild_max_hp' => first['hp'],
+        'level' => first['level'],
+        'base_experience' => first['base_experience'],
         'trainer_pokemon_id' => @trainer_pokemon.id,
-        'trainer_hp' => @trainer_pokemon.hp.to_i,
-        'trainer_max_hp' => @trainer_pokemon.hp.to_i,
+        'trainer_hp' => own_hp,
+        'trainer_max_hp' => own_hp,
+        'trainer_level' => @trainer_pokemon.level,
         'log' => ["#{rival} wants to battle!", "#{rival} sent out #{first['name']}!"]
       })
     end
@@ -53,10 +57,15 @@ module Encounters
         pokemon = DrawOpponent.execute(reference_total: reference).value
         next if pokemon.nil?
 
+        level = Rules.rival_level(@trainer_pokemon.level)
+        base_hp = pokemon.stat_list.find { |stat| stat[:key] == 'hp' }&.dig(:value).to_i
+
         {
           'num_pokedex' => pokemon.num_pokedex,
           'name' => pokemon.name,
-          'hp' => pokemon.stat_list.find { |stat| stat[:key] == 'hp' }&.dig(:value).to_i
+          'level' => level,
+          'base_experience' => pokemon.base_experience,
+          'hp' => ::Pokemons::LevelStats.hp(base_hp, level)
         }
       end
     end

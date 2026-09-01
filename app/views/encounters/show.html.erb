@@ -22,7 +22,10 @@
     <%# El salvaje: barra de HP arriba, como en el juego. %>
     <div class="dex-hp">
       <div class="dex-hp__head">
-        <span class="dex-hp__name"><%= @state['name'] %></span>
+        <span class="dex-hp__name">
+          <%= @state['name'] %>
+          <span class="dex-hp__level">Lv. <%= @state['level'] %></span>
+        </span>
         <span class="dex-hp__value"><%= @state['wild_hp'] %> / <%= @state['wild_max_hp'] %></span>
       </div>
       <div class="dex-hp__track" role="meter"
@@ -44,7 +47,10 @@
   <div class="dex-encounter__side">
     <div class="dex-hp">
       <div class="dex-hp__head">
-        <span class="dex-hp__name"><%= @trainer_pokemon.display_name %></span>
+        <span class="dex-hp__name">
+          <%= @trainer_pokemon.display_name %>
+          <span class="dex-hp__level">Lv. <%= @state['trainer_level'] || @trainer_pokemon.level %></span>
+        </span>
         <span class="dex-hp__value"><%= @state['trainer_hp'] %> / <%= @state['trainer_max_hp'] %></span>
       </div>
       <div class="dex-hp__track" role="meter"

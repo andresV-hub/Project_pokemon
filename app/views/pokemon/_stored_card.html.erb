@@ -6,7 +6,7 @@
               'aria-label': "View #{pokemon.display_name} details" do %><% end %>
 
   <div class="dex-card__top">
-    <span class="dex-card__number"><%= pokemon.dex_number %></span>
+    <span class="dex-card__number"><%= pokemon.dex_number %> · Lv. <%= pokemon.level %></span>
     <% if pokemon.shiny? %>
       <span class="dex-badge">
         <i class="fa fa-star" aria-hidden="true"></i>

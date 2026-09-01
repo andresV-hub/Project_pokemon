@@ -36,6 +36,14 @@
 
       <dl class="dex-hero__meta">
         <div>
+          <dt>Level</dt>
+          <dd><%= @pokemon.level %></dd>
+        </div>
+        <div>
+          <dt>Experience</dt>
+          <dd><%= number_with_delimiter(@pokemon.experience) %> / <%= number_with_delimiter(@pokemon.next_level_experience) %></dd>
+        </div>
+        <div>
           <dt>Species</dt>
           <dd><%= @pokemon.species_name %></dd>
         </div>

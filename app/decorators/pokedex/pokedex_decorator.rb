@@ -40,6 +40,11 @@ module Pokedex
       model['height']
     end
 
+    # Experiencia que otorga derrotarlo, tal cual la da la PokeAPI.
+    def base_experience
+      model['base_experience'].to_i
+    end
+
     def image
       model.dig(*ORAS_SPRITES, 'front_default') ||
         model.dig(*OFFICIAL_ARTWORK, 'front_default') ||

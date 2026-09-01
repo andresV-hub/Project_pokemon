@@ -64,6 +64,12 @@ module Pokemons
   		model.image
   	end
 
+  	# Experiencia acumulada que hará falta para el siguiente nivel: sola, la
+  	# cifra de experiencia no dice nada sobre lo cerca que se está.
+  	def next_level_experience
+  		::Pokemons::LevelStats.experience_for(model.level.to_i + 1)
+  	end
+
   	def sprite_alt
   		"#{species_name}, Pokédex ##{num_pokedex}"
   	end

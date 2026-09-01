@@ -20,18 +20,24 @@ module Encounters
       description = wild && ::Pokeapi::FindDescription.execute(id: wild.num_pokedex).value
       return ServiceResult.new(error: :pokeapi_unavailable) if wild.nil? || description.nil?
 
-      wild_hp = wild.stat_list.find { |stat| stat[:key] == 'hp' }&.dig(:value).to_i
+      level = Rules.rival_level(@trainer_pokemon.level)
+      base_hp = wild.stat_list.find { |stat| stat[:key] == 'hp' }&.dig(:value).to_i
+      wild_hp = ::Pokemons::LevelStats.hp(base_hp, level)
+      own_hp = ::Pokemons::LevelStats.hp(@trainer_pokemon.hp, @trainer_pokemon.level)
 
       ServiceResult.new(value: {
         'num_pokedex' => wild.num_pokedex,
         'name' => wild.name,
         'capture_rate' => description.capture_rate.to_i,
+        'level' => level,
+        'base_experience' => wild.base_experience,
         'wild_hp' => wild_hp,
         'wild_max_hp' => wild_hp,
         'trainer_pokemon_id' => @trainer_pokemon.id,
-        'trainer_hp' => @trainer_pokemon.hp.to_i,
-        'trainer_max_hp' => @trainer_pokemon.hp.to_i,
-        'log' => ["A wild #{wild.name} appeared!"]
+        'trainer_hp' => own_hp,
+        'trainer_max_hp' => own_hp,
+        'trainer_level' => @trainer_pokemon.level,
+        'log' => ["A wild #{wild.name} (Lv. #{level}) appeared!"]
       })
     end
 

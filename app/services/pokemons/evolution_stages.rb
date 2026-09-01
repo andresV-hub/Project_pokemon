@@ -49,7 +49,10 @@ module Pokemons
         id: id,
         name: node.dig('species', 'name').to_s.capitalize,
         image: format(SPRITE_URL, id),
-        condition: condition_for(node['evolution_details'])
+        condition: condition_for(node['evolution_details']),
+        # El nivel en crudo, además del texto: la evolución automática necesita
+        # compararlo, y «Lv. 16» no sirve para eso.
+        min_level: Array(node['evolution_details']).first&.dig('min_level')
       }
     end
 

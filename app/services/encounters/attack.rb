@@ -50,10 +50,11 @@ module Encounters
 
     def hit_wild
       factor = effectiveness(@trainer_pokemon.type_slug, @wild.type_slugs)
-      damage = Rules.damage(attack: @trainer_pokemon.atack,
-                            defense: defensive_stat(@wild),
+      damage = Rules.damage(attack: ::Pokemons::LevelStats.stat(@trainer_pokemon.atack, own_level),
+                            defense: ::Pokemons::LevelStats.stat(defensive_stat(@wild), rival_level),
                             effectiveness: factor,
-                            defender_max_hp: @state['wild_max_hp'])
+                            defender_max_hp: @state['wild_max_hp'],
+                            level: own_level)
       @state['wild_hp'] = [@state['wild_hp'] - damage, 0].max
 
       "#{@trainer_pokemon.display_name} attacks! #{@state['name']} takes #{damage} damage.#{note(factor)}"
@@ -61,13 +62,22 @@ module Encounters
 
     def hit_trainer
       factor = effectiveness(@wild.type_slug, @trainer_pokemon.type_slugs)
-      damage = Rules.damage(attack: offensive_stat(@wild),
-                            defense: @trainer_pokemon.defense,
+      damage = Rules.damage(attack: ::Pokemons::LevelStats.stat(offensive_stat(@wild), rival_level),
+                            defense: ::Pokemons::LevelStats.stat(@trainer_pokemon.defense, own_level),
                             effectiveness: factor,
-                            defender_max_hp: @state['trainer_max_hp'])
+                            defender_max_hp: @state['trainer_max_hp'],
+                            level: rival_level)
       @state['trainer_hp'] = [@state['trainer_hp'] - damage, 0].max
 
       "#{@state['name']} strikes back! #{@trainer_pokemon.display_name} takes #{damage} damage."
+    end
+
+    def own_level
+      @state['trainer_level'].presence || @trainer_pokemon.level
+    end
+
+    def rival_level
+      @state['level'].presence || own_level
     end
 
     def offensive_stat(pokemon)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_01_203307) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_01_204155) do
   create_table "inventory_items", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "kind", null: false
@@ -40,9 +40,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_203307) do
     t.integer "capture_rate"
     t.integer "defense"
     t.text "description"
+    t.integer "experience", default: 0, null: false
     t.string "habitat"
     t.integer "hp"
     t.text "image"
+    t.integer "level", default: 5, null: false
     t.string "name"
     t.string "nickname"
     t.integer "num_pokedex"

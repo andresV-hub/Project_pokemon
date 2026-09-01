@@ -1,0 +1,47 @@
+module Pokemons
+  # Estadísticas efectivas de un Pokémon según su nivel.
+  #
+  # Hasta la fase 10 el combate usaba las estadísticas base tal cual y un nivel
+  # ficticio igual para todos: subir de nivel no cambiaba nada y la única forma
+  # de progresar era acumular Pokémon.
+  #
+  # Es la fórmula de primera generación sin IVs ni EVs, que aquí no existen.
+  module LevelStats
+
+    module_function
+
+    # El HP crece más deprisa que el resto: es lo que hace que un Pokémon de
+    # nivel alto aguante, y no sólo pegue más fuerte.
+    def hp(base, level)
+      ((2 * base.to_i * level.to_i) / 100) + level.to_i + 10
+    end
+
+    def stat(base, level)
+      ((2 * base.to_i * level.to_i) / 100) + 5
+    end
+
+    # Experiencia acumulada necesaria para estar en un nivel: la curva `n³` de
+    # los juegos, que hace que cada nivel cueste bastante más que el anterior.
+    def experience_for(level)
+      level.to_i**3
+    end
+
+    def level_for(experience)
+      level = Math.cbrt(experience.to_i).floor
+      level.clamp(1, MAX_LEVEL)
+    end
+
+    MAX_LEVEL = 100
+
+    # Nivel con el que nace un Pokémon capturado. Su experiencia tiene que
+    # corresponderse: creado con nivel 5 y experiencia 0, el primer combate lo
+    # recalculaba a nivel 3 y el jugador veía a su Pokémon *bajar* de nivel.
+    STARTING_LEVEL = 5
+
+    # Experiencia que da derrotar a un rival, con la fórmula de gen 1.
+    def experience_from(base_experience:, level:)
+      [((base_experience.to_i * level.to_i) / 7.0).round, 1].max
+    end
+
+  end
+end

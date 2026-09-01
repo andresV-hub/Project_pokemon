@@ -27,8 +27,10 @@ module Encounters
       @state['num_pokedex'] = pokemon['num_pokedex']
       @state['wild_hp'] = pokemon['hp']
       @state['wild_max_hp'] = pokemon['hp']
+      @state['level'] = pokemon['level']
+      @state['base_experience'] = pokemon['base_experience']
       @state.delete('over')
-      @state['log'] += ["#{@state['rival']} sent out #{pokemon['name']}!"]
+      @state['log'] += ["#{@state['rival']} sent out #{pokemon['name']} (Lv. #{pokemon['level']})!"]
     end
 
     def win

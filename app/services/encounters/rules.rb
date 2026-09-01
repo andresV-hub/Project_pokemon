@@ -7,9 +7,14 @@ module Encounters
 
     module_function
 
-    # Nivel ficticio para la fórmula de daño. No hay niveles todavía (fase 10),
-    # así que todo combate se resuelve como si ambos estuvieran en éste.
-    LEVEL = 25
+    # Cuánto puede variar el nivel del rival respecto al tuyo. Un margen estrecho:
+    # con rivales muy por encima el combate se pierde antes de empezar, y muy por
+    # debajo no da experiencia que merezca la pena.
+    LEVEL_SPREAD = 2
+
+    def rival_level(own_level)
+      (own_level.to_i + rand(-LEVEL_SPREAD..LEVEL_SPREAD)).clamp(2, Pokemons::LevelStats::MAX_LEVEL)
+    end
 
     # Potencia del ataque. No se eligen movimientos, así que todos golpean igual
     # y la diferencia la ponen las estadísticas y el tipo.
@@ -39,7 +44,9 @@ module Encounters
     # adelante sube al 95%. Tener equipo *debe* dar ventaja, pero esa curva se
     # aplana demasiado pronto; la solución de fondo son los niveles (fase 10),
     # que permitirán escalar también la fuerza del rival y no sólo su número.
-    TRAINER_TEAM_RANGE = (1..3).freeze
+    # Cuatro y no seis: contra un equipo completo el combate sería correcto de
+    # equilibrio pero tedioso de jugar, más de treinta clics en el mismo botón.
+    TRAINER_TEAM_RANGE = (1..4).freeze
 
     # Premio por ganar, calibrado contra el precio de una Poké Ball (200 en la
     # fase de tienda): una victoria compra un objeto, pero no dos. Es lo que
@@ -53,11 +60,11 @@ module Encounters
     # Daño de un atacante a un defensor, con la efectividad de tipos de la fase 2.
     # Es la fórmula de primera generación, simplificada: sin críticos, sin STAB y
     # sin variación aleatoria, para que el resultado sea predecible y ajustable.
-    def damage(attack:, defense:, effectiveness: 1.0, defender_max_hp: nil)
+    def damage(attack:, defense:, effectiveness: 1.0, defender_max_hp: nil, level: 25)
       attack = attack.to_i.clamp(1, 255)
       defense = defense.to_i.clamp(1, 255)
 
-      base = ((2 * LEVEL / 5.0 + 2) * BASE_POWER * attack / defense / 50.0) + 2
+      base = ((2 * level / 5.0 + 2) * BASE_POWER * attack / defense / 50.0) + 2
       dealt = (base * effectiveness).round
 
       # Contra un tipo inmune no hay suelo que valga: cero es cero.

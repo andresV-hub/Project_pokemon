@@ -18,6 +18,9 @@ Rails.application.routes.draw do
 
 	resources :user do
 		# Encuentros salvajes: la única puerta a los Pokémon que aún no tienes.
+		get 'shop', to: 'shop#show', as: :shop
+		post 'shop/buy', to: 'shop#buy', as: :shop_buy
+
 		get 'explore', to: 'encounters#new', as: :explore
 		get 'encounter', to: 'encounters#show', as: :encounter
 		post 'encounter/start', to: 'encounters#create', as: :encounter_start

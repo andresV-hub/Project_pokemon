@@ -15,8 +15,8 @@ module Encounters
     # y la diferencia la ponen las estadísticas y el tipo.
     BASE_POWER = 40
 
-    # Intentos de captura por encuentro.
-    MAX_BALLS = 3
+    # Los intentos de captura ya no son un número fijo: se gastan bolas del
+    # inventario, y quedarse sin ellas es lo que da valor a la tienda.
 
     # Tope blando de turnos. La fórmula sólo mira ataque y defensa, así que un
     # rival con mucha vida y defensa media —Snorlax, 160 PS— se eternizaba: 16

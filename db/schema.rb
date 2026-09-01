@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_01_200831) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_01_203307) do
+  create_table "inventory_items", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "kind", null: false
+    t.integer "quantity", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id", "kind"], name: "index_inventory_items_on_user_id_and_kind", unique: true
+    t.index ["user_id"], name: "index_inventory_items_on_user_id"
+  end
+
   create_table "pokedex_sightings", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "num_pokedex", null: false
@@ -83,6 +93,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_200831) do
     t.index ["user_id"], name: "index_users_roles_on_user_id"
   end
 
+  add_foreign_key "inventory_items", "users"
   add_foreign_key "pokedex_sightings", "users"
   add_foreign_key "users_roles", "roles"
   add_foreign_key "users_roles", "users"

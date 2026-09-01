@@ -1,0 +1,36 @@
+<%= render layout: 'application/page_header',
+           locals: { eyebrow: 'Shop', title: 'Poké Mart',
+                     lead: 'Beat trainers to earn money, spend it on better balls.' } do %>
+  <%= link_to user_explore_path(user_id: current_user.id), class: 'dex-btn dex-btn--ghost' do %>
+    <i class="fa fa-compass" aria-hidden="true"></i>
+    <span>Explore</span>
+  <% end %>
+<% end %>
+
+<div class="dex-grid dex-grid--party">
+  <% @items.each do |kind, item| %>
+    <% owned = @owned[kind]&.quantity.to_i %>
+    <% affordable = current_user.money >= item[:price] %>
+    <article class="dex-card dex-shop__item">
+      <div class="dex-card__top">
+        <span class="dex-card__title"><%= item[:name] %></span>
+        <span class="dex-badge">x<%= owned %></span>
+      </div>
+
+      <div class="dex-card__body">
+        <p class="dex-card__species"><%= item[:description] %></p>
+        <p class="dex-shop__effect">
+          Catch rate ×<%= item[:multiplier] %>
+        </p>
+      </div>
+
+      <div class="dex-card__actions">
+        <%= button_to "Buy · ₽#{number_with_delimiter(item[:price])}",
+                      user_shop_buy_path(user_id: current_user.id, kind: kind),
+                      class: "dex-btn dex-btn--compact dex-btn--block #{affordable ? 'dex-btn--accent' : 'dex-btn--ghost'}",
+                      form_class: 'dex-card__form',
+                      disabled: !affordable %>
+      </div>
+    </article>
+  <% end %>
+</div>

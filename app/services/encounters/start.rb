@@ -28,7 +28,6 @@ module Encounters
         'capture_rate' => description.capture_rate.to_i,
         'wild_hp' => wild_hp,
         'wild_max_hp' => wild_hp,
-        'balls' => Rules::MAX_BALLS,
         'trainer_pokemon_id' => @trainer_pokemon.id,
         'trainer_hp' => @trainer_pokemon.hp.to_i,
         'trainer_max_hp' => @trainer_pokemon.hp.to_i,

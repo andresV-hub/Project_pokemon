@@ -27,15 +27,26 @@ class User < ApplicationRecord
   # huérfanos en la tabla.
   has_many :pokemon, dependent: :destroy
   has_many :pokedex_sightings, dependent: :destroy
+  has_many :inventory_items, dependent: :destroy
 
   after_create :assign_default_role
   after_create :grant_starter
+  after_create :grant_starting_balls
 
   def assign_default_role
   	self.add_role(:user) if self.roles.blank?
   end
 
   private
+
+  # Unas cuantas bolas para empezar: sin ellas no se podría capturar nada hasta
+  # ganar el primer combate, que es justo lo que más cuesta al principio.
+  def grant_starting_balls
+    inventory_items.create!(kind: ::Shop::Catalog::STARTING_KIND,
+                            quantity: ::Shop::Catalog::STARTING_QUANTITY)
+  rescue StandardError => e
+    Rails.logger.error("[StartingBalls] #{e.class}: #{e.message} (user #{id})")
+  end
 
   # El inicial se concede aquí, pero **sin poder tumbar el registro**: depende de
   # la PokeAPI, y si estuviera caída una excepción revertiría la transacción y la

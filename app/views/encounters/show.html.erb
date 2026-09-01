@@ -76,10 +76,17 @@
   <% else %>
     <%= button_to 'Fight', user_encounter_attack_path(user_id: current_user.id),
                   class: 'dex-btn dex-btn--primary', form_class: 'dex-encounter__form' %>
+    <%# Una acción por tipo de bola que se tenga: elegir cuál gastar es la
+        decisión que la tienda hace interesante. %>
     <% unless trainer_battle %>
-      <%= button_to "Catch (#{@state['balls']})", user_encounter_catch_path(user_id: current_user.id),
-                    class: 'dex-btn dex-btn--accent', form_class: 'dex-encounter__form',
-                    disabled: @state['balls'].to_i.zero? %>
+      <% current_user.inventory_items.available.each do |item| %>
+        <%= button_to "#{item.name} (#{item.quantity})",
+                      user_encounter_catch_path(user_id: current_user.id, kind: item.kind),
+                      class: 'dex-btn dex-btn--accent', form_class: 'dex-encounter__form' %>
+      <% end %>
+      <% if current_user.inventory_items.available.none? %>
+        <span class="dex-field__hint">No balls left — visit the shop.</span>
+      <% end %>
     <% end %>
     <%= button_to 'Run', user_encounter_flee_path(user_id: current_user.id),
                   class: 'dex-btn dex-btn--ghost', form_class: 'dex-encounter__form' %>

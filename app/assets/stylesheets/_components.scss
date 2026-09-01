@@ -1942,3 +1942,26 @@ a {
 	color: var(--dex-amber-400);
 	white-space: nowrap;
 }
+
+// ============================================================================
+// Tienda (styles.md §6.25)
+// ============================================================================
+
+.dex-shop__item {
+	min-height: 200px;
+
+	.dex-card__top { align-items: baseline; }
+}
+
+.dex-shop__effect {
+	margin: 0;
+	font-family: var(--dex-font-data);
+	font-size: 13px;
+	color: var(--dex-text-secondary);
+}
+
+// El saldo enlaza a la tienda, así que necesita afordancia de enlace.
+a.dex-nav__money:hover {
+	text-decoration: none;
+	color: var(--dex-amber-300);
+}

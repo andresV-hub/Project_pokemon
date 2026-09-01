@@ -88,15 +88,20 @@ class EncountersController < ApplicationController
 			return redirect_to user_encounter_path(user_id: current_user.id), status: :see_other
 		end
 
-		if state['balls'].to_i <= 0
+		kind = params[:kind].presence || ::Shop::Catalog::STARTING_KIND
+		spent = ::Shop::UseBall.execute(user: current_user, kind: kind)
+
+		if spent.error == :out_of_stock
+			state['log'] = ["You have no #{::Shop::Catalog.name(kind) || 'balls'} left!"]
+			session[:encounter] = state
 			return redirect_to user_encounter_path(user_id: current_user.id), status: :see_other
 		end
 
-		state['balls'] -= 1
 		probability = ::Encounters::Rules.capture_probability(
 			capture_rate: state['capture_rate'],
 			current_hp: state['wild_hp'],
-			max_hp: state['wild_max_hp']
+			max_hp: state['wild_max_hp'],
+			multiplier: ::Shop::Catalog.multiplier(kind)
 		)
 
 		if rand < probability
@@ -106,9 +111,7 @@ class EncountersController < ApplicationController
 				notice: "Gotcha! #{state['name']} was caught and sent to your PC.", status: :see_other
 		end
 
-		state['log'] = ["Oh no! #{state['name']} broke free!"]
-		state['log'] << "#{state['name']} ran away." if state['balls'].zero?
-		state['over'] = 'out_of_balls' if state['balls'].zero?
+		state['log'] = ["You threw a #{::Shop::Catalog.name(kind)}…", "Oh no! #{state['name']} broke free!"]
 		session[:encounter] = state
 		finish_if_over
 

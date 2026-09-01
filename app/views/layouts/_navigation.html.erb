@@ -47,10 +47,13 @@
         <ul class="dex-nav__user">
           <% if user_signed_in? %>
             <li>
-              <span class="dex-nav__money" title="Your money">
+              <%# El saldo es también la puerta de la tienda: es donde el jugador
+                  mira cuando se pregunta si puede permitirse algo. %>
+              <%= link_to user_shop_path(user_id: current_user.id),
+                          class: 'dex-nav__money', title: 'Shop' do %>
                 <i class="fa fa-coins" aria-hidden="true"></i>
                 ₽<%= number_with_delimiter(current_user.money) %>
-              </span>
+              <% end %>
             </li>
             <li>
               <%# La ruta de Devise sólo acepta DELETE. Con `link_to` +

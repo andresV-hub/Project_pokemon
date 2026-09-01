@@ -1,11 +1,18 @@
 module Pokedex
   class PokedexDecorator < ApplicationDecorator
-    
+
     decorates :pokedex
 
-  	def name
-  		model['forms'][0]['name'].capitalize()
-  	end
+    # Sprite preferido y alternativas. Con la paginación ya se llega a pokémon
+    # posteriores a la sexta generación, que no tienen sprite de OmegaRuby /
+    # AlphaSapphire, así que hay que ir cayendo a las siguientes opciones.
+    ORAS_SPRITES = %w[sprites versions generation-vi omegaruby-alphasapphire].freeze
+    OFFICIAL_ARTWORK = %w[sprites other official-artwork].freeze
+    PLACEHOLDER_IMAGE = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png'.freeze
+
+    def name
+      model.dig('forms', 0, 'name').to_s.capitalize
+    end
 
     def num_pokedex
       model['id']
@@ -15,11 +22,18 @@ module Pokedex
       model['height']
     end
 
-  	def image
-      model['sprites']['versions']['generation-vi']['omegaruby-alphasapphire']["front_default"]
+    def image
+      model.dig(*ORAS_SPRITES, 'front_default') ||
+        model.dig(*OFFICIAL_ARTWORK, 'front_default') ||
+        model.dig('sprites', 'front_default') ||
+        PLACEHOLDER_IMAGE
     end
+
     def image_shiny
-      model['sprites']['versions']['generation-vi']['omegaruby-alphasapphire']["front_shiny"]
+      model.dig(*ORAS_SPRITES, 'front_shiny') ||
+        model.dig(*OFFICIAL_ARTWORK, 'front_shiny') ||
+        model.dig('sprites', 'front_shiny') ||
+        image
     end
 
     def id
@@ -27,19 +41,19 @@ module Pokedex
     end
 
     def type_of_pokemon
-      model['types'][0]['type']['name'].capitalize
+      model.dig('types', 0, 'type', 'name').to_s.capitalize
     end
 
     def specie
-      model['species']['name'].capitalize
+      model.dig('species', 'name').to_s.capitalize
     end
 
     def stats(num:)
-      model['stats'][num]['base_stat']
+      model.dig('stats', num, 'base_stat')
     end
 
     def attacks(num:)
-      model['moves'][num]['move']['name'].capitalize
+      model.dig('moves', num, 'move', 'name')&.capitalize
     end
 
   end

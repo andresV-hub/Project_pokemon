@@ -27,8 +27,8 @@ class BaseService
   #
   # Ambas son equivalentes. La segunda permite obtener una referencia al servicio,
   # que puede ser útil para obtener el estado interno.
-  def self.execute(*args, &block)
-    new(*args, &block).execute
+  def self.execute(*args, **kwargs, &block)
+    new(*args, **kwargs, &block).execute
   end
 
   def execute

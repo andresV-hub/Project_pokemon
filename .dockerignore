@@ -1,0 +1,12 @@
+.git
+.gitignore
+.idea
+.omc
+node_modules
+log/*
+tmp/*
+storage/*
+public/assets
+public/webfonts
+app/assets/builds/*
+!app/assets/builds/.keep

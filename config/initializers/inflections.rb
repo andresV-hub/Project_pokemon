@@ -14,3 +14,10 @@
 # ActiveSupport::Inflector.inflections(:en) do |inflect|
 #   inflect.acronym 'RESTful'
 # end
+
+# Zeitwerk deduce el nombre de la constante desde el del fichero, así que
+# necesita saber que UUID es un acrónimo para resolver
+# app/services/devices/find_by_uuid.rb -> Devices::FindByUUID.
+ActiveSupport::Inflector.inflections(:en) do |inflect|
+  inflect.acronym 'UUID'
+end

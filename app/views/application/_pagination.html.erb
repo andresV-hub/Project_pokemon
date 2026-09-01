@@ -1,0 +1,10 @@
+<%# Controles de paginación reutilizables por cualquier vista que reciba una
+    colección de Kaminari (Active Record o array paginado de la PokeAPI). %>
+<% if collection.total_pages > 1 %>
+  <div class="d-flex flex-column align-items-center my-4">
+    <%= paginate collection %>
+    <div class="text-primary small">
+      Page <%= collection.current_page %> of <%= collection.total_pages %> &middot; <%= collection.total_count %> pokemon
+    </div>
+  </div>
+<% end %>

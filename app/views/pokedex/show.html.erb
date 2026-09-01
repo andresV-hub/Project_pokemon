@@ -2,7 +2,7 @@
 	<h2 class="card-title text-primary "><%=@pokemon.name%>  Nº: <%=@pokemon.num_pokedex%></h2>
 	<h3 class="text-secondary text-center mb-2">-</h3>
 	<div class="row text-primary">
-		<div class=" show-pokemon ml-5 col-lg-3">
+		<div class=" show-pokemon ms-5 col-lg-3">
 			<span class=" text-primary">
 				<%=image_tag @pokemon.image, title: @pokemon.name, 
 							id: @pokemon.name, class: "img-pokemon-index"%>
@@ -49,35 +49,38 @@
 <%= render 'modal_form_catch_pokemon'%>
 
 <script>
+  // Turbo vuelve a ejecutar este bloque en cada visita, por eso se engancha
+  // a turbo:load en lugar de a DOMContentLoaded.
+  document.addEventListener("turbo:load", function () {
+    const openButton  = document.getElementById("try-catch-pokemon");
+    const catchButton = document.getElementById("catch-pokemon");
+    const modalEl     = document.getElementById("block_user_modal");
+    const form        = document.getElementById("form-catch-pokemon");
+    const nickname    = document.getElementById("nickname-pokemon-field");
+    const errorBox    = document.getElementById("error-send");
 
+    if (!modalEl || !form) return;
 
-    $(function () {
-        $('#try-catch-pokemon').on('click', function (e) {
-        	e.preventDefault();
-            $('#block_user_modal').modal('show');
-        });
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
 
-        $('#catch-pokemon').on('click', function (e){
-        	if ($('#nickname-pokemon-field').val() == ""){
-        		$('#error-send').html("Choose a name to <%=@pokemon.name%>");
-        	}
-        	else{
-        		$('#form-catch-pokemon').submit();
-        	}
-        });
+    function submitIfNamed() {
+      if (nickname.value.trim() === "") {
+        errorBox.textContent = "Choose a nickname to <%= j @pokemon.name %>";
+      } else {
+        form.requestSubmit();
+      }
+    }
 
-        $(document).keyup(function(e) {
-		  if (e.keyCode === 13){
-		  	if ($('#nickname-pokemon-field').val() == ""){
-        		$('#error-send').html("Choose a nickname to <%=@pokemon.name%>");
-        	}
-        	else{
-        		$('#form-catch-pokemon').submit();
-        	} 	
-		  }
-		  if (e.keyCode === 27) $('#block_user_modal').modal('hide');
-		});
-
+    openButton?.addEventListener("click", function (e) {
+      e.preventDefault();
+      modal.show();
     });
 
+    catchButton?.addEventListener("click", submitIfNamed);
+
+    document.addEventListener("keyup", function (e) {
+      if (e.key === "Enter" && modalEl.classList.contains("show")) submitIfNamed();
+      if (e.key === "Escape") modal.hide();
+    });
+  });
 </script>

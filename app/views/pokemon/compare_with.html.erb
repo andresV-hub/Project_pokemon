@@ -1,10 +1,10 @@
 <div class="card card center-xs card-show container-fluid ">
 	<h2 id="nickname-h2"class="card-title text-primary "><%=@pokemon.nickname%><%= link_to edit_nickname_user_pokemon_path(user_id: current_user.id),id:"button-edit-nickname" do %>
-    <i class="fa fa-pencil"></i>
+    <i class="fa-solid fa-pencil"></i>
   <% end %></h2>
 	<h3 class="text-secondary text-center mb-4"><%=@pokemon.name%>  Nº: <%=@pokemon.num_pokedex%></h3>
 	<div class="row text-primary">
-		<div class=" show-pokemon ml-5 col-lg-3">
+		<div class=" show-pokemon ms-5 col-lg-3">
 			<span class=" text-primary">
 				<%=image_tag @pokemon.image, title: @pokemon.name, 
 							id: @pokemon.name, class: "img-pokemon-index"%>

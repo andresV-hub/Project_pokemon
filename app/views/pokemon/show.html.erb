@@ -1,10 +1,10 @@
 <div class="card card center-xs card-show container-fluid ">
 	<h2 id="nickname-h2"class="card-title text-primary "><%=@pokemon.nickname%><%= link_to edit_nickname_user_pokemon_path(user_id: current_user.id),id:"button-edit-nickname" do %>
-    <i class="fa fa-pencil"></i>
+    <i class="fa-solid fa-pencil"></i>
   <% end %></h2>
 	<h3 class="text-secondary text-center mb-4"><%=@pokemon.name%>  Nº: <%=@pokemon.num_pokedex%></h3>
 	<div class="row text-primary">
-		<div class=" show-pokemon ml-5 col-lg-3">
+		<div class=" show-pokemon ms-5 col-lg-3">
 			<span class=" text-primary">
 				<%=image_tag @pokemon.image, title: @pokemon.name, 
 							id: @pokemon.name, class: "img-pokemon-index"%>
@@ -57,51 +57,52 @@
 <%= render 'modal_to_compare_pokemon'%>
 
 <script>
+  document.addEventListener("turbo:load", function () {
+    const modals = {
+      delete:  document.getElementById("delete_pokemon_modal"),
+      edit:    document.getElementById("edit_pokemon_modal"),
+      compare: document.getElementById("compare_pokemon_modal")
+    };
 
+    function instance(el) {
+      return el ? bootstrap.Modal.getOrCreateInstance(el) : null;
+    }
 
-    $(function () {
+    function openOnClick(buttonId, modalEl) {
+      document.getElementById(buttonId)?.addEventListener("click", function (e) {
+        e.preventDefault();
+        instance(modalEl)?.show();
+      });
+    }
 
-    	//Destroy
-        $('#button-to-modal-delete-pokemon').on('click', function (e) {
-        	e.preventDefault();
-            $('#delete_pokemon_modal').modal('show');
-        });
+    function submitOnClick(buttonId, formId) {
+      document.getElementById(buttonId)?.addEventListener("click", function () {
+        document.getElementById(formId)?.requestSubmit();
+      });
+    }
 
-        $('#delete-pokemon').on('click', function (e){
-        		$('#form-destroy-pokemon').submit();
-        });
+    // Liberar
+    openOnClick("button-to-modal-delete-pokemon", modals.delete);
+    submitOnClick("delete-pokemon", "form-destroy-pokemon");
 
-        //KeyBindings
-        $(document).keyup(function(e) {
-		  if (e.keyCode === 13){
-        	$('#form-destroy-pokemon').submit();
-		  }
-		  if (e.keyCode === 27){ 
-		  	$('#block_user_modal').modal('hide');
-		  	$('#edit_pokemon_modal').modal('hide');
-			}
-		});
+    // Editar mote
+    openOnClick("button-edit-nickname", modals.edit);
+    submitOnClick("edit-pokemon", "form-edit-pokemon");
 
-        //Edit
-        $('#button-edit-nickname').on('click', function (e) {
-        	e.preventDefault();
-            $('#edit_pokemon_modal').modal('show');
-        });
+    // Comparar
+    openOnClick("button-to-modal-compare-pokemon", modals.compare);
+    submitOnClick("compare-pokemon", "form-compare-pokemon");
 
-        $('#edit-pokemon').on('click', function (e){
-        		$('#form-edit-pokemon').submit();
-        });
+    // Atajos de teclado
+    document.addEventListener("keyup", function (e) {
+      const open = Object.values(modals).find((el) => el?.classList.contains("show"));
+      if (!open) return;
 
-        //Compare
-        $('#button-to-modal-compare-pokemon').on('click', function (e) {
-        	e.preventDefault();
-            $('#compare_pokemon_modal').modal('show');
-        });
-
-        $('#compare-pokemon').on('click', function (e){
-        		$('#form-compare-pokemon').submit();
-        });
-
+      if (e.key === "Enter") {
+        open.querySelector("form")?.requestSubmit();
+      } else if (e.key === "Escape") {
+        instance(open)?.hide();
+      }
     });
-
+  });
 </script>

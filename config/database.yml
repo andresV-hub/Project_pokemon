@@ -1,18 +1,19 @@
-# SQLite version 3.x
-#   gem install sqlite3
-#
-#   Ensure the SQLite 3 gem is defined in your Gemfile
-#   gem 'sqlite3'
-#
+# Los valores de conexión vienen de config/settings/<entorno>.yml (gema `config`)
+# y se pueden sobrescribir por entorno con variables SETTINGS__DATABASE__*.
+# La contraseña se lee de las credenciales cifradas (bin/rails credentials:edit)
+# con respaldo en la variable de entorno DB_PASSWORD.
 default: &default
   adapter:      <%= Settings.database.db_adapter %>
+  encoding:     utf8mb4
+  pool:         <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
   host:         <%= Settings.database.db_host %>
   port:         <%= Settings.database.db_port %>
   database:     <%= Settings.database.db_name %>
   username:     <%= Settings.database.db_username %>
-  password:     <%= Rails.application.credentials.dig(Rails.env.to_sym, :database, :db_pwd) %>
-  timeout:      <%= Settings.database.db_timeout %>
+  password:     <%= Rails.application.credentials.dig(Rails.env.to_sym, :database, :db_pwd).presence || ENV["DB_PASSWORD"] %>
+<% if Settings.database.db_socket.present? %>
   socket:       <%= Settings.database.db_socket %>
+<% end %>
 
 development:
   <<: *default

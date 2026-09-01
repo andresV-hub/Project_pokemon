@@ -1,0 +1,3 @@
+<li class="page-item <%= 'active' if page.current? %>">
+  <%= link_to page, url, remote: remote, class: 'page-link', rel: page.rel, 'aria-current': ('page' if page.current?) %>
+</li>

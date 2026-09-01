@@ -1,0 +1,33 @@
+// Punto de entrada de los estilos. Se compila con Dart Sass a
+// app/assets/builds/application.css mediante `npm run build:css`,
+// y Propshaft sirve ese resultado.
+
+// Font Awesome carga sus fuentes desde public/webfonts (las copia `npm run build:fonts`).
+$fa-font-path: "/webfonts";
+
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/variables-dark";
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
+
+// Paleta propia del proyecto, fusionada con la de Bootstrap para no perder
+// el resto de colores del tema (success, danger, etc.).
+$theme-colors: map-merge(
+  $theme-colors,
+  (
+    "primary": rgba(0, 73, 151, 0.9),
+    "secondary": rgb(250, 159, 22)
+  )
+);
+
+@import "bootstrap/scss/bootstrap";
+
+@import "@fortawesome/fontawesome-free/scss/fontawesome";
+@import "@fortawesome/fontawesome-free/scss/solid";
+@import "@fortawesome/fontawesome-free/scss/regular";
+@import "@fortawesome/fontawesome-free/scss/brands";
+@import "@fortawesome/fontawesome-free/scss/v4-shims";
+
+@import "flexboxgrid";
+@import "styles";

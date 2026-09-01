@@ -1,0 +1,30 @@
+# Ignora los ficheros generados por la aplicación.
+
+# Dependencias
+/node_modules
+/.bundle
+
+# Assets compilados por `npm run build:css` y fuentes copiadas de Font Awesome
+/app/assets/builds/*
+!/app/assets/builds/.keep
+/public/assets
+/public/webfonts
+
+# Ficheros temporales y logs
+/log/*
+!/log/.keep
+/tmp/*
+!/tmp/.keep
+/tmp/pids/*
+!/tmp/pids/
+!/tmp/pids/.keep
+/storage/*
+!/storage/.keep
+
+# Herramientas locales del editor y del asistente
+/.claude
+/.idea
+/.omc
+
+# Nunca subir la clave maestra de las credenciales
+/config/master.key

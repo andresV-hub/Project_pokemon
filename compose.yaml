@@ -1,0 +1,50 @@
+name: project-pokemon
+
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: project_pokemon_dev
+      MYSQL_USER: andres
+      MYSQL_PASSWORD: pokemon
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uandres", "-ppokemon"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  web:
+    build: .
+    command: ["./bin/rails", "server", "-b", "0.0.0.0"]
+    environment:
+      RAILS_ENV: development
+      # La gema `config` lee estas variables y sobrescribe config/settings/development.yml
+      SETTINGS__DATABASE__DB_HOST: db
+      SETTINGS__DATABASE__DB_PORT: "3306"
+      SETTINGS__DATABASE__DB_NAME: project_pokemon_dev
+      SETTINGS__DATABASE__DB_USERNAME: andres
+      SETTINGS__DATABASE__DB_SOCKET: ""
+      DB_PASSWORD: pokemon
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/rails
+      # Volúmenes propios del contenedor: node_modules trae binarios nativos de
+      # Linux que no deben mezclarse con los del host.
+      - node_modules:/rails/node_modules
+      - rails_tmp:/rails/tmp
+    stdin_open: true
+    tty: true
+
+volumes:
+  db_data:
+  node_modules:
+  rails_tmp:

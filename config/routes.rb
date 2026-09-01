@@ -18,10 +18,16 @@ Rails.application.routes.draw do
 
 	resources :user do
 		resources :pokemon, only: [:show, :index] do
+			collection do
+				get :party
+			end
+
 			member do
 				patch :liberate_pokemon
 				patch :edit_nickname
 				patch :compare_with
+				patch :add_to_party
+				patch :send_to_pc
 			end
 		end
 

@@ -24,6 +24,11 @@
 
   <div class="dex-card__actions">
     <%= link_to 'View details', user_pokemon_path(user_id: current_user.id, id: pokemon.id),
-                class: 'dex-btn dex-btn--ghost dex-btn--compact dex-btn--block' %>
+                class: 'dex-btn dex-btn--ghost dex-btn--compact' %>
+    <%= button_to 'Add to party',
+                  add_to_party_user_pokemon_path(user_id: current_user.id, id: pokemon.id),
+                  method: :patch,
+                  class: 'dex-btn dex-btn--accent dex-btn--compact',
+                  form_class: 'dex-card__form' %>
   </div>
 </article>

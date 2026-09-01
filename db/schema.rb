@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_01_190003) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_01_191650) do
   create_table "pokedex_sightings", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "num_pokedex", null: false
@@ -36,12 +36,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_190003) do
     t.string "name"
     t.string "nickname"
     t.integer "num_pokedex"
+    t.integer "party_position"
     t.boolean "shiny", default: false, null: false
     t.integer "special_atack"
     t.integer "special_defense"
     t.integer "speed"
     t.string "type_of_pokemon"
     t.bigint "user_id"
+    t.index ["user_id", "party_position"], name: "index_pokemons_on_user_id_and_party_position", unique: true
     t.index ["user_id"], name: "index_pokemons_on_user_id"
   end
 

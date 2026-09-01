@@ -1,0 +1,52 @@
+<%= render layout: 'application/page_header',
+           locals: { eyebrow: 'Team', title: 'Party',
+                     lead: 'The six Pokémon you carry with you. Everyone else waits in the PC.' } do %>
+  <%= link_to user_pokemon_index_path(user_id: current_user.id),
+              class: 'dex-btn dex-btn--ghost' do %>
+    <i class="fa fa-desktop" aria-hidden="true"></i>
+    <span>Go to my PC</span>
+  <% end %>
+<% end %>
+
+<div class="dex-grid dex-grid--party">
+  <% @party.each do |pokemon| %>
+    <article class="dex-card dex-card--stored dex-tinted--<%= pokemon.type_slug %>">
+      <%= link_to user_pokemon_path(user_id: current_user.id, id: pokemon.id),
+                  class: 'dex-card__link',
+                  'aria-label': "View #{pokemon.display_name} details" do %><% end %>
+
+      <div class="dex-card__top">
+        <span class="dex-card__slot">Slot <%= pokemon.party_position %></span>
+        <% if pokemon.shiny? %>
+          <span class="dex-badge"><i class="fa fa-star" aria-hidden="true"></i> Shiny</span>
+        <% end %>
+      </div>
+
+      <div class="dex-card__body">
+        <%= render 'application/sprite', pokemon: pokemon, variant: :pixel %>
+        <h2 class="dex-card__title"><%= pokemon.display_name %></h2>
+        <p class="dex-card__species"><%= pokemon.species_name %></p>
+        <%= render 'application/type_chips', pokemon: pokemon %>
+      </div>
+
+      <div class="dex-card__actions">
+        <%= button_to 'Send to PC',
+                      send_to_pc_user_pokemon_path(user_id: current_user.id, id: pokemon.id),
+                      method: :patch,
+                      class: 'dex-btn dex-btn--ghost dex-btn--compact dex-btn--block',
+                      form_class: 'dex-card__form' %>
+      </div>
+    </article>
+  <% end %>
+
+  <%# Los huecos vacíos se dibujan: seis plazas es la regla del juego, y verlas
+      vacías es lo que empuja a llenarlas. %>
+  <% @free_slots.times do |index| %>
+    <div class="dex-card dex-card--empty-slot">
+      <span class="dex-card__slot">Slot <%= @party.size + index + 1 %></span>
+      <p class="dex-card__species">Empty</p>
+      <%= link_to 'Choose from PC', user_pokemon_index_path(user_id: current_user.id),
+                  class: 'dex-btn dex-btn--text dex-btn--compact' %>
+    </div>
+  <% end %>
+</div>

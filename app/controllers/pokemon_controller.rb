@@ -4,11 +4,41 @@ class PokemonController < ApplicationController
 	# de Active Record (LIMIT/OFFSET en SQL, no en memoria).
 	def index
 		pokemons = ::Pokemons::SearchByUser.execute(user_id: current_user.id)
+			.in_storage
 			.order(:num_pokedex, :id)
 			.page(params[:page])
 			.per(params[:per_page])
 
 		@pokemons = Pokemons::PokemonDecorator.decorate_collection(pokemons)
+		@party_size = ::Pokemons::SearchByUser.execute(user_id: current_user.id).in_party.count
+	end
+
+	# El equipo: seis huecos, algunos vacíos. Es la otra mitad de "My PC".
+	def party
+		pokemons = ::Pokemons::SearchByUser.execute(user_id: current_user.id).in_party
+		@party = Pokemons::PokemonDecorator.decorate_collection(pokemons)
+		@free_slots = Pokemon::PARTY_SIZE - @party.size
+	end
+
+	def add_to_party
+		pokemon = owned_pokemon
+		result = ::Pokemons::AddToParty.execute(pokemon: pokemon)
+
+		if result.error == :party_full
+			redirect_to user_pokemon_index_path(user_id: current_user.id),
+				alert: "Your party is full. Send someone to the PC first.", status: :see_other
+		else
+			redirect_to party_user_pokemon_index_path(user_id: current_user.id),
+				notice: "#{pokemon.nickname} joined your party.", status: :see_other
+		end
+	end
+
+	def send_to_pc
+		pokemon = owned_pokemon
+		::Pokemons::SendToPc.execute(pokemon: pokemon)
+
+		redirect_to party_user_pokemon_index_path(user_id: current_user.id),
+			notice: "#{pokemon.nickname} was sent to your PC.", status: :see_other
 	end
 
 	def show
@@ -57,7 +87,7 @@ class PokemonController < ApplicationController
 	#
 	# Antes se hacía `Base::Find.execute(klass: Pokemon, id: params[:id])`, que
 	# resuelve el id sin mirar de quién es: bastaba conocer un id ajeno para
-	# liberar, renombrar o comparar el Pokémon de otra persona. `params[:user_id]`
+	# liberar, renombrar o mover el Pokémon de otra persona. `params[:user_id]`
 	# tampoco servía de filtro, porque viene de la URL y lo pone quien llama.
 	#
 	# `find` lanza RecordNotFound, que Rails convierte en un 404: la respuesta

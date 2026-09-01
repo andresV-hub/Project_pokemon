@@ -1671,3 +1671,49 @@ a {
 	0% { transform: scale(1); opacity: 1; }
 	100% { transform: scale(.85); opacity: .45; }
 }
+
+// ============================================================================
+// Equipo (styles.md §6.21)
+// ============================================================================
+
+// El equipo son seis plazas fijas, así que la rejilla no crece más de tres
+// columnas: con cinco por fila los huecos vacíos se pierden.
+.dex-grid--party {
+	@media (min-width: 992px) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+	@media (min-width: 1200px) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+.dex-card {
+	&__slot {
+		font-family: var(--dex-font-data);
+		font-size: 13px;
+		line-height: 16px;
+		font-weight: 500;
+		color: var(--dex-text-tertiary);
+	}
+
+	// `button_to` envuelve el botón en un formulario; sin esto rompería la fila
+	// de acciones de la tarjeta.
+	&__form {
+		margin: 0;
+		flex: 1 1 auto;
+
+		.dex-btn { width: 100%; }
+	}
+
+	// Hueco libre del equipo: se dibuja, no se omite. Ver las plazas vacías es
+	// lo que empuja a llenarlas.
+	&--empty-slot {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: var(--dex-space-1);
+		min-height: 220px;
+		border-style: dashed;
+		box-shadow: none;
+		text-align: center;
+
+		&:hover { box-shadow: none; }
+	}
+}

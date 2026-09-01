@@ -1779,3 +1779,111 @@ a {
 		font-weight: 600;
 	}
 }
+
+// ============================================================================
+// Encuentros salvajes (styles.md §6.23)
+// ============================================================================
+
+.dex-explore {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--dex-space-4);
+	text-align: center;
+
+	&__lead { margin: 0; color: var(--dex-text-secondary); }
+	&__form { margin: 0; }
+}
+
+.dex-encounter {
+	display: grid;
+	gap: var(--dex-space-5);
+	grid-template-columns: 1fr;
+
+	@media (min-width: 768px) { grid-template-columns: 1fr 1fr; }
+
+	&__side {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--dex-space-3);
+	}
+
+	&__actions {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: var(--dex-space-2);
+		margin-top: var(--dex-space-4);
+	}
+
+	&__form { margin: 0; }
+}
+
+// Barra de HP. No reutiliza `dex-stat` (§6.7) porque cambia durante el combate y
+// necesita cambiar de color al bajar; la de estadísticas es un dato fijo.
+.dex-hp {
+	width: 100%;
+	max-width: 320px;
+
+	&__head {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: var(--dex-space-2);
+		margin-bottom: var(--dex-space-1);
+	}
+
+	&__name {
+		font-size: 15px;
+		font-weight: 600;
+	}
+
+	&__value {
+		font-family: var(--dex-font-data);
+		font-size: 13px;
+		font-variant-numeric: tabular-nums;
+		color: var(--dex-text-secondary);
+	}
+
+	&__track {
+		height: 10px;
+		border-radius: var(--dex-radius-pill);
+		background-color: var(--dex-gray-100);
+		overflow: hidden;
+	}
+
+	// Verde, ámbar y rojo según lo que queda: el color avisa, pero la cifra de
+	// al lado es la que informa (§9).
+	&__fill {
+		display: block;
+		height: 100%;
+		border-radius: var(--dex-radius-pill);
+		background-color: var(--dex-success);
+		transition: width var(--dex-motion-slow) var(--dex-ease),
+					background-color var(--dex-motion-slow) var(--dex-ease);
+
+		&--mid { background-color: var(--dex-amber-500); }
+		&--low { background-color: var(--dex-danger); }
+	}
+}
+
+// El registro del combate: varias líneas, alineadas a la izquierda, a diferencia
+// del diálogo de una sola frase de la captura.
+.dex-dialog--log {
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--dex-space-1);
+	text-align: left;
+	font-size: 14px;
+	line-height: 22px;
+}
+
+// Texto que sustituye al enlace en una especie aún no encontrada (§6.5).
+.dex-card__locked {
+	display: block;
+	padding: var(--dex-space-2);
+	text-align: center;
+	font-size: 13px;
+	color: var(--dex-text-tertiary);
+}

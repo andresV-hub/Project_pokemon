@@ -6,9 +6,11 @@
     muestra, porque es lo que invita a completarla. %>
 <% seen = local_assigns.fetch(:seen, true) %>
 <article class="dex-card <%= 'dex-card--unseen' unless seen %>">
-  <%= link_to user_pokedex_path(user_id: current_user.id, id: pokemon.id),
-              class: 'dex-card__link',
-              'aria-label': seen ? "View #{pokemon.name} details" : "Reveal Pokédex #{pokemon.dex_number}" do %><% end %>
+  <% if seen %>
+    <%= link_to user_pokedex_path(user_id: current_user.id, id: pokemon.id),
+                class: 'dex-card__link',
+                'aria-label': "View #{pokemon.name} details" do %><% end %>
+  <% end %>
 
   <div class="dex-card__top">
     <span class="dex-card__number"><%= pokemon.dex_number %></span>
@@ -30,8 +32,12 @@
   </div>
 
   <div class="dex-card__actions">
-    <%= link_to seen ? 'View details' : 'Reveal',
-                user_pokedex_path(user_id: current_user.id, id: pokemon.id),
-                class: 'dex-btn dex-btn--ghost dex-btn--compact dex-btn--block' %>
+    <% if seen %>
+      <%= link_to 'View details', user_pokedex_path(user_id: current_user.id, id: pokemon.id),
+                  class: 'dex-btn dex-btn--ghost dex-btn--compact dex-btn--block' %>
+    <% else %>
+      <%# Sin enlace: a una especie no encontrada no se llega desde aquí. %>
+      <span class="dex-card__locked">Find it in the wild</span>
+    <% end %>
   </div>
 </article>

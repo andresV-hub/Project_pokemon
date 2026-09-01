@@ -30,6 +30,10 @@
                           class: "dex-nav__link #{'dex-nav__link--active' if in_pokedex}" %>
             </li>
             <li>
+              <%= link_to 'Explore', user_explore_path(user_id: current_user.id),
+                          class: "dex-nav__link #{'dex-nav__link--active' if controller_name == 'encounters'}" %>
+            </li>
+            <li>
               <%= link_to 'Party', party_user_pokemon_index_path(user_id: current_user.id),
                           class: "dex-nav__link #{'dex-nav__link--active' if action_name == 'party'}" %>
             </li>

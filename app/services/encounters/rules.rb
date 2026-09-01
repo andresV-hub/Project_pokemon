@@ -1,0 +1,61 @@
+module Encounters
+  # Constantes de equilibrio del encuentro, todas juntas y en un solo sitio.
+  #
+  # Son los números que hay que tocar cuando el juego se hace aburrido o
+  # imposible; repartidos por los servicios serían imposibles de calibrar.
+  module Rules
+
+    module_function
+
+    # Nivel ficticio para la fórmula de daño. No hay niveles todavía (fase 10),
+    # así que todo combate se resuelve como si ambos estuvieran en éste.
+    LEVEL = 25
+
+    # Potencia del ataque. No se eligen movimientos, así que todos golpean igual
+    # y la diferencia la ponen las estadísticas y el tipo.
+    BASE_POWER = 40
+
+    # Intentos de captura por encuentro.
+    MAX_BALLS = 3
+
+    # Tope blando de turnos. La fórmula sólo mira ataque y defensa, así que un
+    # rival con mucha vida y defensa media —Snorlax, 160 PS— se eternizaba: 16
+    # turnos pulsando el mismo botón. El suelo de daño garantiza que ningún
+    # combate pase de aquí, sin tocar los que ya se resolvían rápido.
+    MAX_TURNS = 8
+
+    # Cuánto mejora la captura tener al rival debilitado: ×1 a HP completo y
+    # hasta ×3 con un punto de vida. Es lo que hace que valga la pena pelear
+    # antes de lanzar la bola.
+    MAX_HP_BONUS = 3.0
+
+    # Daño de un atacante a un defensor, con la efectividad de tipos de la fase 2.
+    # Es la fórmula de primera generación, simplificada: sin críticos, sin STAB y
+    # sin variación aleatoria, para que el resultado sea predecible y ajustable.
+    def damage(attack:, defense:, effectiveness: 1.0, defender_max_hp: nil)
+      attack = attack.to_i.clamp(1, 255)
+      defense = defense.to_i.clamp(1, 255)
+
+      base = ((2 * LEVEL / 5.0 + 2) * BASE_POWER * attack / defense / 50.0) + 2
+      dealt = (base * effectiveness).round
+
+      # Contra un tipo inmune no hay suelo que valga: cero es cero.
+      return 0 if effectiveness.zero?
+
+      floor = defender_max_hp.to_i.positive? ? (defender_max_hp.to_f / MAX_TURNS).ceil : 1
+      [dealt, floor, 1].max
+    end
+
+    # Probabilidad de captura: el ratio de la especie, mejorado por el daño ya
+    # hecho. `capture_rate` llega como porcentaje (0-100) desde el decorador.
+    def capture_probability(capture_rate:, current_hp:, max_hp:, multiplier: 1.0)
+      return 0.0 unless capture_rate.to_i.positive?
+
+      missing = max_hp.positive? ? (1.0 - current_hp.to_f / max_hp) : 0.0
+      hp_bonus = 1 + (MAX_HP_BONUS - 1) * missing
+
+      [(capture_rate / 100.0) * hp_bonus * multiplier, 1.0].min
+    end
+
+  end
+end

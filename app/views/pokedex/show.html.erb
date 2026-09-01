@@ -2,12 +2,13 @@
            locals: { eyebrow: 'Pokédex', title: @pokemon.name } do %>
   <%= link_to 'Back to catalog', user_pokedex_index_path(user_id: current_user.id),
               class: 'dex-btn dex-btn--ghost' %>
-  <%# Abre el modal de captura. La lógica vive en el controlador Stimulus
-      `capture`, no en un script en línea. %>
-  <button type="button" class="dex-btn dex-btn--accent"
-          data-bs-toggle="modal" data-bs-target="#block_user_modal">
-    Catch
-  </button>
+  <%# Ya no se captura desde la Pokédex: los Pokémon se consiguen en encuentros
+      (§6.23). La ficha es sólo el registro de lo que te has encontrado. %>
+  <%= link_to user_explore_path(user_id: current_user.id),
+              class: 'dex-btn dex-btn--accent' do %>
+    <i class="fa fa-compass" aria-hidden="true"></i>
+    <span>Explore</span>
+  <% end %>
 <% end %>
 
 <section class="dex-surface dex-surface--padded">
@@ -85,5 +86,4 @@
   </div>
 </section>
 
-<%= render 'modal_form_catch_pokemon' %>
 

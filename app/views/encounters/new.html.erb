@@ -1,0 +1,18 @@
+<%= render layout: 'application/page_header',
+           locals: { eyebrow: 'Wild', title: 'Explore',
+                     lead: 'Pokémon you have not met yet only show up out here.' } do %>
+<% end %>
+
+<section class="dex-surface dex-surface--padded dex-explore">
+  <p class="dex-explore__lead">
+    <strong><%= @lead_pokemon.display_name %></strong> is at the front of your party
+    and will fight for you.
+  </p>
+
+  <%= render 'application/sprite', pokemon: @lead_pokemon, variant: :pixel, eager: true %>
+
+  <%= button_to 'Look for Pokémon',
+                user_encounter_start_path(user_id: current_user.id),
+                class: 'dex-btn dex-btn--accent dex-btn--form',
+                form_class: 'dex-explore__form' %>
+</section>

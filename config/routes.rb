@@ -17,6 +17,14 @@ Rails.application.routes.draw do
 	end
 
 	resources :user do
+		# Encuentros salvajes: la única puerta a los Pokémon que aún no tienes.
+		get 'explore', to: 'encounters#new', as: :explore
+		get 'encounter', to: 'encounters#show', as: :encounter
+		post 'encounter/start', to: 'encounters#create', as: :encounter_start
+		post 'encounter/attack', to: 'encounters#attack', as: :encounter_attack
+		post 'encounter/catch', to: 'encounters#catch', as: :encounter_catch
+		post 'encounter/flee', to: 'encounters#flee', as: :encounter_flee
+
 		resources :pokemon, only: [:show, :index] do
 			collection do
 				get :party

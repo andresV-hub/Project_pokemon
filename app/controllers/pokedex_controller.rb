@@ -23,7 +23,6 @@ class PokedexController < ApplicationController
 		@evolution_stages = ::Pokemons::EvolutionStages.execute(
 			chain: ::Pokeapi::FindEvolutionChain.execute(id: params[:id]).value
 		).value
-		record_sighting(@pokemon.num_pokedex)
 	end
 
 	def information

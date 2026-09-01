@@ -1,0 +1,71 @@
+<% over = @state['over'].present? %>
+<%= render layout: 'application/page_header',
+           locals: { eyebrow: 'Wild encounter', title: "Wild #{@state['name']}" } do %>
+<% end %>
+
+<section class="dex-surface dex-surface--padded dex-encounter">
+  <div class="dex-encounter__side">
+    <%# El salvaje: barra de HP arriba, como en el juego. %>
+    <div class="dex-hp">
+      <div class="dex-hp__head">
+        <span class="dex-hp__name"><%= @state['name'] %></span>
+        <span class="dex-hp__value"><%= @state['wild_hp'] %> / <%= @state['wild_max_hp'] %></span>
+      </div>
+      <div class="dex-hp__track" role="meter"
+           aria-label="<%= @state['name'] %> HP"
+           aria-valuenow="<%= @state['wild_hp'] %>" aria-valuemin="0"
+           aria-valuemax="<%= @state['wild_max_hp'] %>">
+        <% ratio = @state['wild_max_hp'].to_i.positive? ? @state['wild_hp'] * 100.0 / @state['wild_max_hp'] : 0 %>
+        <span class="dex-hp__fill <%= 'dex-hp__fill--low' if ratio <= 25 %> <%= 'dex-hp__fill--mid' if ratio > 25 && ratio <= 50 %>"
+              style="width: <%= ratio.round %>%"></span>
+      </div>
+    </div>
+
+    <% if @wild %>
+      <%= render 'application/sprite', pokemon: @wild, variant: :pixel_lg, eager: true %>
+      <%= render 'application/type_chips', pokemon: @wild %>
+    <% end %>
+  </div>
+
+  <div class="dex-encounter__side">
+    <div class="dex-hp">
+      <div class="dex-hp__head">
+        <span class="dex-hp__name"><%= @trainer_pokemon.display_name %></span>
+        <span class="dex-hp__value"><%= @state['trainer_hp'] %> / <%= @state['trainer_max_hp'] %></span>
+      </div>
+      <div class="dex-hp__track" role="meter"
+           aria-label="<%= @trainer_pokemon.display_name %> HP"
+           aria-valuenow="<%= @state['trainer_hp'] %>" aria-valuemin="0"
+           aria-valuemax="<%= @state['trainer_max_hp'] %>">
+        <% mine = @state['trainer_max_hp'].to_i.positive? ? @state['trainer_hp'] * 100.0 / @state['trainer_max_hp'] : 0 %>
+        <span class="dex-hp__fill <%= 'dex-hp__fill--low' if mine <= 25 %> <%= 'dex-hp__fill--mid' if mine > 25 && mine <= 50 %>"
+              style="width: <%= mine.round %>%"></span>
+      </div>
+    </div>
+
+    <%= render 'application/sprite', pokemon: @trainer_pokemon, variant: :pixel, eager: true %>
+    <%= render 'application/type_chips', pokemon: @trainer_pokemon %>
+  </div>
+</section>
+
+<%# El registro de lo ocurrido, en la caja de diálogo de la captura (§6.20). %>
+<div class="dex-dialog dex-dialog--log">
+  <% Array(@state['log']).each do |line| %>
+    <span><%= line %></span>
+  <% end %>
+</div>
+
+<div class="dex-encounter__actions">
+  <% if over %>
+    <%= button_to 'Back to Explore', user_encounter_flee_path(user_id: current_user.id),
+                  class: 'dex-btn dex-btn--primary', form_class: 'dex-encounter__form' %>
+  <% else %>
+    <%= button_to 'Fight', user_encounter_attack_path(user_id: current_user.id),
+                  class: 'dex-btn dex-btn--primary', form_class: 'dex-encounter__form' %>
+    <%= button_to "Catch (#{@state['balls']})", user_encounter_catch_path(user_id: current_user.id),
+                  class: 'dex-btn dex-btn--accent', form_class: 'dex-encounter__form',
+                  disabled: @state['balls'].to_i.zero? %>
+    <%= button_to 'Run', user_encounter_flee_path(user_id: current_user.id),
+                  class: 'dex-btn dex-btn--ghost', form_class: 'dex-encounter__form' %>
+  <% end %>
+</div>

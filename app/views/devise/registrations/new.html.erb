@@ -42,6 +42,25 @@
         </div>
       </div>
 
+      <%# Elegir el inicial es el momento más reconocible del juego, y además
+          resuelve un problema real: sin ningún Pokémon no hay con quién combatir
+          y los encuentros serían un callejón sin salida. %>
+      <fieldset class="dex-starter">
+        <legend class="dex-field__label">Choose your first partner</legend>
+        <div class="dex-starter__options">
+          <% User::STARTERS.each_with_index do |(num, name), index| %>
+            <label class="dex-starter__option dex-tinted--<%= %w[grass fire water][index] %>">
+              <%= f.radio_button :starter_num_pokedex, num, checked: index.zero?,
+                                 class: 'dex-starter__radio' %>
+              <%= image_tag "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/#{num}.png",
+                            alt: '', width: 72, height: 72, loading: 'lazy',
+                            class: 'dex-starter__sprite' %>
+              <span class="dex-starter__name"><%= name %></span>
+            </label>
+          <% end %>
+        </div>
+      </fieldset>
+
       <div class="dex-auth__actions">
         <%= f.submit 'Create account', class: 'dex-btn dex-btn--primary dex-btn--form dex-btn--block' %>
       </div>

@@ -20,7 +20,7 @@ class ApplicationController < ActionController::Base
 	# lleva pidiendo desde siempre se descartaban en silencio y se guardaban nulos.
 	def configure_permitted_parameters
 		extra = %i[name last_name phone]
-		devise_parameter_sanitizer.permit(:sign_up, keys: extra)
+		devise_parameter_sanitizer.permit(:sign_up, keys: extra + [:starter_num_pokedex])
 		devise_parameter_sanitizer.permit(:account_update, keys: extra)
 	end
 

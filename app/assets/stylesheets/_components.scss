@@ -1717,3 +1717,65 @@ a {
 		&:hover { box-shadow: none; }
 	}
 }
+
+// ============================================================================
+// Elección de inicial (styles.md §6.22)
+// ============================================================================
+
+.dex-starter {
+	margin: 0 0 var(--dex-space-4);
+	padding: 0;
+	border: 0;
+
+	&__options {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: var(--dex-space-2);
+		margin-top: var(--dex-space-2);
+	}
+
+	// El radio nativo se oculta visualmente pero sigue existiendo: el teclado y
+	// los lectores de pantalla necesitan el control real, y el foco se refleja
+	// en la tarjeta con :has().
+	&__radio {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		opacity: 0;
+	}
+
+	&__option {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--dex-space-1);
+		padding: var(--dex-space-3) var(--dex-space-2);
+		border: 1px solid var(--dex-border-strong);
+		border-radius: var(--dex-radius-md);
+		background: radial-gradient(circle at 50% 60%,
+					color-mix(in srgb, var(--dex-type) 12%, transparent), transparent 70%);
+		cursor: pointer;
+		transition: border-color var(--dex-motion-fast) var(--dex-ease),
+					background-color var(--dex-motion-fast) var(--dex-ease);
+
+		&:has(:checked) {
+			border-color: var(--dex-accent);
+			border-width: 2px;
+			padding: calc(var(--dex-space-3) - 1px) calc(var(--dex-space-2) - 1px);
+		}
+
+		&:has(:focus-visible) {
+			outline: 2px solid var(--dex-blue-600);
+			outline-offset: 2px;
+		}
+	}
+
+	&__sprite {
+		image-rendering: pixelated;
+	}
+
+	&__name {
+		font-size: 13px;
+		font-weight: 600;
+	}
+}

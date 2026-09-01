@@ -29,6 +29,27 @@ module Encounters
     # antes de lanzar la bola.
     MAX_HP_BONUS = 3.0
 
+    # --- Entrenadores -------------------------------------------------------
+
+    # Cuántos Pokémon lleva un entrenador rival, como mucho. El número real se
+    # limita además al tamaño de tu equipo, así que con el inicial solo el rival
+    # lleva uno.
+    #
+    # Medido con simulación: equipo de 1 gana el 50% de los combates, y de 3 en
+    # adelante sube al 95%. Tener equipo *debe* dar ventaja, pero esa curva se
+    # aplana demasiado pronto; la solución de fondo son los niveles (fase 10),
+    # que permitirán escalar también la fuerza del rival y no sólo su número.
+    TRAINER_TEAM_RANGE = (1..3).freeze
+
+    # Premio por ganar, calibrado contra el precio de una Poké Ball (200 en la
+    # fase de tienda): una victoria compra un objeto, pero no dos. Es lo que
+    # mantiene la tienda como una decisión y no como un trámite.
+    REWARD_RANGE = (100..300).freeze
+
+    def trainer_reward
+      rand(REWARD_RANGE)
+    end
+
     # Daño de un atacante a un defensor, con la efectividad de tipos de la fase 2.
     # Es la fórmula de primera generación, simplificada: sin críticos, sin STAB y
     # sin variación aleatoria, para que el resultado sea predecible y ajustable.

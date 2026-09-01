@@ -11,8 +11,17 @@
 
   <%= render 'application/sprite', pokemon: @lead_pokemon, variant: :pixel, eager: true %>
 
-  <%= button_to 'Look for Pokémon',
-                user_encounter_start_path(user_id: current_user.id),
-                class: 'dex-btn dex-btn--accent dex-btn--form',
-                form_class: 'dex-explore__form' %>
+  <div class="dex-explore__actions">
+    <%= button_to 'Look for Pokémon',
+                  user_encounter_start_path(user_id: current_user.id),
+                  class: 'dex-btn dex-btn--accent dex-btn--form',
+                  form_class: 'dex-explore__form' %>
+    <%= button_to 'Find a trainer',
+                  user_encounter_trainer_path(user_id: current_user.id),
+                  class: 'dex-btn dex-btn--primary dex-btn--form',
+                  form_class: 'dex-explore__form' %>
+  </div>
+  <p class="dex-field__hint">
+    Wild Pokémon can be caught. Trainers pay up when you beat them.
+  </p>
 </section>

@@ -1889,3 +1889,56 @@ a {
 	font-size: 13px;
 	color: var(--dex-text-tertiary);
 }
+
+// ============================================================================
+// Combate contra entrenador (styles.md §6.24)
+// ============================================================================
+
+.dex-explore__actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: var(--dex-space-2);
+}
+
+.dex-encounter {
+	// Equipo del rival: se ve cuántos quedan, que es la información que decide
+	// si seguir peleando o no.
+	&__team {
+		margin-bottom: var(--dex-space-4);
+		font-size: 13px;
+		color: var(--dex-text-secondary);
+	}
+
+	&__member {
+		display: inline-block;
+		margin-left: var(--dex-space-1);
+		padding: 2px 8px;
+		border: 1px solid var(--dex-border-subtle);
+		border-radius: var(--dex-radius-pill);
+
+		// Derribado: tachado además de atenuado, para no depender del color.
+		&--down {
+			text-decoration: line-through;
+			opacity: .5;
+		}
+
+		&--current {
+			border-color: var(--dex-accent);
+			color: var(--dex-text-primary);
+			font-weight: 600;
+		}
+	}
+}
+
+.dex-nav__money {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--dex-space-1);
+	padding: var(--dex-space-2) var(--dex-space-3);
+	font-family: var(--dex-font-data);
+	font-size: 13px;
+	font-variant-numeric: tabular-nums;
+	color: var(--dex-amber-400);
+	white-space: nowrap;
+}

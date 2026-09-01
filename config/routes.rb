@@ -21,6 +21,7 @@ Rails.application.routes.draw do
 		get 'explore', to: 'encounters#new', as: :explore
 		get 'encounter', to: 'encounters#show', as: :encounter
 		post 'encounter/start', to: 'encounters#create', as: :encounter_start
+		post 'encounter/trainer', to: 'encounters#create_trainer', as: :encounter_trainer
 		post 'encounter/attack', to: 'encounters#attack', as: :encounter_attack
 		post 'encounter/catch', to: 'encounters#catch', as: :encounter_catch
 		post 'encounter/flee', to: 'encounters#flee', as: :encounter_flee

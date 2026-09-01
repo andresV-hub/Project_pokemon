@@ -28,6 +28,20 @@ class EncountersController < ApplicationController
 		redirect_to user_encounter_path(user_id: current_user.id), status: :see_other
 	end
 
+	# Combate contra entrenador: no se captura, se cobra.
+	def create_trainer
+		result = ::Encounters::StartTrainer.execute(trainer_pokemon: lead_pokemon,
+		                                           party_size: current_user.pokemon.in_party.count)
+
+		if result.error
+			return redirect_to user_explore_path(user_id: current_user.id),
+				alert: 'We could not reach the PokeAPI. Try again in a few seconds.', status: :see_other
+		end
+
+		session[:encounter] = result.value
+		redirect_to user_encounter_path(user_id: current_user.id), status: :see_other
+	end
+
 	def show
 		@state = session[:encounter]
 		@wild = ::Pokeapi::FindPokemon.execute(id: @state['num_pokedex']).value
@@ -39,7 +53,25 @@ class EncountersController < ApplicationController
 		result = ::Encounters::Attack.execute(state: encounter_state,
 		                                     trainer_pokemon: lead_pokemon,
 		                                     wild: wild)
-		session[:encounter] = result.value
+		state = result.value
+
+		# Contra un entrenador, derribar a uno no acaba el combate: sale el
+		# siguiente, y sólo al agotar el equipo se cobra.
+		if state['kind'] == 'trainer' && state['over'] == 'wild_fainted'
+			state = ::Encounters::NextOpponent.execute(state: state, user: current_user).value
+		end
+
+		# Y si el que cae es el tuyo, entra el siguiente de tu equipo: por eso
+		# tener seis huecos llenos importa.
+		if state['over'] == 'trainer_fainted'
+			state = if state['kind'] == 'trainer'
+				::Encounters::NextOwnPokemon.execute(state: state, user: current_user).value
+			else
+				state.merge('log' => state['log'] + ['You flee from the battle.'])
+			end
+		end
+
+		session[:encounter] = state
 		finish_if_over
 
 		redirect_to user_encounter_path(user_id: current_user.id), status: :see_other
@@ -47,6 +79,15 @@ class EncountersController < ApplicationController
 
 	def catch
 		state = encounter_state
+
+		# En el juego lanzar una bola a un Pokémon ajeno no funciona, y aquí
+		# además dejaría al entrenador sin equipo a mitad de combate.
+		if state['kind'] == 'trainer'
+			state['log'] = ["You can't catch another trainer's Pokémon!"]
+			session[:encounter] = state
+			return redirect_to user_encounter_path(user_id: current_user.id), status: :see_other
+		end
+
 		if state['balls'].to_i <= 0
 			return redirect_to user_encounter_path(user_id: current_user.id), status: :see_other
 		end
@@ -86,9 +127,12 @@ class EncountersController < ApplicationController
 		session[:encounter]
 	end
 
-	# El primero del equipo es quien combate. Sin equipo no hay encuentro.
+	# Quien está combatiendo: durante un combate lo dice el estado, porque puede
+	# haber relevado al primero del equipo.
 	def lead_pokemon
-		pokemon = current_user.pokemon.in_party.first
+		current = session[:encounter] && session[:encounter]['trainer_pokemon_id']
+		pokemon = current && current_user.pokemon.find_by(id: current)
+		pokemon ||= current_user.pokemon.in_party.first
 		pokemon && ::Pokemons::PokemonDecorator.decorate(pokemon)
 	end
 

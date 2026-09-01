@@ -18,12 +18,20 @@ module Encounters
       if @state['wild_hp'].positive?
         log << hit_trainer
       else
-        log << "#{@state['name']} fainted. It got away."
+        # Un salvaje derribado se pierde; el de un entrenador simplemente cae y
+        # deja paso al siguiente.
+        log << if @state['kind'] == 'trainer'
+          "#{@state['name']} fainted!"
+        else
+          "#{@state['name']} fainted. It got away."
+        end
         @state['over'] = 'wild_fainted'
       end
 
       if @state['trainer_hp'] <= 0
-        log << "#{@trainer_pokemon.display_name} has no energy left. You flee."
+        # Sin desenlace aquí: contra un entrenador puede quedar relevo, y quien
+        # sabe si el combate acaba es quien mira el equipo.
+        log << "#{@trainer_pokemon.display_name} has no energy left!"
         @state['over'] = 'trainer_fainted'
       end
 

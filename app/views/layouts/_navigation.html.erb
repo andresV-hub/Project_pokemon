@@ -47,6 +47,12 @@
         <ul class="dex-nav__user">
           <% if user_signed_in? %>
             <li>
+              <span class="dex-nav__money" title="Your money">
+                <i class="fa fa-coins" aria-hidden="true"></i>
+                ₽<%= number_with_delimiter(current_user.money) %>
+              </span>
+            </li>
+            <li>
               <%# La ruta de Devise sólo acepta DELETE. Con `link_to` +
                   `data-turbo-method` el cierre de sesión depende de que Turbo
                   intercepte el clic: si el JS no llega a cargarse, el navegador

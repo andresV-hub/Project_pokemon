@@ -1,6 +1,20 @@
 <% over = @state['over'].present? %>
+<% trainer_battle = @state['kind'] == 'trainer' %>
 <%= render layout: 'application/page_header',
-           locals: { eyebrow: 'Wild encounter', title: "Wild #{@state['name']}" } do %>
+           locals: { eyebrow: trainer_battle ? "#{@state['rival']} · reward ₽#{@state['reward']}" : 'Wild encounter',
+                     title: trainer_battle ? @state['name'] : "Wild #{@state['name']}" } do %>
+<% end %>
+
+<% if trainer_battle %>
+  <p class="dex-encounter__team">
+    <%= @state['rival'] %>'s team:
+    <% Array(@state['team']).each_with_index do |member, index| %>
+      <span class="dex-encounter__member <%= 'dex-encounter__member--down' if index < @state['index'].to_i %>
+                   <%= 'dex-encounter__member--current' if index == @state['index'].to_i %>">
+        <%= member['name'] %>
+      </span>
+    <% end %>
+  </p>
 <% end %>
 
 <section class="dex-surface dex-surface--padded dex-encounter">
@@ -62,9 +76,11 @@
   <% else %>
     <%= button_to 'Fight', user_encounter_attack_path(user_id: current_user.id),
                   class: 'dex-btn dex-btn--primary', form_class: 'dex-encounter__form' %>
-    <%= button_to "Catch (#{@state['balls']})", user_encounter_catch_path(user_id: current_user.id),
-                  class: 'dex-btn dex-btn--accent', form_class: 'dex-encounter__form',
-                  disabled: @state['balls'].to_i.zero? %>
+    <% unless trainer_battle %>
+      <%= button_to "Catch (#{@state['balls']})", user_encounter_catch_path(user_id: current_user.id),
+                    class: 'dex-btn dex-btn--accent', form_class: 'dex-encounter__form',
+                    disabled: @state['balls'].to_i.zero? %>
+    <% end %>
     <%= button_to 'Run', user_encounter_flee_path(user_id: current_user.id),
                   class: 'dex-btn dex-btn--ghost', form_class: 'dex-encounter__form' %>
   <% end %>

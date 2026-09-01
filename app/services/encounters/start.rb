@@ -10,8 +10,13 @@ module Encounters
       @trainer_pokemon = trainer_pokemon
     end
 
+    # Fuerza del Pokémon que va a combatir, para emparejar al rival con él.
+    def reference_total
+      @trainer_pokemon.stat_list.sum { |stat| stat[:value].to_i }
+    end
+
     def service_execute
-      wild = ::Pokeapi::FindPokemon.execute(id: rand(1..::Pokeapi::SearchPokemons::POKEDEX_LIMIT)).value
+      wild = DrawOpponent.execute(reference_total: reference_total).value
       description = wild && ::Pokeapi::FindDescription.execute(id: wild.num_pokedex).value
       return ServiceResult.new(error: :pokeapi_unavailable) if wild.nil? || description.nil?
 

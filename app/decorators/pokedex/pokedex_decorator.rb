@@ -117,10 +117,24 @@ module Pokedex
       end
     end
 
+    # Los cuatro primeros del array que devuelve la PokeAPI **no son** los que se
+    # aprenden subiendo de nivel, sino los de máquina: la ficha de Pikachu decía
+    # que sabía Mega Punch. Ahora se listan los de nivel, con el nivel al lado,
+    # que es lo que de verdad describe a la especie.
     def move_list
-      Array(model['moves']).first(MOVES_SHOWN).filter_map do |move|
-        move.dig('move', 'name')&.tr('-', ' ')&.capitalize
-      end
+      level_moves.first(MOVES_SHOWN).map { |name, _level| name }
+    end
+
+    def level_moves
+      Array(model['moves']).filter_map do |entry|
+        detail = Array(entry['version_group_details']).find do |version|
+          version.dig('version_group', 'name') == ::Pokemons::MoveSet::VERSION_GROUP &&
+            version.dig('move_learn_method', 'name') == 'level-up'
+        end
+        next if detail.nil?
+
+        [entry.dig('move', 'name').to_s.tr('-', ' ').capitalize, detail['level_learned_at'].to_i]
+      end.sort_by(&:last)
     end
 
     def sprite_alt

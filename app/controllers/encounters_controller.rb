@@ -50,9 +50,10 @@ class EncountersController < ApplicationController
 
 	def attack
 		wild = ::Pokeapi::FindPokemon.execute(id: encounter_state['num_pokedex']).value
-		result = ::Encounters::Attack.execute(state: encounter_state,
-		                                     trainer_pokemon: lead_pokemon,
-		                                     wild: wild)
+		result = ::Encounters::ResolveTurn.execute(state: encounter_state,
+		                                          trainer_pokemon: lead_pokemon,
+		                                          wild: wild,
+		                                          move_index: params[:move].to_i)
 		state = result.value
 
 		# Derribar a un rival da experiencia, sea salvaje o de entrenador: es lo
@@ -70,6 +71,7 @@ class EncountersController < ApplicationController
 		if state['over'] == 'trainer_fainted'
 			state = if state['kind'] == 'trainer'
 				::Encounters::NextOwnPokemon.execute(state: state, user: current_user).value
+					.then { |next_state| reload_own_moves(next_state) }
 			else
 				state.merge('log' => state['log'] + ['You flee from the battle.'])
 			end
@@ -132,6 +134,18 @@ class EncountersController < ApplicationController
 
 	def encounter_state
 		session[:encounter]
+	end
+
+	# El relevo entra con sus propios movimientos, no con los del que ha caído.
+	def reload_own_moves(state)
+		fighter = current_user.pokemon.find_by(id: state['trainer_pokemon_id'])
+		return state if fighter.nil?
+
+		raw = ::Pokeapi::Client.get("pokemon/#{fighter.num_pokedex}")
+		return state if raw.nil?
+
+		moves = ::Pokemons::MoveSet.execute(raw_pokemon: raw, level: fighter.level).value
+		state.merge('own_moves' => moves.map { |move| move.merge('pp_left' => move['pp']) })
 	end
 
 	def award_experience(state)

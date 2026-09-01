@@ -16,9 +16,11 @@ module Encounters
       (own_level.to_i + rand(-LEVEL_SPREAD..LEVEL_SPREAD)).clamp(2, Pokemons::LevelStats::MAX_LEVEL)
     end
 
-    # Potencia del ataque. No se eligen movimientos, así que todos golpean igual
-    # y la diferencia la ponen las estadísticas y el tipo.
+    # Potencia de reserva, para un movimiento sin datos de potencia.
     BASE_POWER = 40
+
+    # Bonus por usar un movimiento del propio tipo, el STAB del juego.
+    SAME_TYPE_BONUS = 1.5
 
     # Los intentos de captura ya no son un número fijo: se gastan bolas del
     # inventario, y quedarse sin ellas es lo que da valor a la tienda.
@@ -57,14 +59,24 @@ module Encounters
       rand(REWARD_RANGE)
     end
 
+    # ¿Acierta el movimiento? Una precisión vacía significa que nunca falla.
+    def hits?(accuracy)
+      return true if accuracy.nil?
+
+      rand(1..100) <= accuracy.to_i
+    end
+
     # Daño de un atacante a un defensor, con la efectividad de tipos de la fase 2.
     # Es la fórmula de primera generación, simplificada: sin críticos, sin STAB y
     # sin variación aleatoria, para que el resultado sea predecible y ajustable.
-    def damage(attack:, defense:, effectiveness: 1.0, defender_max_hp: nil, level: 25)
+    def damage(attack:, defense:, effectiveness: 1.0, defender_max_hp: nil, level: 25,
+               power: BASE_POWER, same_type: false)
       attack = attack.to_i.clamp(1, 255)
       defense = defense.to_i.clamp(1, 255)
+      power = power.to_i.positive? ? power.to_i : BASE_POWER
 
-      base = ((2 * level / 5.0 + 2) * BASE_POWER * attack / defense / 50.0) + 2
+      base = ((2 * level / 5.0 + 2) * power * attack / defense / 50.0) + 2
+      base *= SAME_TYPE_BONUS if same_type
       dealt = (base * effectiveness).round
 
       # Contra un tipo inmune no hay suelo que valga: cero es cero.

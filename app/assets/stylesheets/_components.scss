@@ -1975,3 +1975,81 @@ a.dex-nav__money:hover {
 	font-variant-numeric: tabular-nums;
 	color: var(--dex-text-tertiary);
 }
+
+// ============================================================================
+// Movimientos en combate (styles.md §6.27)
+// ============================================================================
+
+// Los movimientos ocupan su propia fila: mezclados con Catch y Run, el cuarto
+// caía suelto a otra línea y las tres cosas parecían el mismo grupo de acciones,
+// cuando elegir movimiento y decidir capturar son decisiones distintas.
+.dex-moves-bar {
+	flex-basis: 100%;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(140px, 1fr));
+	gap: var(--dex-space-2);
+	max-width: 480px;
+	margin: 0 auto var(--dex-space-3);
+
+	@media (min-width: 768px) {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		max-width: 720px;
+	}
+}
+
+// Cada movimiento es un botón con su nombre, su tipo y los PP que le quedan.
+// Se tiñe del color de su tipo para poder elegir de un vistazo, pero el tipo va
+// además escrito en el chip: el color no es el dato (§9).
+.dex-move {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--dex-space-1);
+	width: 100%;
+	padding: var(--dex-space-2) var(--dex-space-3);
+	background-color: color-mix(in srgb, var(--dex-type) 12%, var(--dex-surface-raised));
+	border: 1px solid color-mix(in srgb, var(--dex-type) 40%, var(--dex-border-subtle));
+	border-radius: var(--dex-radius-sm);
+	color: var(--dex-text-primary);
+	cursor: pointer;
+	text-align: left;
+	transition: background-color var(--dex-motion-fast) var(--dex-ease);
+
+	&:hover:not(:disabled) {
+		background-color: color-mix(in srgb, var(--dex-type) 22%, var(--dex-surface-raised));
+	}
+
+	// Sin PP no se puede usar: se deshabilita en lugar de ocultarse, porque el
+	// movimiento sigue siendo suyo y volverá a tener PP en el próximo combate.
+	&:disabled {
+		opacity: .45;
+		cursor: not-allowed;
+	}
+
+	&__name {
+		font-size: 15px;
+		font-weight: 600;
+	}
+
+	&__meta {
+		display: flex;
+		align-items: center;
+		gap: var(--dex-space-2);
+	}
+
+	&__pp {
+		font-family: var(--dex-font-data);
+		font-size: 12px;
+		font-variant-numeric: tabular-nums;
+		color: var(--dex-text-secondary);
+	}
+}
+
+// Nivel al que se aprende cada movimiento, en la ficha de especie (§6.27).
+.dex-moves__level {
+	float: right;
+	font-family: var(--dex-font-data);
+	font-size: 12px;
+	font-variant-numeric: tabular-nums;
+	color: var(--dex-text-tertiary);
+}

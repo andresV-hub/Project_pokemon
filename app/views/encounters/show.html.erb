@@ -80,8 +80,22 @@
     <%= button_to 'Back to Explore', user_encounter_flee_path(user_id: current_user.id),
                   class: 'dex-btn dex-btn--primary', form_class: 'dex-encounter__form' %>
   <% else %>
-    <%= button_to 'Fight', user_encounter_attack_path(user_id: current_user.id),
-                  class: 'dex-btn dex-btn--primary', form_class: 'dex-encounter__form' %>
+    <%# Un botón por movimiento, con su tipo y los PP que quedan: elegir cuál
+        usar es la decisión del turno (styles.md §6.27). %>
+    <div class="dex-moves-bar">
+      <% Array(@state['own_moves']).each_with_index do |move, index| %>
+        <%= button_to user_encounter_attack_path(user_id: current_user.id, move: index),
+                      class: "dex-move dex-tinted--#{move['type']}",
+                      form_class: 'dex-encounter__form',
+                      disabled: move['pp_left'].to_i.zero? do %>
+          <span class="dex-move__name"><%= move['label'] %></span>
+          <span class="dex-move__meta">
+            <span class="dex-type dex-type--<%= move['type'] %>"><%= move['type'] %></span>
+            <span class="dex-move__pp"><%= move['pp_left'] %>/<%= move['pp'] %></span>
+          </span>
+        <% end %>
+      <% end %>
+    </div>
     <%# Una acción por tipo de bola que se tenga: elegir cuál gastar es la
         decisión que la tienda hace interesante. %>
     <% unless trainer_battle %>

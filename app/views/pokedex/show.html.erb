@@ -74,11 +74,14 @@
       <h2 class="dex-section-title">Evolution</h2>
       <%= render 'application/evolution_chain', stages: @evolution_stages, current_id: @pokemon.num_pokedex %>
 
-      <% if @pokemon.move_list.any? %>
-        <h2 class="dex-section-title">Moves</h2>
+      <% if @pokemon.level_moves.any? %>
+        <h2 class="dex-section-title">Moves learned by level</h2>
         <ul class="dex-moves">
-          <% @pokemon.move_list.each do |move| %>
-            <li><%= move %></li>
+          <% @pokemon.level_moves.first(8).each do |move, level| %>
+            <li>
+              <%= move %>
+              <span class="dex-moves__level">Lv. <%= level %></span>
+            </li>
           <% end %>
         </ul>
       <% end %>

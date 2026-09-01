@@ -24,6 +24,8 @@ module Encounters
 
       ServiceResult.new(value: {
         'kind' => 'trainer',
+        'own_moves' => move_set_for(@trainer_pokemon.num_pokedex, @trainer_pokemon.level),
+        'rival_moves' => first['moves'],
         'rival' => rival,
         'team' => team,
         'index' => 0,
@@ -43,6 +45,15 @@ module Encounters
     end
 
     private
+
+    def move_set_for(num_pokedex, level)
+      raw = ::Pokeapi::Client.get("pokemon/#{num_pokedex}")
+      return [] if raw.nil?
+
+      ::Pokemons::MoveSet.execute(raw_pokemon: raw, level: level).value.map do |move|
+        move.merge('pp_left' => move['pp'])
+      end
+    end
 
     def build_team
       reference = @trainer_pokemon.stat_list.sum { |stat| stat[:value].to_i }
@@ -65,7 +76,8 @@ module Encounters
           'name' => pokemon.name,
           'level' => level,
           'base_experience' => pokemon.base_experience,
-          'hp' => ::Pokemons::LevelStats.hp(base_hp, level)
+          'hp' => ::Pokemons::LevelStats.hp(base_hp, level),
+          'moves' => move_set_for(pokemon.num_pokedex, level)
         }
       end
     end

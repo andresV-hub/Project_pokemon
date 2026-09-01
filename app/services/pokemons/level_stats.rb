@@ -10,10 +10,20 @@ module Pokemons
 
     module_function
 
+    # Margen de resistencia. Con movimientos reales, cuya potencia llega a 120,
+    # la fórmula de HP a secas dejaba a un Pokémon KO de un solo golpe: un Petal
+    # Dance con bonus de tipo hacía el 124% de su vida.
+    #
+    # No se toca el daño porque su dispersión es deseable —que un movimiento
+    # fuerte y súper efectivo se lleve el combate es lo que hace que elegir
+    # importe—; lo que faltaba era aguante para que esa decisión llegue a
+    # tomarse más de una vez.
+    HP_SCALE = 1.5
+
     # El HP crece más deprisa que el resto: es lo que hace que un Pokémon de
     # nivel alto aguante, y no sólo pegue más fuerte.
     def hp(base, level)
-      ((2 * base.to_i * level.to_i) / 100) + level.to_i + 10
+      ((((2 * base.to_i * level.to_i) / 100) + level.to_i + 10) * HP_SCALE).round
     end
 
     def stat(base, level)

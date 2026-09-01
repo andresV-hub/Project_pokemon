@@ -21,7 +21,9 @@ module Pokemons
   	# La migración FixSwappedDefenseAndSpecialAttack corrige los ya guardados.
   	def service_execute
       stats = @pokemon.stat_list.index_by { |stat| stat[:key] }
-      moves = @pokemon.move_list
+      # Los que sabe a su nivel inicial, no los cuatro primeros del array.
+      moves = MoveSet.execute(raw_pokemon: @pokemon.object,
+                              level: LevelStats::STARTING_LEVEL).value.map { |move| move['label'] }
       shiny = shiny?
 
       pokemon = Pokemon.new(

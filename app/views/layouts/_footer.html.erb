@@ -1,8 +1,13 @@
-<div id="footer">
-    <div class="float-end">
-     Developed by Andrés Valiño
+<%# Pie (styles.md §6.15). Deja de ser `position: fixed`: robaba altura útil en
+    móvil y se solapaba con la última fila de tarjetas. %>
+<footer class="dex-foot">
+  <div class="dex-foot__inner">
+    <div>
+      <%= Settings.app_name ||= 'Project Pokédex' %> &copy; <%= Time.current.year %> ·
+      Developed by Andrés Valiño
     </div>
-    <div class="">
-      <%= Settings.app_name ||= 'Andrés Valiño' %> &copy; <%= Time.now.year.to_s %> 
+    <div>
+      Data and sprites from <%= link_to 'PokeAPI', 'https://pokeapi.co', target: '_blank', rel: 'noopener' %>
     </div>
-</div>
+  </div>
+</footer>

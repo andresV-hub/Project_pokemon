@@ -1,0 +1,12 @@
+<%# Chips de tipo (styles.md §6.2). El modificador usa la clave inglesa de la
+    PokeAPI, que es la estable; el texto visible se capitaliza en el decorator. %>
+<div class="dex-types">
+  <% slugs = pokemon.type_slugs %>
+  <% if slugs.empty? %>
+    <span class="dex-type dex-type--muted">Sin tipo</span>
+  <% else %>
+    <% slugs.each_with_index do |slug, index| %>
+      <span class="dex-type dex-type--<%= slug %>"><%= pokemon.type_names[index] %></span>
+    <% end %>
+  <% end %>
+</div>

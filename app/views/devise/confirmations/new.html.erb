@@ -1,16 +1,21 @@
-<h2>Resend confirmation instructions</h2>
+<div class="dex-auth">
+  <%= render 'application/auth_lockup', title: 'Resend confirmation' %>
 
-<%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+  <section class="dex-surface dex-surface--padded">
+    <%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
+      <%= render 'devise/shared/error_messages', resource: resource %>
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email", value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email) %>
-  </div>
+      <div class="dex-field">
+        <%= f.label :email, 'Email address', class: 'dex-field__label' %>
+        <%= f.email_field :email, autofocus: true, autocomplete: 'email',
+                          value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email) %>
+      </div>
 
-  <div class="actions">
-    <%= f.submit "Resend confirmation instructions" %>
-  </div>
-<% end %>
+      <div class="dex-auth__actions">
+        <%= f.submit 'Resend instructions', class: 'dex-btn dex-btn--primary dex-btn--form dex-btn--block' %>
+      </div>
+    <% end %>
+  </section>
 
-<%= render "devise/shared/links" %>
+  <%= render 'devise/shared/links' %>
+</div>

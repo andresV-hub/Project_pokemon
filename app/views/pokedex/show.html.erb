@@ -1,52 +1,64 @@
-<div class="card card center-xs card-show container-fluid ">
-	<h2 class="card-title text-primary "><%=@pokemon.name%>  Nº: <%=@pokemon.num_pokedex%></h2>
-	<h3 class="text-secondary text-center mb-2">-</h3>
-	<div class="row text-primary">
-		<div class=" show-pokemon ms-5 col-lg-3">
-			<span class=" text-primary">
-				<%=image_tag @pokemon.image, title: @pokemon.name, 
-							id: @pokemon.name, class: "img-pokemon-index"%>
-			</span>
-			<span class=" text-primary">
-				<p>Type: <%= @pokemon.type_of_pokemon%></p>
-				<p>Habitat: <%= @description.habitat%></p>
-				<p>Capture rate: <%= @description.capture_rate%>%</p>
-				<p>Base Happiness: <%= @description.base_happiness%></p>
-			</span>
-		</div>
-		<div class=" show-pokemon  col-lg-8 text-center">
-			<h2 class="text-secondary mb-3">Description</h2>
-			<p><%= @description.description%></p>
-			<h2 class="text-secondary mb-3">Base Stats</h2>
-			<div class="row" style="text-align: center;">
-				<% stats = ["HP","Attack","Special attack","Defense","Special defense","Speed "]%>
-				<% num =0%>
-				<% stats.each do |stat| %>
-					<span class="col-lg-4"><%=stat%>: <%= @pokemon.stats(num: num)%></span>
-					<% num = num+1%>
-				<% end %>
-			</div>
-			<div class="row" style="text-align: center;">
-				<div class=" col-lg-8">
-					<h2 class="text-secondary mb-3 mt-5">Attacks</h2>
-					<div class="row">
-						<% attacks = ["First attack","Second attack","Third attack","Fourth attack"]%>
-						<% num2 =0%>
-						<% attacks.each do |attack| %>
-							<span class="col-lg-6 mt-3"><%=attack%>: <%= @pokemon.attacks(num: num2)%></span>
-							<% num2 = num2+1%>
-						<% end %>
-					</div>
-				</div>
-				<div class=" mt-5 col-lg-4 vertical-middle-align padded">
-				    <%=link_to "Capture", user_pokedex_path(user_id: current_user.id, id: @pokemon.id), class:"btn button-primary p-3 align-middle vertical-middle-align", id:"try-catch-pokemon"%>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
+<%= render layout: 'application/page_header',
+           locals: { eyebrow: 'Pokédex', title: @pokemon.name } do %>
+  <%= link_to 'Back to catalog', user_pokedex_index_path(user_id: current_user.id),
+              class: 'dex-btn dex-btn--ghost' %>
+  <%# Abre el modal de captura: el script de esta vista engancha por ID. %>
+  <%= link_to 'Catch',
+              user_pokedex_path(user_id: current_user.id, id: @pokemon.id),
+              id: 'try-catch-pokemon',
+              class: 'dex-btn dex-btn--accent' %>
+<% end %>
 
-<%= render 'modal_form_catch_pokemon'%>
+<section class="dex-surface dex-surface--padded">
+  <div class="dex-hero">
+    <div>
+      <%# Artwork oficial en la ficha; el sprite pequeño se reserva a los
+          listados (styles.md §6.13). %>
+      <%= render 'application/sprite', pokemon: @pokemon, variant: :artwork, eager: true %>
+
+      <p class="dex-hero__number"><%= @pokemon.dex_number %></p>
+      <%= render 'application/type_chips', pokemon: @pokemon %>
+
+      <dl class="dex-hero__meta">
+        <div>
+          <dt>Habitat</dt>
+          <dd><%= @description&.habitat || 'Unknown' %></dd>
+        </div>
+        <div>
+          <dt>Catch rate</dt>
+          <dd><%= @description&.capture_rate ? "#{@description.capture_rate}%" : '—' %></dd>
+        </div>
+        <div>
+          <dt>Base happiness</dt>
+          <dd><%= @description&.base_happiness || '—' %></dd>
+        </div>
+      </dl>
+    </div>
+
+    <div>
+      <h2 class="dex-section-title">Description</h2>
+      <% if @description&.description.present? %>
+        <p class="dex-hero__description"><%= @description.description %></p>
+      <% else %>
+        <p class="dex-hero__description"><%= t('.no_description', default: 'The PokeAPI does not have a Pokédex entry for this species.') %></p>
+      <% end %>
+
+      <h2 class="dex-section-title">Base stats</h2>
+      <%= render 'application/stat_bars', pokemon: @pokemon %>
+
+      <% if @pokemon.move_list.any? %>
+        <h2 class="dex-section-title">Moves</h2>
+        <ul class="dex-moves">
+          <% @pokemon.move_list.each do |move| %>
+            <li><%= move %></li>
+          <% end %>
+        </ul>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<%= render 'modal_form_catch_pokemon' %>
 
 <script>
   // Turbo vuelve a ejecutar este bloque en cada visita, por eso se engancha
@@ -65,7 +77,7 @@
 
     function submitIfNamed() {
       if (nickname.value.trim() === "") {
-        errorBox.textContent = "Choose a nickname to <%= j @pokemon.name %>";
+        errorBox.textContent = "Choose a nickname for <%= j @pokemon.name %>";
       } else {
         form.requestSubmit();
       }

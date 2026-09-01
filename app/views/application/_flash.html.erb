@@ -1,0 +1,7 @@
+<%# Mensajes de la aplicación (styles.md §2, Estados). %>
+<% flash.each do |type, message| %>
+  <% next if message.blank? %>
+  <div class="dex-flash dex-flash--<%= type.to_s == 'alert' ? 'alert' : 'notice' %>" role="status">
+    <%= message %>
+  </div>
+<% end %>

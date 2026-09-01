@@ -1,28 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>ProjectPokemon</title>
+    <title>Project Pokédex</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <%# Icono de la pestaña. Se declara explícitamente para que gane al
+        public/favicon.ico que Chrome pide por convención. %>
+    <%= favicon_link_tag 'logo.png', type: 'image/png' %>
+    <%= favicon_link_tag 'logo.png', rel: 'apple-touch-icon', type: 'image/png' %>
+
+    <%# Tres familias, tres papeles: marca, interfaz y datos (styles.md §3). %>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
   <body>
-    <div id="page">
-
+    <div class="dex-shell">
       <%= render 'layouts/navigation' %>
 
-      <div class="central"> <%= yield %></div>
+      <main class="dex-main">
+        <%= render 'application/flash' %>
+        <%= yield %>
+      </main>
 
       <%= render 'layouts/footer' %>
-
     </div>
   </body>
 </html>

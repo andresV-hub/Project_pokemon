@@ -1,52 +1,89 @@
-<div class="card card center-xs card-show container-fluid ">
-	<h2 id="nickname-h2"class="card-title text-primary "><%=@pokemon.nickname%><%= link_to edit_nickname_user_pokemon_path(user_id: current_user.id),id:"button-edit-nickname" do %>
-    <i class="fa-solid fa-pencil"></i>
-  <% end %></h2>
-	<h3 class="text-secondary text-center mb-4"><%=@pokemon.name%>  Nº: <%=@pokemon.num_pokedex%></h3>
-	<div class="row text-primary">
-		<div class=" show-pokemon ms-5 col-lg-3">
-			<span class=" text-primary">
-				<%=image_tag @pokemon.image, title: @pokemon.name, 
-							id: @pokemon.name, class: "img-pokemon-index"%>
-			</span>
-			<span class=" text-primary">
-				<p>Type: <%= @pokemon.type_of_pokemon%></p>
-				<p>Habitat: <%= @pokemon.habitat%></p>
-				<p>Base Happiness: <%= @pokemon.base_happiness%></p>
-			</span>
-		</div>
-		<div class=" show-pokemon  col-lg-8 text-center">
-			<h2 class="text-secondary mb-3">Description</h2>
-			<p><%= @pokemon.description%></p>
-			<h2 class="text-secondary mb-3">Base Stats</h2>
-			<div class="row" style="text-align: center;">
-				<span class="col-lg-4">HP: <%=@pokemon.hp%></span>
-				<span class="col-lg-4">Attack: <%=@pokemon.atack%></span>
-				<span class="col-lg-4">Special Attack: <%=@pokemon.special_atack%></span>
-				<span class="col-lg-4">Defense: <%=@pokemon.defense%></span>
-				<span class="col-lg-4">Special Defense: <%=@pokemon.special_defense%></span>
-				<span class="col-lg-4">Speed: <%=@pokemon.speed%></span>
-			</div>
-			<div class="row" style="text-align: center;">
-				<div class=" col-lg-7">
-					<h2 class="text-secondary mb-3 mt-5">Attacks</h2>
-					<div class="row">
-						<span class="col-lg-6 mt-3">First attack: <%=@pokemon.atack0%></span>
-						<span class="col-lg-6 mt-3">Second attack: <%=@pokemon.atack1%></span>
-						<span class="col-lg-6 mt-3">Third attack: <%=@pokemon.atack2%></span>
-						<span class="col-lg-6 mt-3">Fourth attack: <%=@pokemon.atack3%></span>
-					</div>
-				</div>
-				<div class=" mt-5 col-lg-5 vertical-middle-align padded row">
-					<div class="col-lg-6">
-						<%=link_to "Liberate",liberate_pokemon_user_pokemon_path(user_id: current_user.id,id: @pokemon.id), id: "pokemon-#{@pokemon.id}", class:"btn btn-white p-3 align-middle vertical-middle-align", id:"button-to-modal-delete-pokemon"%>
-					</div>
-					<div class="col-lg-6">
-						<%=link_to "Compare",liberate_pokemon_user_pokemon_path(user_id: current_user.id,id: @pokemon.id), id: "pokemon-#{@pokemon.id}", class:"btn btn-primary p-3 align-middle vertical-middle-align be-primary ", id:"button-to-modal-compare-pokemon"%>
-					</div>
-				    
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
+<%# Comparador (styles.md §6.8). Antes esta vista era una copia literal del show
+    y no comparaba nada: no usaba ni @pokemon_api ni las diferencias.
+    Las diferencias se emparejan aquí por clave de estadística (hp, attack,
+    defense…) en lugar de por posición, porque el array que llega en @stats
+    cruza `defense` con `special-attack` (ver el informe de la revisión). %>
+<% mine = @pokemon.stat_list.index_by { |stat| stat[:key] } %>
+<% theirs = @pokemon_api.stat_list.index_by { |stat| stat[:key] } %>
+<% rows = mine.keys.map { |key| [mine[key], theirs[key]] } %>
+<% balance = rows.sum { |mine_stat, their_stat| mine_stat[:value] - their_stat.to_h.fetch(:value, 0) } %>
+
+<%= render layout: 'application/page_header',
+           locals: { eyebrow: 'Comparison',
+                     title: "#{@pokemon.display_name} vs #{@pokemon_api.name}" } do %>
+  <%= link_to 'Back to details', user_pokemon_path(user_id: current_user.id, id: @pokemon.id),
+              class: 'dex-btn dex-btn--ghost' %>
+<% end %>
+
+<section class="dex-surface dex-surface--padded dex-surface--split">
+  <div class="dex-surface__body">
+    <div class="dex-compare__head dex-tinted--<%= @pokemon.type_slug %>">
+      <%= render 'application/sprite', pokemon: @pokemon, variant: :pixel, eager: true %>
+      <div>
+        <p class="dex-compare__name"><%= @pokemon.display_name %></p>
+        <p class="dex-card__species"><%= @pokemon.species_name %> · <%= @pokemon.dex_number %></p>
+        <%= render 'application/type_chips', pokemon: @pokemon %>
+      </div>
+    </div>
+
+    <div class="dex-compare__head dex-tinted--<%= @pokemon_api.type_slug %>">
+      <%= render 'application/sprite', pokemon: @pokemon_api, variant: :pixel, eager: true %>
+      <div>
+        <p class="dex-compare__name"><%= @pokemon_api.name %></p>
+        <p class="dex-card__species">Catalog species · <%= @pokemon_api.dex_number %></p>
+        <%= render 'application/type_chips', pokemon: @pokemon_api %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="dex-surface mt-4">
+  <div class="dex-surface__head">
+    <h2>Base stats</h2>
+  </div>
+
+  <div class="dex-surface__body dex-compare">
+    <% rows.each do |mine_stat, their_stat| %>
+      <% their_value = their_stat.to_h.fetch(:value, 0) %>
+      <% delta = mine_stat[:value] - their_value %>
+      <div class="dex-compare__row">
+        <span class="dex-compare__label"><%= mine_stat[:label] %></span>
+
+        <span class="dex-compare__value dex-compare__value--mine"><%= mine_stat[:value] %></span>
+
+        <%# Icono además de color: la diferencia nunca se marca sólo con color, y
+            el valor menor va en gris porque perder no es un error (§6.8). %>
+        <% if delta.positive? %>
+          <span class="dex-compare__delta dex-compare__delta--up">
+            <span aria-hidden="true">▲</span>
+            <span>+<%= delta %></span>
+            <span class="dex-visually-hidden">in favor of <%= @pokemon.display_name %></span>
+          </span>
+        <% elsif delta.negative? %>
+          <span class="dex-compare__delta dex-compare__delta--down">
+            <span aria-hidden="true">▼</span>
+            <span><%= delta %></span>
+            <span class="dex-visually-hidden">in favor of <%= @pokemon_api.name %></span>
+          </span>
+        <% else %>
+          <span class="dex-compare__delta dex-compare__delta--tie">
+            <span aria-hidden="true">=</span>
+            <span class="dex-visually-hidden">tie</span>
+          </span>
+        <% end %>
+
+        <span class="dex-compare__value dex-compare__value--theirs"><%= their_value %></span>
+      </div>
+    <% end %>
+
+    <p class="dex-compare__verdict">
+      <% if balance.positive? %>
+        <%= @pokemon.display_name %> has <%= balance %> more total base stat points than <%= @pokemon_api.name %>.
+      <% elsif balance.negative? %>
+        <%= @pokemon_api.name %> has <%= balance.abs %> more total base stat points than <%= @pokemon.display_name %>.
+      <% else %>
+        Both have the exact same total base stat points.
+      <% end %>
+    </p>
+  </div>
+</section>

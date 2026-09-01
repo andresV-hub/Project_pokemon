@@ -1,29 +1,28 @@
-<div>
-	<h1 class="text-primary pt-3">My PC</h1>
-	<% if @pokemons.any? %>
-		<h2 class="text-secondary">-</h2>
+<%= render layout: 'application/page_header',
+           locals: { eyebrow: 'Storage', title: 'My PC',
+                     lead: 'The Pokémon you have caught, stored with the nicknames you gave them.' } do %>
+  <%= link_to user_pokedex_index_path(user_id: current_user.id),
+              class: 'dex-btn dex-btn--primary' do %>
+    <i class="fa fa-book" aria-hidden="true"></i>
+    <span>Explore the Pokédex</span>
+  <% end %>
+<% end %>
 
-		<%= render 'pagination', collection: @pokemons %>
+<% if @pokemons.any? %>
+  <%= render 'application/pagination', collection: @pokemons %>
 
-		<div class="row no-margin center-elements pb-5">
-			<% @pokemons.each do |pokemon| %>
-				<div class="card center card-width">
-					<h2 class="card-title text-primary pt-3"><%= pokemon.nickname %></h2>
-					<h2 class="card-title text-secondary pt-3"><%= pokemon.name %>  Nº:<%= pokemon.num_pokedex %></h2>
-					<div class="card-body">
-						<%= image_tag pokemon.image, title: pokemon.name, class: "img-pokemon-index" %>
-						<div class="card-text"><%= pokemon.description %></div>
-						<div class="mb-3 mt-5">
-							<%= link_to "Show", user_pokemon_path(user_id: current_user.id, id: pokemon.id), class: "btn button-primary p-3" %>
-						</div>
-					</div>
-				</div>
-			<% end %>
-		</div>
+  <div class="dex-grid">
+    <% @pokemons.each do |pokemon| %>
+      <%= render 'stored_card', pokemon: pokemon %>
+    <% end %>
+  </div>
 
-		<%= render 'pagination', collection: @pokemons %>
-	<% else %>
-		<h2 class="text-secondary mt-5">You dont have any pokemons</h2>
-		<p><%= link_to "Pokedex", user_pokedex_index_path(user_id: current_user.id), class: "btn button-primary p-3 mt-5" %></p>
-	<% end %>
-</div>
+  <%= render 'application/pagination', collection: @pokemons %>
+<% else %>
+  <%= render layout: 'application/empty_state',
+             locals: { title: 'Your PC is empty',
+                       text: 'You have not caught any Pokémon yet. Open the Pokédex, choose a species, and give it a nickname.' } do %>
+    <%= link_to 'Explore the Pokédex', user_pokedex_index_path(user_id: current_user.id),
+                class: 'dex-btn dex-btn--primary' %>
+  <% end %>
+<% end %>

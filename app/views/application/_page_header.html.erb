@@ -1,0 +1,17 @@
+<%# Cabecera de página (styles.md §6.1). Se renderiza con `render layout:` para
+    que cada vista aporte sus propias acciones dentro del bloque. %>
+<% lead = local_assigns[:lead] %>
+<header class="dex-page-header">
+  <div class="dex-page-header__lead">
+    <% if local_assigns[:eyebrow].present? %>
+      <span class="dex-page-header__eyebrow"><%= eyebrow %></span>
+    <% end %>
+    <h1 class="dex-page-header__title"><%= title %></h1>
+    <% if lead.present? %>
+      <p><%= lead %></p>
+    <% end %>
+  </div>
+  <div class="dex-page-header__actions">
+    <%= yield %>
+  </div>
+</header>

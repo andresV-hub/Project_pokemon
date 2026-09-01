@@ -1,0 +1,21 @@
+<%# Barras de estadística (styles.md §6.7). Escala fija 0–255 en todas las
+    fichas y cifra siempre visible: la barra sola no es un dato accesible. %>
+<% max = local_assigns.fetch(:max, Pokedex::PokedexDecorator::STAT_MAX) %>
+<div class="dex-stats dex-tinted--<%= pokemon.type_slug %>">
+  <% pokemon.stat_list.each do |stat| %>
+    <div class="dex-stat">
+      <div class="dex-stat__head">
+        <span class="dex-stat__label"><%= stat[:label] %></span>
+        <span class="dex-stat__value"><%= stat[:value] %></span>
+      </div>
+      <div class="dex-stat__track"
+           role="meter"
+           aria-label="<%= stat[:label] %>"
+           aria-valuenow="<%= stat[:value] %>"
+           aria-valuemin="0"
+           aria-valuemax="<%= max.to_i %>">
+        <span class="dex-stat__fill" style="width: <%= [(stat[:value] / max * 100).round, 100].min %>%"></span>
+      </div>
+    </div>
+  <% end %>
+</div>

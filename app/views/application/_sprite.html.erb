@@ -1,0 +1,13 @@
+<%# Sprite sobre un tinte del tipo primario (styles.md §6.13).
+    variant: :pixel (96px, listados) | :pixel_lg (192px) | :artwork (ficha) %>
+<% variant = local_assigns.fetch(:variant, :pixel) %>
+<% modifier = { pixel: 'dex-sprite--pixel', pixel_lg: 'dex-sprite--pixel-lg', artwork: 'dex-sprite--artwork' }.fetch(variant) %>
+<% size = { pixel: 96, pixel_lg: 192, artwork: 320 }.fetch(variant) %>
+<div class="dex-sprite <%= modifier %> dex-tinted--<%= pokemon.type_slug %>">
+  <%= image_tag(variant == :artwork ? pokemon.artwork : pokemon.image,
+                alt: pokemon.sprite_alt,
+                width: size,
+                height: size,
+                loading: local_assigns.fetch(:eager, false) ? 'eager' : 'lazy',
+                fetchpriority: local_assigns.fetch(:eager, false) ? 'high' : 'auto') %>
+</div>

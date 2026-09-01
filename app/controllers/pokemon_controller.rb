@@ -35,7 +35,7 @@ class PokemonController < ApplicationController
 
 		if @pokemon_api.nil?
 			return redirect_to user_pokemon_path(user_id: current_user.id, id: params[:id]),
-				alert: 'No existe ningun pokemon con ese numero de Pokedex', status: :see_other
+				alert: 'No Pokémon found with that Pokédex number', status: :see_other
 		end
 
 		@stats = Pokemons::ComparePokemonUseCase.execute(pokemon1: pokemon, pokemon_api: @pokemon_api)

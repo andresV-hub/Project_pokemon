@@ -1,0 +1,8 @@
+<%# Símbolo de marca (styles.md §1.2): cuadrado de esquinas redondeadas partido
+    por una banda, con un punto sobre ella. No se usa la Poké Ball. %>
+<% size = local_assigns.fetch(:size, 24) %>
+<svg width="<%= size %>" height="<%= size %>" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+  <rect x="1.5" y="1.5" width="21" height="21" rx="8" stroke="currentColor" stroke-width="2"/>
+  <path d="M2 12h20" stroke="currentColor" stroke-width="2"/>
+  <circle cx="12" cy="12" r="3.25" fill="<%= local_assigns.fetch(:dot, 'currentColor') %>"/>
+</svg>

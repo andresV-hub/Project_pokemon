@@ -1,26 +1,60 @@
+<%# Barra de navegación (styles.md §6.1 y §8). El wordmark es un enlace, no un
+    encabezado: como <h2> rompía la jerarquía de todas las páginas. %>
+<% in_pokedex = controller_name == 'pokedex' && action_name != 'information' %>
+<% in_storage = controller_name == 'pokemon' %>
 <header>
-      <nav class="navegador">
-        <ul class="no-list row center-xs middle-xs me-0">
-          <li class="col-md"><h2 id="logo">PROJECT POKEMON</h2></li>
-          <li class="col-md list"><%=link_to "Information", root_path, class:"link"%></li>
-          <%if user_signed_in?%>
-            <li class="col-md list">
-              <%=link_to "Pokedex", user_pokedex_index_path(user_id: current_user.id), class:"link"%>
+  <nav class="dex-nav" data-controller="nav">
+    <div class="dex-nav__inner">
+      <%= link_to root_path, class: 'dex-nav__brand', 'aria-label': 'Project Pokédex, home' do %>
+        <%= render 'application/brand_mark', size: 24 %>
+        <span>PROJECT&nbsp;<span class="dex-nav__brand-accent">POKÉDEX</span></span>
+      <% end %>
+
+      <button type="button"
+              class="dex-nav__toggle"
+              data-action="nav#toggle"
+              aria-expanded="false"
+              aria-label="Toggle menu">
+        <i class="fa fa-bars" aria-hidden="true"></i>
+      </button>
+
+      <div class="dex-nav__collapse" data-nav-target="menu">
+        <ul class="dex-nav__links">
+          <li>
+            <%= link_to 'About', root_path,
+                        class: "dex-nav__link #{'dex-nav__link--active' if action_name == 'information'}" %>
+          </li>
+          <% if user_signed_in? %>
+            <li>
+              <%= link_to 'Pokédex', user_pokedex_index_path(user_id: current_user.id),
+                          class: "dex-nav__link #{'dex-nav__link--active' if in_pokedex}" %>
             </li>
-            <li class="col-md list">
-              <%=link_to "My PC", user_pokemon_index_path(user_id: current_user.id), class:"link"%>
+            <li>
+              <%= link_to 'My PC', user_pokemon_index_path(user_id: current_user.id),
+                          class: "dex-nav__link #{'dex-nav__link--active' if in_storage}" %>
             </li>
-            <li class="col-md list">
-              <%=link_to "Logout", destroy_user_session_path, data: { turbo_method: :delete }, class:"link"%>
-            </li>
-          <%else%>
-            <li class="col-md list">
-              <%=link_to "Login", new_user_session_path, class:"link"%>
-            </li>
-            <li class="col-md list">
-              <%=link_to "Sign up", new_user_registration_path, class:"link"%>
-            </li>
-          <%end%>
+          <% end %>
         </ul>
-      </nav>
-    </header>
+
+        <ul class="dex-nav__user">
+          <% if user_signed_in? %>
+            <li>
+              <%# La ruta de Devise sólo acepta DELETE. Con `link_to` +
+                  `data-turbo-method` el cierre de sesión depende de que Turbo
+                  intercepte el clic: si el JS no llega a cargarse, el navegador
+                  hace un GET y la aplicación responde 404. `button_to` genera un
+                  formulario real y funciona con Turbo y sin él. %>
+              <%= button_to 'Log out', destroy_user_session_path,
+                            method: :delete,
+                            class: 'dex-nav__link dex-nav__link--button',
+                            form_class: 'dex-nav__form' %>
+            </li>
+          <% else %>
+            <li><%= link_to 'Log in', new_user_session_path, class: 'dex-nav__link' %></li>
+            <li><%= link_to 'Sign up', new_user_registration_path, class: 'dex-nav__link' %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>

@@ -1,60 +1,69 @@
-<div class="card card center-xs card-show container-fluid ">
-	<h2 id="nickname-h2"class="card-title text-primary "><%=@pokemon.nickname%><%= link_to edit_nickname_user_pokemon_path(user_id: current_user.id),id:"button-edit-nickname" do %>
-    <i class="fa-solid fa-pencil"></i>
-  <% end %></h2>
-	<h3 class="text-secondary text-center mb-4"><%=@pokemon.name%>  Nº: <%=@pokemon.num_pokedex%></h3>
-	<div class="row text-primary">
-		<div class=" show-pokemon ms-5 col-lg-3">
-			<span class=" text-primary">
-				<%=image_tag @pokemon.image, title: @pokemon.name, 
-							id: @pokemon.name, class: "img-pokemon-index"%>
-			</span>
-			<span class=" text-primary">
-				<p>Type: <%= @pokemon.type_of_pokemon%></p>
-				<p>Habitat: <%= @pokemon.habitat%></p>
-				<p>Base Happiness: <%= @pokemon.base_happiness%></p>
-			</span>
-		</div>
-		<div class=" show-pokemon  col-lg-8 text-center">
-			<h2 class="text-secondary mb-3">Description</h2>
-			<p><%= @pokemon.description%></p>
-			<h2 class="text-secondary mb-3">Base Stats</h2>
-			<div class="row" style="text-align: center;">
-				<span class="col-lg-4">HP: <%=@pokemon.hp%></span>
-				<span class="col-lg-4">Attack: <%=@pokemon.atack%></span>
-				<span class="col-lg-4">Special Attack: <%=@pokemon.special_atack%></span>
-				<span class="col-lg-4">Defense: <%=@pokemon.defense%></span>
-				<span class="col-lg-4">Special Defense: <%=@pokemon.special_defense%></span>
-				<span class="col-lg-4">Speed: <%=@pokemon.speed%></span>
-			</div>
-			<div class="row" style="text-align: center;">
-				<div class=" col-lg-7">
-					<h2 class="text-secondary mb-3 mt-5">Attacks</h2>
-					<div class="row">
-						<span class="col-lg-6 mt-3">First attack: <%=@pokemon.atack0%></span>
-						<span class="col-lg-6 mt-3">Second attack: <%=@pokemon.atack1%></span>
-						<span class="col-lg-6 mt-3">Third attack: <%=@pokemon.atack2%></span>
-						<span class="col-lg-6 mt-3">Fourth attack: <%=@pokemon.atack3%></span>
-					</div>
-				</div>
-				<div class=" mt-5 col-lg-5 vertical-middle-align padded row">
-					<div class="col-lg-6">
-						<%=link_to "Liberate",liberate_pokemon_user_pokemon_path(user_id: current_user.id,id: @pokemon.id), id: "pokemon-#{@pokemon.id}", class:"btn btn-white p-3 align-middle vertical-middle-align", id:"button-to-modal-delete-pokemon"%>
-					</div>
-					<div class="col-lg-6">
-						<%=link_to "Compare",liberate_pokemon_user_pokemon_path(user_id: current_user.id,id: @pokemon.id), id: "pokemon-#{@pokemon.id}", class:"btn btn-primary p-3 align-middle vertical-middle-align be-primary ", id:"button-to-modal-compare-pokemon"%>
-					</div>
-				    
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
+<%= render layout: 'application/page_header',
+           locals: { eyebrow: 'My PC', title: @pokemon.display_name,
+                     lead: @pokemon.species_name } do %>
+  <%# Disparadores de los modales (styles.md §6.3). Son botones, no enlaces: no
+      navegan a ninguna parte, abren un diálogo. Los IDs los consulta el script
+      del final de esta vista. %>
+  <button type="button" id="button-edit-nickname" class="dex-btn dex-btn--ghost">
+    <i class="fa fa-pen" aria-hidden="true"></i>
+    <span>Edit nickname</span>
+  </button>
+  <button type="button" id="button-to-modal-compare-pokemon" class="dex-btn dex-btn--ghost">
+    <i class="fa fa-right-left" aria-hidden="true"></i>
+    <span>Compare</span>
+  </button>
+  <button type="button" id="button-to-modal-delete-pokemon" class="dex-btn dex-btn--danger">
+    <i class="fa fa-trash" aria-hidden="true"></i>
+    <span>Release</span>
+  </button>
+<% end %>
 
+<section class="dex-surface dex-surface--padded">
+  <div class="dex-hero">
+    <div>
+      <%= render 'application/sprite', pokemon: @pokemon, variant: :pixel_lg, eager: true %>
 
-<%= render 'modal_delete_pokemon'%>
-<%= render 'modal_edit_nickname'%>
-<%= render 'modal_to_compare_pokemon'%>
+      <p class="dex-hero__number"><%= @pokemon.dex_number %></p>
+      <%= render 'application/type_chips', pokemon: @pokemon %>
+
+      <dl class="dex-hero__meta">
+        <div>
+          <dt>Species</dt>
+          <dd><%= @pokemon.species_name %></dd>
+        </div>
+        <div>
+          <dt>Habitat</dt>
+          <dd><%= @pokemon.habitat.presence || 'Unknown' %></dd>
+        </div>
+        <div>
+          <dt>Base happiness</dt>
+          <dd><%= @pokemon.base_happiness || '—' %></dd>
+        </div>
+      </dl>
+    </div>
+
+    <div>
+      <h2 class="dex-section-title">Description</h2>
+      <p class="dex-hero__description"><%= @pokemon.description %></p>
+
+      <h2 class="dex-section-title">Base stats</h2>
+      <%= render 'application/stat_bars', pokemon: @pokemon %>
+
+      <% if @pokemon.move_list.any? %>
+        <h2 class="dex-section-title">Moves</h2>
+        <ul class="dex-moves">
+          <% @pokemon.move_list.each do |move| %>
+            <li><%= move %></li>
+          <% end %>
+        </ul>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<%= render 'modal_delete_pokemon' %>
+<%= render 'modal_edit_nickname' %>
+<%= render 'modal_to_compare_pokemon' %>
 
 <script>
   document.addEventListener("turbo:load", function () {

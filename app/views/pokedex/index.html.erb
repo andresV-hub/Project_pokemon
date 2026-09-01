@@ -1,24 +1,35 @@
-<div>
-	<h1 class="text-primary pt-3">Pokedex</h1>
-	<h2 class="text-secondary">-</h2>
+<%= render layout: 'application/page_header',
+           locals: { eyebrow: 'Catalog', title: 'Pokédex',
+                     lead: 'Search for a species and catch it to store it in your PC.' } do %>
+  <%= link_to user_pokemon_index_path(user_id: current_user.id),
+              class: 'dex-btn dex-btn--ghost' do %>
+    <i class="fa fa-desktop" aria-hidden="true"></i>
+    <span>Go to my PC</span>
+  <% end %>
+<% end %>
 
-	<%= render 'pagination', collection: @pokemons %>
+<% if @pokemons.any? %>
+  <%= render 'application/pagination', collection: @pokemons %>
 
-	<div class="row no-margin center-elements pb-5">
-		<% @pokemons.each do |pokemon| %>
-			<div class="card center card-width">
-				<h2 class="card-title text-primary pt-3"><%= pokemon.name %>  Nº:<%= pokemon.num_pokedex %></h2>
-				<h3 class="text-primary">-</h3>
-				<div class="card-body">
-					<%= image_tag pokemon.image, title: pokemon.name, class: "img-pokemon-index" %>
-					<div class="card-text"><%= @descriptions[pokemon.num_pokedex]&.description %></div>
-					<div class="mb-3 mt-5">
-						<%= link_to "Show", user_pokedex_path(user_id: current_user.id, id: pokemon.id), class: "btn button-primary p-3" %>
-					</div>
-				</div>
-			</div>
-		<% end %>
-	</div>
+  <div class="dex-grid">
+    <% @pokemons.each do |pokemon| %>
+      <%= render 'species_card',
+                 pokemon: pokemon,
+                 captured: @captured_numbers.include?(pokemon.num_pokedex) %>
+    <% end %>
+  </div>
 
-	<%= render 'pagination', collection: @pokemons %>
-</div>
+  <%= render 'application/pagination', collection: @pokemons %>
+<% else %>
+  <%# La Pokédex depende de un servicio externo: este estado se diseña
+      (styles.md §6.14). %>
+  <div class="dex-error" role="alert">
+    <i class="fa fa-triangle-exclamation" aria-hidden="true"></i>
+    <div class="dex-error__body">
+      <h2 class="dex-error__title">Could not reach the PokeAPI</h2>
+      <p>The catalog is fetched live from pokeapi.co. Please try again in a few seconds.</p>
+      <%= link_to 'Retry', user_pokedex_index_path(user_id: current_user.id),
+                  class: 'dex-btn dex-btn--ghost dex-btn--compact' %>
+    </div>
+  </div>
+<% end %>

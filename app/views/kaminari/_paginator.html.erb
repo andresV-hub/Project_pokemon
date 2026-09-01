@@ -1,18 +1,17 @@
-<%# Paginador de Kaminari con el marcado de Bootstrap 5. %>
+<%# Paginador de Kaminari (styles.md §6.12). El <nav aria-label> lo aporta
+    `application/_pagination`, así que aquí sólo va la lista. %>
 <%= paginator.render do -%>
-  <nav aria-label="Paginación">
-    <ul class="pagination justify-content-center flex-wrap">
-      <%= first_page_tag unless current_page.first? %>
-      <%= prev_page_tag unless current_page.first? %>
-      <% each_page do |page| -%>
-        <% if page.left_outer? || page.right_outer? || page.inside_window? -%>
-          <%= page_tag page %>
-        <% elsif !page.was_truncated? -%>
-          <%= gap_tag %>
-        <% end -%>
+  <ul class="pagination">
+    <%= first_page_tag unless current_page.first? %>
+    <%= prev_page_tag unless current_page.first? %>
+    <% each_page do |page| -%>
+      <% if page.left_outer? || page.right_outer? || page.inside_window? -%>
+        <%= page_tag page %>
+      <% elsif !page.was_truncated? -%>
+        <%= gap_tag %>
       <% end -%>
-      <%= next_page_tag unless current_page.last? %>
-      <%= last_page_tag unless current_page.last? %>
-    </ul>
-  </nav>
+    <% end -%>
+    <%= next_page_tag unless current_page.last? %>
+    <%= last_page_tag unless current_page.last? %>
+  </ul>
 <% end -%>

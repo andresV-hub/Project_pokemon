@@ -6,21 +6,26 @@
 $fa-font-path: "/webfonts";
 
 @import "bootstrap/scss/functions";
+
+// Puente con la imagen corporativa: estos valores deben coincidir con los
+// tokens de _tokens.scss (styles.md §11.2 y Reglas de oro). Si cambia uno,
+// cambian los dos.
+$primary: #0B4E9F;
+$secondary: #F5A623;
+$success: #157F4B;
+$danger: #B3261E;
+$warning: #9A6700;
+$body-bg: #FAFBFD;
+$body-color: #131A22;
+$font-family-sans-serif: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+$border-radius: .25rem;
+$border-radius-lg: .5rem;
+$focus-ring-color: rgba(11, 78, 159, .5);
+
 @import "bootstrap/scss/variables";
 @import "bootstrap/scss/variables-dark";
 @import "bootstrap/scss/maps";
 @import "bootstrap/scss/mixins";
-
-// Paleta propia del proyecto, fusionada con la de Bootstrap para no perder
-// el resto de colores del tema (success, danger, etc.).
-$theme-colors: map-merge(
-  $theme-colors,
-  (
-    "primary": rgba(0, 73, 151, 0.9),
-    "secondary": rgb(250, 159, 22)
-  )
-);
-
 @import "bootstrap/scss/bootstrap";
 
 @import "@fortawesome/fontawesome-free/scss/fontawesome";
@@ -29,5 +34,7 @@ $theme-colors: map-merge(
 @import "@fortawesome/fontawesome-free/scss/brands";
 @import "@fortawesome/fontawesome-free/scss/v4-shims";
 
-@import "flexboxgrid";
-@import "styles";
+// Design system del producto. Va después de Bootstrap para poder ganarle la
+// cascada sin recurrir a `!important` (styles.md §9, antipatrón 12).
+@import "tokens";
+@import "components";

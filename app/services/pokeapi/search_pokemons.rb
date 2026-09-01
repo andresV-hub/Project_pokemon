@@ -10,8 +10,14 @@ module Pokeapi
   #
   class SearchPokemons < BaseService
 
-    DEFAULT_PER_PAGE = 16
+    DEFAULT_PER_PAGE = 15
     MAX_PER_PAGE = 60
+
+    # El catálogo se limita a la primera generación. La PokeAPI declara más de
+    # mil especies en `count`, así que el tope se aplica aquí: recorta lo que se
+    # pide a la API y también el total que recibe Kaminari, para que no pinte
+    # páginas vacías al final.
+    POKEDEX_LIMIT = 151
 
     attr_reader :page, :per_page
 
@@ -21,13 +27,15 @@ module Pokeapi
     end
 
     def service_execute
-      listing = Client.get('pokemon', limit: per_page, offset: offset)
+      return ServiceResult.new(value: empty_page) unless remaining.positive?
+
+      listing = Client.get('pokemon', limit: remaining, offset: offset)
       return ServiceResult.new(value: empty_page) if listing.nil?
 
       ServiceResult.new(
         value: Kaminari.paginate_array(
           decorated_pokemons(listing['results']),
-          total_count: listing['count'],
+          total_count: [listing['count'].to_i, POKEDEX_LIMIT].min,
           limit: per_page,
           offset: offset
         )
@@ -39,6 +47,12 @@ module Pokeapi
     end
 
     private
+
+    # Cuántas especies caben todavía dentro del tope en la página pedida: la
+    # última página de la primera generación es más corta que las demás.
+    def remaining
+      [per_page, POKEDEX_LIMIT - offset].min
+    end
 
     # Cada elemento del listado sólo trae nombre y URL; hay que pedir el detalle
     # de cada uno para poder decorarlo.

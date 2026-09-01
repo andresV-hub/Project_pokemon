@@ -1,0 +1,10 @@
+<%# Estado vacío (styles.md §6.14). Se renderiza con `render layout:`; el bloque
+    aporta la llamada a la acción. %>
+<div class="dex-empty">
+  <span class="dex-empty__mark"><%= render 'brand_mark', size: 96 %></span>
+  <h2 class="dex-empty__title"><%= title %></h2>
+  <% if local_assigns[:text].present? %>
+    <p class="dex-empty__text"><%= text %></p>
+  <% end %>
+  <%= yield %>
+</div>

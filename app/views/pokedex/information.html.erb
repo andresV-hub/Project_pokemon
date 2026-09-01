@@ -1,20 +1,44 @@
-<div>
-	<h1 class="text-primary pt-3">Revive the first generation</h1>
-	<h2 class="text-secondary">-</h2>
-	<div class="row no-margin center-elements pb-3">
-		<% @pokemons.each do |pokemon| %>
-			<div class="card center card-width">
-			   <h2 class="card-title text-primary pt-3"><%=pokemon.name%>  Nº:<%=pokemon.num_pokedex%></h2>
-			   <h3 class="text-primary">-</h3>
-			  <div class="card-body">
-				<%=image_tag pokemon.image, title: pokemon.name, 
-					class: "img-pokemon-index"%>
-			    <p class="card-text"><%= @descriptions[pokemon.num_pokedex]&.description %></p>
-			  </div>
-			</div>
-		<% end %>
-	</div>
-		<p class="text-wrap margin-root-text text-primary">The video games that start this generation and the entire Pokémon history, Pokémon Red and Pokémon Green, were released on February 27, 1996, taking the first step in the great franchise that we know today. A turn-based battle game mode that has long been on the video game market.</p>
-		<p class="text-wrap text-primary ">Here is the place to remeber this whole generation of pokemon, access to all their information and test this kind of combats.</p>
-	</div>
-</div>
+<%# Portada pública: la única página accesible sin sesión. %>
+<%= render layout: 'application/page_header',
+           locals: { eyebrow: 'Project Pokédex',
+                     title: 'Relive the first generation',
+                     lead: 'Browse the full PokeAPI catalog, catch species, and store them with nicknames in your PC.' } do %>
+  <% if user_signed_in? %>
+    <%= link_to 'Open Pokédex', user_pokedex_index_path(user_id: current_user.id),
+                class: 'dex-btn dex-btn--primary' %>
+  <% else %>
+    <%= link_to 'Sign up', new_user_registration_path, class: 'dex-btn dex-btn--primary' %>
+    <%= link_to 'Log in', new_user_session_path, class: 'dex-btn dex-btn--ghost' %>
+  <% end %>
+<% end %>
+
+<% if @pokemons.any? %>
+  <div class="dex-grid">
+    <% @pokemons.each do |pokemon| %>
+      <article class="dex-card">
+        <div class="dex-card__top">
+          <span class="dex-card__number"><%= pokemon.dex_number %></span>
+        </div>
+        <div class="dex-card__body">
+          <%= render 'application/sprite', pokemon: pokemon, variant: :pixel, eager: true %>
+          <h2 class="dex-card__title"><%= pokemon.name %></h2>
+          <%= render 'application/type_chips', pokemon: pokemon %>
+          <p class="dex-card__species"><%= @descriptions[pokemon.num_pokedex]&.description %></p>
+        </div>
+      </article>
+    <% end %>
+  </div>
+<% end %>
+
+<section class="dex-surface dex-surface--padded mt-4">
+  <h2 class="dex-section-title">About the first generation</h2>
+  <p class="dex-hero__description">
+    The video games that started this generation and the entire Pokémon history, Pokémon Red and
+    Pokémon Green, were released on February 27, 1996, taking the first step in the franchise
+    we know today: a turn-based battle system that has been around for decades.
+  </p>
+  <p class="dex-hero__description">
+    Here you can explore that entire generation, check all their information, and compare your
+    Pokémon with one another.
+  </p>
+</section>

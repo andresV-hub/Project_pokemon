@@ -1,3 +1,6 @@
 <li class="page-item">
-  <%= link_to raw('&lsaquo;'), url, remote: remote, rel: 'prev', class: 'page-link', 'aria-label': 'Anterior' %>
+  <%= link_to url, remote: remote, rel: 'prev', class: 'page-link', 'aria-label': 'Previous page' do %>
+    <span aria-hidden="true">&lsaquo;</span>
+    <span class="dex-pager__label">Previous</span>
+  <% end %>
 </li>

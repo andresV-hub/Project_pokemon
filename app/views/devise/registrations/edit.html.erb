@@ -1,43 +1,52 @@
-<h2>Edit <%= resource_name.to_s.humanize %></h2>
+<div class="dex-auth">
+  <%= render 'application/auth_lockup', title: 'Your account' %>
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+  <section class="dex-surface dex-surface--padded">
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
+      <%= render 'devise/shared/error_messages', resource: resource %>
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
-  </div>
+      <div class="dex-field">
+        <%= f.label :email, 'Email address', class: 'dex-field__label' %>
+        <%= f.email_field :email, autofocus: true, autocomplete: 'email' %>
+      </div>
 
-  <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
-    <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
-  <% end %>
+      <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+        <p class="dex-field__hint">Pending confirmation: <%= resource.unconfirmed_email %></p>
+      <% end %>
 
-  <div class="field">
-    <%= f.label :password %> <i>(leave blank if you don't want to change it)</i><br />
-    <%= f.password_field :password, autocomplete: "new-password" %>
-    <% if @minimum_password_length %>
-      <br />
-      <em><%= @minimum_password_length %> characters minimum</em>
+      <div class="dex-field">
+        <%= f.label :password, 'New password', class: 'dex-field__label' %>
+        <%= f.password_field :password, autocomplete: 'new-password' %>
+        <p class="dex-field__hint">
+          Leave blank if you do not want to change it<%= ". Minimum #{@minimum_password_length} characters" if @minimum_password_length %>.
+        </p>
+      </div>
+
+      <div class="dex-field">
+        <%= f.label :password_confirmation, 'Confirm new password', class: 'dex-field__label' %>
+        <%= f.password_field :password_confirmation, autocomplete: 'new-password' %>
+      </div>
+
+      <div class="dex-field">
+        <%= f.label :current_password, 'Current password', class: 'dex-field__label' %>
+        <%= f.password_field :current_password, autocomplete: 'current-password' %>
+        <p class="dex-field__hint">We need your current password to confirm your changes.</p>
+      </div>
+
+      <div class="dex-auth__actions">
+        <%= f.submit 'Save changes', class: 'dex-btn dex-btn--primary dex-btn--form dex-btn--block' %>
+      </div>
     <% end %>
-  </div>
+  </section>
 
-  <div class="field">
-    <%= f.label :password_confirmation %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-  </div>
-
-  <div class="field">
-    <%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i><br />
-    <%= f.password_field :current_password, autocomplete: "current-password" %>
-  </div>
-
-  <div class="actions">
-    <%= f.submit "Update" %>
-  </div>
-<% end %>
-
-<h3>Cancel my account</h3>
-
-<p>Unhappy? <%= button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?" }, method: :delete %></p>
-
-<%= link_to "Back", :back %>
+  <section class="dex-surface dex-surface--padded mt-4">
+    <h2 class="dex-section-title">Delete account</h2>
+    <p class="dex-field__hint">
+      Your account and all Pokémon in your PC will be deleted. This action cannot be undone.
+    </p>
+    <%= button_to 'Delete my account', registration_path(resource_name),
+                  method: :delete,
+                  class: 'dex-btn dex-btn--danger',
+                  form: { data: { turbo_confirm: 'Are you sure you want to delete your account?' } } %>
+  </section>
+</div>

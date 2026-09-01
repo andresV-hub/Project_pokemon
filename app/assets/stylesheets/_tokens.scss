@@ -1,0 +1,161 @@
+// Tokens de la imagen corporativa — Project Pokédex.
+//
+// Fuente de verdad: .claude/skills/rails-frontend-design/references/styles.md
+// Si cambia un valor aquí, cambia también allí (styles.md, Reglas de oro).
+//
+// Ningún componente debe declarar un hexadecimal literal: todo color sale de
+// esta hoja (styles.md §2, Reglas duras).
+
+:root {
+	// ---- Azul Dex — color primario (styles.md §2) -------------------------
+	--dex-blue-50: #EEF4FC;
+	--dex-blue-100: #D6E4F7;
+	--dex-blue-200: #AEC9EE;
+	--dex-blue-300: #7DA8E1;
+	--dex-blue-400: #4C84D0;
+	--dex-blue-500: #1F62BC;
+	--dex-blue-600: #0B4E9F;
+	--dex-blue-700: #073C7C;
+	--dex-blue-800: #052C5B;
+	--dex-blue-900: #041E3E;
+
+	// ---- Ámbar Ember — acento (styles.md §2) ------------------------------
+	// --dex-amber-400 NUNCA como color de texto sobre fondo claro: 2.03:1.
+	// Para ámbar escrito, --dex-amber-700 (6.25:1).
+	--dex-amber-50: #FFF7E8;
+	--dex-amber-100: #FDEAC4;
+	--dex-amber-300: #F9BF4E;
+	--dex-amber-400: #F5A623;
+	--dex-amber-500: #DE8A08;
+	--dex-amber-700: #8E5206;
+
+	// ---- Grafito — neutros fríos (styles.md §2) ---------------------------
+	--dex-gray-0: #FFFFFF;
+	--dex-gray-25: #FAFBFD;
+	--dex-gray-50: #F2F5F9;
+	--dex-gray-100: #E6EBF2;
+	--dex-gray-200: #D2DAE5;
+	--dex-gray-300: #B0BCCC;
+	--dex-gray-400: #8494A9;
+	--dex-gray-500: #63738A;
+	--dex-gray-700: #364250;
+	--dex-gray-900: #131A22;
+
+	// ---- Estados (styles.md §2) -------------------------------------------
+	--dex-success: #157F4B;
+	--dex-success-bg: #E7F5EE;
+	--dex-warning: #9A6700;
+	--dex-warning-bg: #FFF6E0;
+	--dex-danger: #B3261E;
+	--dex-danger-bg: #FDECEA;
+
+	// ---- Roles de superficie y texto --------------------------------------
+	// Son los únicos que se redefinen en modo oscuro.
+	--dex-surface-canvas: var(--dex-gray-25);
+	--dex-surface-raised: var(--dex-gray-0);
+	--dex-surface-sunken: var(--dex-gray-50);
+	--dex-border-subtle: var(--dex-gray-100);
+	--dex-border-strong: var(--dex-gray-200);
+	--dex-text-primary: var(--dex-gray-900);
+	--dex-text-secondary: var(--dex-gray-700);
+	--dex-text-tertiary: var(--dex-gray-500);
+	--dex-accent: var(--dex-blue-600);
+	--dex-on-nav: #C9D6EA;
+	--dex-veil: rgba(4, 30, 62, .48);
+
+	// ---- Tipografía (styles.md §3) ----------------------------------------
+	--dex-font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+	--dex-font-brand: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+	--dex-font-data: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+	// ---- Espaciado (styles.md §4) -----------------------------------------
+	--dex-space-1: 4px;
+	--dex-space-2: 8px;
+	--dex-space-3: 12px;
+	--dex-space-4: 16px;
+	--dex-space-5: 24px;
+	--dex-space-6: 32px;
+	--dex-space-7: 48px;
+	--dex-space-8: 64px;
+	--dex-space-9: 96px;
+
+	// ---- Forma (styles.md §4) ---------------------------------------------
+	--dex-radius-sm: 4px;
+	--dex-radius-md: 8px;
+	--dex-radius-lg: 12px;
+	--dex-radius-pill: 999px;
+
+	// ---- Elevación — sombras tintadas de azul, nunca negro puro -----------
+	--dex-shadow-1: 0 1px 2px rgba(4, 30, 62, .06), 0 1px 1px rgba(4, 30, 62, .04);
+	--dex-shadow-2: 0 2px 8px rgba(4, 30, 62, .08), 0 1px 2px rgba(4, 30, 62, .06);
+	--dex-shadow-3: 0 12px 32px rgba(4, 30, 62, .16);
+
+	// ---- Movimiento (styles.md §4) ----------------------------------------
+	--dex-motion-fast: 120ms;
+	--dex-motion-base: 180ms;
+	--dex-motion-slow: 240ms;
+	--dex-ease: cubic-bezier(.2, 0, 0, 1);
+
+	// ---- Tipos de Pokémon (styles.md §2) ----------------------------------
+	// Par sólido + tinta. El chip deriva su tinte con color-mix (§6.2).
+	--dex-type-normal: #9099A1;
+	--dex-type-normal-ink: #4A5259;
+	--dex-type-fire: #F0632B;
+	--dex-type-fire-ink: #A33208;
+	--dex-type-water: #3A8BE0;
+	--dex-type-water-ink: #14508F;
+	--dex-type-electric: #E8B60B;
+	--dex-type-electric-ink: #7A5D00;
+	--dex-type-grass: #43A047;
+	--dex-type-grass-ink: #1B5E20;
+	--dex-type-ice: #63C7D6;
+	--dex-type-ice-ink: #0F5C66;
+	--dex-type-fighting: #C1392B;
+	--dex-type-fighting-ink: #7E2018;
+	--dex-type-poison: #9B4DCA;
+	--dex-type-poison-ink: #5B1E7E;
+	--dex-type-ground: #D0A44C;
+	--dex-type-ground-ink: #7A5310;
+	--dex-type-flying: #8E9CE8;
+	--dex-type-flying-ink: #3B47A3;
+	--dex-type-psychic: #F05C86;
+	--dex-type-psychic-ink: #9E1F44;
+	--dex-type-bug: #93B814;
+	--dex-type-bug-ink: #4C5E00;
+	--dex-type-rock: #B09B5A;
+	--dex-type-rock-ink: #665519;
+	--dex-type-ghost: #6B5FA8;
+	--dex-type-ghost-ink: #3B3270;
+	--dex-type-dragon: #5A47D6;
+	--dex-type-dragon-ink: #2E2189;
+	--dex-type-dark: #4E4550;
+	--dex-type-dark-ink: #2B242D;
+	--dex-type-steel: #7A97A8;
+	--dex-type-steel-ink: #3A5361;
+	--dex-type-fairy: #EE8FC0;
+	--dex-type-fairy-ink: #8E2A62;
+
+	// Tipo por defecto: lo usan los componentes que se tiñen con el tipo
+	// primario del Pokémon (sprite, franja de tarjeta, relleno de estadística)
+	// cuando la vista no ha fijado --dex-type en el elemento.
+	--dex-type: var(--dex-gray-400);
+	--dex-type-ink: var(--dex-gray-700);
+}
+
+// Modo oscuro: sólo se redefinen roles, nunca componentes (styles.md §2).
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme='light']) {
+		--dex-surface-canvas: #0A1524;
+		--dex-surface-raised: #122032;
+		--dex-surface-sunken: #08111C;
+		--dex-border-subtle: #22344A;
+		--dex-border-strong: #2E4460;
+		--dex-text-primary: #E8EDF4;
+		--dex-text-secondary: #A6B4C6;
+		--dex-text-tertiary: #8294A8;
+		--dex-accent: #5B93E8;
+		--dex-shadow-1: 0 1px 2px rgba(0, 0, 0, .40);
+		--dex-shadow-2: 0 2px 8px rgba(0, 0, 0, .48);
+		--dex-shadow-3: 0 12px 32px rgba(0, 0, 0, .56);
+	}
+}

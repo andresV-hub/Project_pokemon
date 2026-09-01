@@ -1,24 +1,38 @@
-<div class="modal inmodal mt-5" id="block_user_modal" role="dialog" aria-hidden="true" data-bs-backdrop="false" style="display: none;">
-  <div class="modal-dialog">
-    <%=form_with :url => add_pokemon_to_team_user_pokedex_index_path, id: "form-catch-pokemon" do |f|%>
-      <div class="modal-content animated fadeIn">
+<%# Modal de captura (styles.md §6.9). Capturar es reversible, así que NO usa la
+    variante `dex-confirm`, que está reservada a liberar.
+    JS hooks: #block_user_modal, #form-catch-pokemon, #error-send,
+    #nickname-pokemon-field y #catch-pokemon los consulta el script de show. %>
+<div class="modal dex-modal" id="block_user_modal" tabindex="-1" role="dialog"
+     aria-hidden="true" aria-labelledby="catch-modal-title" data-bs-backdrop="false">
+  <div class="modal-dialog modal-dialog-centered">
+    <%= form_with url: add_pokemon_to_team_user_pokedex_index_path, id: 'form-catch-pokemon' do |f| %>
+      <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title text-primary">Congratulations. You catch a <%=@pokemon.name%>!</h4>
+          <h2 class="dex-modal__title" id="catch-modal-title">
+            You caught <%= @pokemon.name %>!
+          </h2>
         </div>
+
         <div class="modal-body">
-          <div id="error-send" class="text-danger"></div>
-          <div class="row">
-            <div class="mb-3">
-              <div class="col-sm-12">
-                <%= f.label "Select a nickname to #{@pokemon.name}", class: "text-primary mt-3", id: "label-nickname-catched"%>
-                <%= f.text_field :nickname, class: "form-control input-lg ",id: "nickname-pokemon-field", placeholder: "Choose its nickname" %>
-              	<%= hidden_field_tag 'pokemon_id', @pokemon.num_pokedex %>
-              </div>
-            </div>
+          <div id="error-send" class="dex-modal__error" role="alert"></div>
+
+          <p class="dex-modal__text">Give it a nickname to store it in your PC. You can change it later.</p>
+
+          <div class="dex-field">
+            <%# `for:` explícito: el campo lleva un id propio porque lo consulta el
+                script de la ficha, y sin esto el label apuntaría a `nickname`. %>
+            <%= f.label :nickname, 'Nickname', for: 'nickname-pokemon-field',
+                        class: 'dex-field__label', id: 'label-nickname-catched' %>
+            <%= f.text_field :nickname, id: 'nickname-pokemon-field',
+                             placeholder: "For example, Sparky", autofocus: true %>
+            <%= hidden_field_tag 'pokemon_id', @pokemon.num_pokedex %>
           </div>
+        </div>
+
         <div class="modal-footer">
-          <button type="button" class="btn btn-white" data-bs-dismiss="modal">Free it</button>
-          <%= button_tag "Catch it", type:"button", class: 'btn btn-primary be-primary', id: 'catch-pokemon' %>
+          <button type="button" class="dex-btn dex-btn--ghost" data-bs-dismiss="modal">Cancel</button>
+          <%= button_tag 'Save to my PC', type: 'button',
+                         class: 'dex-btn dex-btn--accent', id: 'catch-pokemon' %>
         </div>
       </div>
     <% end %>

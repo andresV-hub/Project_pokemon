@@ -24,7 +24,12 @@
 # Herramientas locales del editor y del asistente
 /.claude
 /.idea
-/.omc
+# oh-my-claudecode deja estado de sesión en cualquier nivel del árbol,
+# no sólo en la raíz.
+.omc/
 
 # Nunca subir la clave maestra de las credenciales
 /config/master.key
+
+# Documentación de trabajo local (no se versiona)
+/docs

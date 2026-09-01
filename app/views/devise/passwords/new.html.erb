@@ -1,16 +1,22 @@
-<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
-  <h1 class="text-primary pt-3">Forgot your password?</h1>
-  <h2 class="text-secondary">-</h2>
+<div class="dex-auth">
+  <%= render 'application/auth_lockup',
+             title: 'Forgot your password?',
+             lead: "We'll send you a link to choose a new one." %>
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
-  </div>
+  <section class="dex-surface dex-surface--padded">
+    <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
+      <%= render 'devise/shared/error_messages', resource: resource %>
 
-  <div class="actions">
-    <%= f.submit "Send me reset password instructions", class: "button-primary mb-4" %>
-  </div>
-<% end %>
+      <div class="dex-field">
+        <%= f.label :email, 'Email address', class: 'dex-field__label' %>
+        <%= f.email_field :email, autofocus: true, autocomplete: 'email', placeholder: 'you@example.com' %>
+      </div>
 
-<%= render "devise/shared/links" %>
+      <div class="dex-auth__actions">
+        <%= f.submit 'Send instructions', class: 'dex-btn dex-btn--primary dex-btn--form dex-btn--block' %>
+      </div>
+    <% end %>
+  </section>
+
+  <%= render 'devise/shared/links' %>
+</div>

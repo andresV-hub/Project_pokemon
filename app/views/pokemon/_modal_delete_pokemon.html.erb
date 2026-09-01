@@ -1,26 +1,39 @@
-<div class="modal inmodal mt-5" id="delete_pokemon_modal" role="dialog" aria-hidden="true" data-bs-backdrop="false" style="display: none;">
-  <div class="modal-dialog">
-      <div class="modal-content animated fadeIn">
-        <div class="modal-header">
-          <h4 class="modal-title text-primary">Free <%=@pokemon.nickname%></h4>
-        </div>
-        <div class="modal-body">
-          <div id="error-send" class="text-danger"></div>
-          <div class="row">
-            <div class="mb-3">
-              <div class="col-sm-12">
-                <div>Are you sure you want to change the nickname of <%=@pokemon.nickname%>?</div>
-              </div>
-            </div>
-          </div>
-        <div class="modal-footer">
-          <%=form_with model: @pokemon, :url => liberate_pokemon_user_pokemon_path(user_id:current_user.id,id: @pokemon.id), id: "form-destroy-pokemon" do |f|%>
-            <button type="button" class="btn btn-white" data-bs-dismiss="modal">Cancel</button>
-            <%= button_tag "Free #{@pokemon.nickname}", type:"button", class: 'btn btn-primary be-primary', id: 'delete-pokemon' %>
-          <% end %>
+<%# Confirmación de liberar (styles.md §6.9). Es el ÚNICO modal destructivo de
+    la aplicación: nombra al Pokémon por su apodo, porque es lo que el usuario
+    va a perder.
+    JS hooks: #delete_pokemon_modal, #form-destroy-pokemon, #delete-pokemon. %>
+<div class="modal dex-modal dex-confirm" id="delete_pokemon_modal" tabindex="-1" role="dialog"
+     aria-hidden="true" aria-labelledby="delete-modal-title" data-bs-backdrop="false">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <span class="dex-confirm__icon" aria-hidden="true">
+            <i class="fa fa-trash"></i>
+          </span>
+          <span class="dex-confirm__eyebrow">Irreversible action</span>
+          <h2 class="dex-modal__title" id="delete-modal-title">
+            Release <%= @pokemon.display_name %>
+          </h2>
         </div>
       </div>
 
+      <div class="modal-body">
+        <p class="dex-modal__text">
+          You are about to release <strong><%= @pokemon.display_name %></strong>, your
+          <%= @pokemon.species_name %>. It will leave your PC and this action cannot be undone.
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <%= form_with model: @pokemon,
+                      url: liberate_pokemon_user_pokemon_path(user_id: current_user.id, id: @pokemon.id),
+                      method: :patch, id: 'form-destroy-pokemon' do |f| %>
+          <button type="button" class="dex-btn dex-btn--ghost" data-bs-dismiss="modal">Cancel</button>
+          <%= button_tag 'Release', type: 'button',
+                         class: 'dex-btn dex-btn--danger-solid', id: 'delete-pokemon' %>
+        <% end %>
+      </div>
+    </div>
   </div>
-</div>
 </div>

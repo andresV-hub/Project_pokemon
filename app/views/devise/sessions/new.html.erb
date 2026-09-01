@@ -1,26 +1,30 @@
-<%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-  <h1 class="text-primary pt-3">Login</h1>
-  <h2 class="text-secondary">-</h2>
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
-  </div>
+<div class="dex-auth">
+  <%= render 'application/auth_lockup', title: 'Sign in' %>
 
-  <div class="field">
-    <%= f.label :password %><br />
-    <%= f.password_field :password, autocomplete: "current-password" %>
-  </div>
+  <section class="dex-surface dex-surface--padded">
+    <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+      <div class="dex-field">
+        <%= f.label :email, 'Email address', class: 'dex-field__label' %>
+        <%= f.email_field :email, autofocus: true, autocomplete: 'email', placeholder: 'you@example.com' %>
+      </div>
 
-  <% if devise_mapping.rememberable? %>
-    <div class="field">
-      <%= f.check_box :remember_me %>
-      <%= f.label :remember_me %>
-    </div>
-  <% end %>
+      <div class="dex-field">
+        <%= f.label :password, 'Password', class: 'dex-field__label' %>
+        <%= f.password_field :password, autocomplete: 'current-password' %>
+      </div>
 
-  <div class="actions">
-    <%= f.submit "LOGIN", class: "button-primary mb-4" %>
-  </div>
-<% end %>
+      <% if devise_mapping.rememberable? %>
+        <div class="dex-field dex-field__check">
+          <%= f.check_box :remember_me %>
+          <%= f.label :remember_me, 'Remember me' %>
+        </div>
+      <% end %>
 
-<%= render "devise/shared/links" %>
+      <div class="dex-auth__actions">
+        <%= f.submit 'Sign in', class: 'dex-btn dex-btn--primary dex-btn--form dex-btn--block' %>
+      </div>
+    <% end %>
+  </section>
+
+  <%= render 'devise/shared/links' %>
+</div>

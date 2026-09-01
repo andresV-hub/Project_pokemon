@@ -1,0 +1,8 @@
+<%# Lockup de marca de las pantallas de acceso (styles.md §6.10). %>
+<div class="dex-auth__lockup">
+  <%= render "application/brand_mark", size: 40 %>
+  <h1 class="dex-auth__title"><%= title %></h1>
+  <% if local_assigns[:lead].present? %>
+    <p class="dex-field__hint"><%= lead %></p>
+  <% end %>
+</div>

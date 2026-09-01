@@ -9,12 +9,12 @@ class PokedexController < ApplicationController
 	# contra la propia API (limit/offset), así que sólo se descarga la página pedida.
 	def index
 		@pokemons = ::Pokeapi::SearchPokemons.execute(page: params[:page], per_page: params[:per_page]).value
-		@descriptions = descriptions_for(@pokemons)
+		@captured_numbers = captured_numbers
 	end
 
 	def show
 		@pokemon = ::Pokeapi::FindPokemon.execute(id: params[:id]).value
-		return redirect_to(user_pokedex_index_path(user_id: current_user.id), alert: 'Pokemon no encontrado') if @pokemon.nil?
+		return redirect_to(user_pokedex_index_path(user_id: current_user.id), alert: 'Pokémon not found') if @pokemon.nil?
 
 		@description = ::Pokeapi::FindDescription.execute(id: params[:id]).value
 	end
@@ -39,6 +39,13 @@ class PokedexController < ApplicationController
 	end
 
 	private
+
+	# Números de Pokédex que el usuario ya tiene en su PC, en una sola consulta:
+	# la tarjeta del catálogo marca con un badge las especies capturadas
+	# (styles.md §6.5) y hacerlo por tarjeta sería una N+1.
+	def captured_numbers
+		current_user.pokemon.pluck(:num_pokedex).to_set
+	end
 
 	# Las descripciones se indexan por número de Pokédex para que la vista no
 	# dependa de que ambos arrays vayan en el mismo orden.

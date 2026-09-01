@@ -1,8 +1,18 @@
 class User < ApplicationRecord
   rolify
 
-  # Los tres iniciales de la primera generación.
-  STARTERS = { 1 => 'Bulbasaur', 4 => 'Charmander', 7 => 'Squirtle' }.freeze
+  # Iniciales a elegir. Además de los tres clásicos, Pikachu y Eevee: son las dos
+  # caras de Pokémon Amarillo y las especies más reconocibles de la generación.
+  #
+  # El tipo va en la propia constante porque la vista lo necesita para el tinte, y
+  # deducirlo por el orden sólo funcionaba mientras fueran tres.
+  STARTERS = {
+    1 => { name: 'Bulbasaur', type: 'grass' },
+    4 => { name: 'Charmander', type: 'fire' },
+    7 => { name: 'Squirtle', type: 'water' },
+    25 => { name: 'Pikachu', type: 'electric' },
+    133 => { name: 'Eevee', type: 'normal' }
+  }.freeze
 
   # Elección del formulario de registro; no es una columna.
   attr_accessor :starter_num_pokedex

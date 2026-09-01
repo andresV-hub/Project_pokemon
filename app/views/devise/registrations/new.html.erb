@@ -48,14 +48,14 @@
       <fieldset class="dex-starter">
         <legend class="dex-field__label">Choose your first partner</legend>
         <div class="dex-starter__options">
-          <% User::STARTERS.each_with_index do |(num, name), index| %>
-            <label class="dex-starter__option dex-tinted--<%= %w[grass fire water][index] %>">
+          <% User::STARTERS.each_with_index do |(num, starter), index| %>
+            <label class="dex-starter__option dex-tinted--<%= starter[:type] %>">
               <%= f.radio_button :starter_num_pokedex, num, checked: index.zero?,
                                  class: 'dex-starter__radio' %>
               <%= image_tag "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/#{num}.png",
                             alt: '', width: 72, height: 72, loading: 'lazy',
                             class: 'dex-starter__sprite' %>
-              <span class="dex-starter__name"><%= name %></span>
+              <span class="dex-starter__name"><%= starter[:name] %></span>
             </label>
           <% end %>
         </div>

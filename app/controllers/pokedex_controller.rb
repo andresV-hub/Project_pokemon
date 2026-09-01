@@ -1,6 +1,8 @@
 class PokedexController < ApplicationController
 
-	INFORMATION_POKEMONS = [1, 4, 7].freeze
+	# Los mismos que se pueden elegir al registrarse: la portada enseña
+	# exactamente entre lo que vas a escoger.
+	INFORMATION_POKEMONS = User::STARTERS.keys.freeze
 
 	# La portada es la única página pública.
 	skip_before_action :authenticate_user!, only: :information

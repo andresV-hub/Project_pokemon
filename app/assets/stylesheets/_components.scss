@@ -1727,9 +1727,11 @@ a {
 	padding: 0;
 	border: 0;
 
+	// `auto-fit` y no un número fijo de columnas: los iniciales pasaron de tres a
+	// cinco, y volverán a cambiar si se añade alguno más.
 	&__options {
 		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
 		gap: var(--dex-space-2);
 		margin-top: var(--dex-space-2);
 	}

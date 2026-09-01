@@ -15,6 +15,7 @@ class PokemonController < ApplicationController
 		pokemon = ::Base::Find.execute(klass: Pokemon, id: params[:id])
 
 		@pokemon = Pokemons::PokemonDecorator.decorate(pokemon)
+		@matchups = ::Pokemons::TypeMatchup.execute(type_slugs: @pokemon.type_slugs).value
 	end
 
 	def liberate_pokemon
@@ -40,6 +41,11 @@ class PokemonController < ApplicationController
 
 		@stats = Pokemons::ComparePokemonUseCase.execute(pokemon1: pokemon, pokemon_api: @pokemon_api)
 		@pokemon = Pokemons::PokemonDecorator.decorate(pokemon)
+
+		# Cuánto daño recibe cada uno: para saber cómo golpea A a B basta con
+		# mirar el matchup defensivo de B en el tipo de A.
+		@my_matchups = ::Pokemons::TypeMatchup.execute(type_slugs: @pokemon.type_slugs).value
+		@their_matchups = ::Pokemons::TypeMatchup.execute(type_slugs: @pokemon_api.type_slugs).value
 	end
 
 end

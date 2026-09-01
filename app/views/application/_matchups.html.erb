@@ -1,0 +1,26 @@
+<%# Efectividades de tipo (styles.md §6.17). El multiplicador va siempre escrito:
+    el color del chip identifica el tipo, no la magnitud del daño. %>
+<% groups = group_matchups(matchups) %>
+<% titles = { weaknesses: 'Weak to', resistances: 'Resists', immunities: 'Immune to' } %>
+
+<% if groups.values.all?(&:empty?) %>
+  <p class="dex-field__hint">This species takes normal damage from every type.</p>
+<% else %>
+  <div class="dex-matchup">
+    <% titles.each do |group, title| %>
+      <% entries = groups[group] %>
+      <% next if entries.empty? %>
+      <div class="dex-matchup__group">
+        <h3 class="dex-matchup__title"><%= title %></h3>
+        <ul class="dex-matchup__list">
+          <% entries.each do |slug, factor| %>
+            <li class="dex-matchup__item">
+              <span class="dex-type dex-type--<%= slug %>"><%= slug.capitalize %></span>
+              <span class="dex-matchup__factor"><%= type_multiplier_label(factor) %></span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  </div>
+<% end %>

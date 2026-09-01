@@ -122,5 +122,24 @@ module Pokedex
       "#{name}, Pokédex ##{num_pokedex}"
     end
 
+    # La PokeAPI da la altura en decímetros y el peso en hectogramos.
+    def height_in_metres
+      return nil if model['height'].blank?
+
+      (model['height'] / 10.0).round(1)
+    end
+
+    def weight_in_kilos
+      return nil if model['weight'].blank?
+
+      (model['weight'] / 10.0).round(1)
+    end
+
+    # Sonido del Pokémon. Sólo lo tienen las especies principales, así que puede
+    # venir vacío y la vista tiene que poder prescindir de él.
+    def cry_url
+      model.dig('cries', 'latest').presence
+    end
+
   end
 end

@@ -1,0 +1,31 @@
+<%# Cadena evolutiva (styles.md §6.18). Una fila por etapa; dentro de cada una,
+    todas las formas posibles, porque hay cadenas que ramifican (Eevee tiene
+    ocho evoluciones en la misma etapa). El eslabón actual va resaltado. %>
+<% if stages.present? && stages.sum(&:size) > 1 %>
+  <ol class="dex-evolution">
+    <% stages.each_with_index do |stage, index| %>
+      <li class="dex-evolution__stage">
+        <% if index.positive? %>
+          <span class="dex-evolution__arrow" aria-hidden="true">→</span>
+        <% end %>
+        <div class="dex-evolution__forms">
+          <% stage.each do |link| %>
+            <% current = link[:id] == current_id %>
+            <%= link_to user_pokedex_path(user_id: current_user.id, id: link[:id]),
+                        class: "dex-evolution__link #{'dex-evolution__link--current' if current}",
+                        'aria-current': (current ? 'page' : nil) do %>
+              <%= image_tag link[:image], alt: '', width: 72, height: 72, loading: 'lazy',
+                            class: 'dex-evolution__sprite' %>
+              <span class="dex-evolution__name"><%= link[:name] %></span>
+              <% if link[:condition].present? %>
+                <span class="dex-evolution__condition"><%= link[:condition] %></span>
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
+      </li>
+    <% end %>
+  </ol>
+<% else %>
+  <p class="dex-field__hint">This species does not evolve.</p>
+<% end %>

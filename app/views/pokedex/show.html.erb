@@ -16,7 +16,19 @@
           listados (styles.md §6.13). %>
       <%= render 'application/sprite', pokemon: @pokemon, variant: :artwork, eager: true %>
 
-      <p class="dex-hero__number"><%= @pokemon.dex_number %></p>
+      <p class="dex-hero__number">
+        <%= @pokemon.dex_number %>
+        <% if @pokemon.cry_url.present? %>
+          <button type="button"
+                  class="dex-cry"
+                  data-controller="cry"
+                  data-cry-url-value="<%= @pokemon.cry_url %>"
+                  data-action="cry#play"
+                  aria-label="Play <%= @pokemon.name %>'s cry">
+            <i class="fa fa-volume-high" aria-hidden="true"></i>
+          </button>
+        <% end %>
+      </p>
       <%= render 'application/type_chips', pokemon: @pokemon %>
 
       <dl class="dex-hero__meta">
@@ -32,6 +44,14 @@
           <dt>Base happiness</dt>
           <dd><%= @description&.base_happiness || '—' %></dd>
         </div>
+        <div>
+          <dt>Height</dt>
+          <dd><%= @pokemon.height_in_metres ? "#{@pokemon.height_in_metres} m" : '—' %></dd>
+        </div>
+        <div>
+          <dt>Weight</dt>
+          <dd><%= @pokemon.weight_in_kilos ? "#{@pokemon.weight_in_kilos} kg" : '—' %></dd>
+        </div>
       </dl>
     </div>
 
@@ -45,6 +65,12 @@
 
       <h2 class="dex-section-title">Base stats</h2>
       <%= render 'application/stat_bars', pokemon: @pokemon %>
+
+      <h2 class="dex-section-title">Type matchups</h2>
+      <%= render 'application/matchups', matchups: @matchups %>
+
+      <h2 class="dex-section-title">Evolution</h2>
+      <%= render 'application/evolution_chain', stages: @evolution_stages, current_id: @pokemon.num_pokedex %>
 
       <% if @pokemon.move_list.any? %>
         <h2 class="dex-section-title">Moves</h2>

@@ -1,9 +1,14 @@
 <%# Tarjeta de especie (styles.md §6.5). Toda la tarjeta enlaza a la ficha; el
-    botón de capturar es un control anidado sobre esa capa. %>
-<article class="dex-card">
+    botón de capturar es un control anidado sobre esa capa.
+
+    Una especie que el usuario todavía no ha encontrado sale en silueta y sin
+    nombre ni tipos: la Pokédex se rellena visitando fichas. El número sí se
+    muestra, porque es lo que invita a completarla. %>
+<% seen = local_assigns.fetch(:seen, true) %>
+<article class="dex-card <%= 'dex-card--unseen' unless seen %>">
   <%= link_to user_pokedex_path(user_id: current_user.id, id: pokemon.id),
               class: 'dex-card__link',
-              'aria-label': "View #{pokemon.name} details" do %><% end %>
+              'aria-label': seen ? "View #{pokemon.name} details" : "Reveal Pokédex #{pokemon.dex_number}" do %><% end %>
 
   <div class="dex-card__top">
     <span class="dex-card__number"><%= pokemon.dex_number %></span>
@@ -13,13 +18,19 @@
   </div>
 
   <div class="dex-card__body">
-    <%= render 'application/sprite', pokemon: pokemon, variant: :pixel %>
-    <h2 class="dex-card__title"><%= pokemon.name %></h2>
-    <%= render 'application/type_chips', pokemon: pokemon %>
+    <%= render 'application/sprite', pokemon: pokemon, variant: :pixel, silhouette: !seen %>
+
+    <% if seen %>
+      <h2 class="dex-card__title"><%= pokemon.name %></h2>
+      <%= render 'application/type_chips', pokemon: pokemon %>
+    <% else %>
+      <h2 class="dex-card__title dex-card__title--unknown">???</h2>
+      <p class="dex-card__species">Not seen yet</p>
+    <% end %>
   </div>
 
   <div class="dex-card__actions">
-    <%= link_to 'View details',
+    <%= link_to seen ? 'View details' : 'Reveal',
                 user_pokedex_path(user_id: current_user.id, id: pokemon.id),
                 class: 'dex-btn dex-btn--ghost dex-btn--compact dex-btn--block' %>
   </div>

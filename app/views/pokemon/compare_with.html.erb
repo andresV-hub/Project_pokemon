@@ -37,6 +37,53 @@
   </div>
 </section>
 
+<%# Ventaja de tipos. Para saber cómo golpea A a B basta con mirar el matchup
+    defensivo de B en el tipo de A. Se usa el tipo primario de cada uno como su
+    tipo de ataque: un Pokémon capturado sólo guarda uno, así que tomar el
+    primario mantiene la comparación simétrica. %>
+<% mine_hits = @their_matchups.fetch(@pokemon.type_slug, 1.0) %>
+<% theirs_hits = @my_matchups.fetch(@pokemon_api.type_slug, 1.0) %>
+
+<section class="dex-surface mt-4">
+  <div class="dex-surface__head">
+    <h2>Type advantage</h2>
+  </div>
+
+  <div class="dex-surface__body dex-compare">
+    <div class="dex-compare__row">
+      <span class="dex-compare__label">
+        <%= @pokemon.display_name %>'s <%= @pokemon.type_slug.capitalize %> against <%= @pokemon_api.name %>
+      </span>
+      <span class="dex-compare__value dex-compare__value--mine"><%= type_multiplier_label(mine_hits) %></span>
+      <span class="dex-compare__delta dex-compare__delta--<%= mine_hits > 1 ? 'up' : (mine_hits < 1 ? 'down' : 'tie') %>">
+        <span aria-hidden="true"><%= mine_hits > 1 ? '▲' : (mine_hits < 1 ? '▼' : '=') %></span>
+      </span>
+      <span class="dex-compare__value dex-compare__value--theirs"></span>
+    </div>
+
+    <div class="dex-compare__row">
+      <span class="dex-compare__label">
+        <%= @pokemon_api.name %>'s <%= @pokemon_api.type_slug.capitalize %> against <%= @pokemon.display_name %>
+      </span>
+      <span class="dex-compare__value dex-compare__value--mine"></span>
+      <span class="dex-compare__delta dex-compare__delta--<%= theirs_hits > 1 ? 'up' : (theirs_hits < 1 ? 'down' : 'tie') %>">
+        <span aria-hidden="true"><%= theirs_hits > 1 ? '▲' : (theirs_hits < 1 ? '▼' : '=') %></span>
+      </span>
+      <span class="dex-compare__value dex-compare__value--theirs"><%= type_multiplier_label(theirs_hits) %></span>
+    </div>
+
+    <p class="dex-compare__verdict">
+      <% if mine_hits > theirs_hits %>
+        <%= @pokemon.display_name %> has the type advantage.
+      <% elsif theirs_hits > mine_hits %>
+        <%= @pokemon_api.name %> has the type advantage.
+      <% else %>
+        Neither has a type advantage.
+      <% end %>
+    </p>
+  </div>
+</section>
+
 <section class="dex-surface mt-4">
   <div class="dex-surface__head">
     <h2>Base stats</h2>

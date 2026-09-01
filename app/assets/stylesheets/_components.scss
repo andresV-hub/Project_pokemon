@@ -591,6 +591,19 @@ a {
 		max-width: 320px;
 		height: auto;
 	}
+
+	// Especie aún no encontrada (styles.md §6.5).
+	&--silhouette img {
+		filter: var(--dex-silhouette);
+		opacity: var(--dex-silhouette-opacity);
+	}
+}
+
+// Tipo desconocido: lo usan las tarjetas en silueta, que no pueden revelar el
+// color del tipo real.
+.dex-tinted--unknown {
+	--dex-type: var(--dex-gray-400);
+	--dex-type-ink: var(--dex-gray-700);
 }
 
 // ============================================================================
@@ -685,6 +698,246 @@ a {
 	&--stored {
 		border-left: 3px solid var(--dex-type);
 	}
+
+	// Especie aún no encontrada: presente en la rejilla pero sin revelar nada
+	// más que su número (styles.md §6.5).
+	&--unseen {
+		border-style: dashed;
+		box-shadow: none;
+
+		&:hover { box-shadow: var(--dex-shadow-1); }
+	}
+
+	&__title--unknown {
+		font-family: var(--dex-font-data);
+		letter-spacing: .1em;
+		color: var(--dex-text-tertiary);
+	}
+}
+
+// ============================================================================
+// Cadena evolutiva (styles.md §6.18)
+// ============================================================================
+
+.dex-evolution {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	gap: var(--dex-space-2);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+
+	&__stage {
+		display: flex;
+		align-items: flex-start;
+		gap: var(--dex-space-2);
+	}
+
+	// La flecha se alinea con la primera fila de sprites, no con el centro de la
+	// etapa: en una cadena ramificada como la de Eevee esa etapa mide 300px de
+	// alto y la flecha quedaba flotando suelta en mitad del hueco.
+	&__arrow {
+		margin-top: 40px;
+		color: var(--dex-text-tertiary);
+		font-size: 18px;
+		line-height: 1;
+	}
+
+	// Las cadenas que ramifican apilan sus formas en vertical: Eevee tiene ocho
+	// en la misma etapa y en horizontal no cabrían.
+	&__forms {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--dex-space-2);
+	}
+
+	&__link {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--dex-space-1);
+		width: 104px;
+		padding: var(--dex-space-2);
+		border: 1px solid transparent;
+		border-radius: var(--dex-radius-md);
+		color: var(--dex-text-primary);
+		text-align: center;
+		transition: background-color var(--dex-motion-fast) var(--dex-ease),
+					border-color var(--dex-motion-fast) var(--dex-ease);
+
+		&:hover {
+			background-color: var(--dex-surface-sunken);
+			border-color: var(--dex-border-subtle);
+			text-decoration: none;
+		}
+
+		// El eslabón que se está viendo: se marca con fondo y borde, no sólo con
+		// color de texto (styles.md §9).
+		&--current {
+			background-color: var(--dex-blue-50);
+			border-color: var(--dex-blue-200);
+			font-weight: 600;
+		}
+	}
+
+	&__sprite {
+		image-rendering: pixelated;
+	}
+
+	&__name {
+		font-size: 13px;
+		line-height: 18px;
+	}
+
+	&__condition {
+		font-family: var(--dex-font-data);
+		font-size: 11px;
+		line-height: 15px;
+		color: var(--dex-text-tertiary);
+	}
+
+	@media (max-width: 575.98px) {
+		flex-direction: column;
+		align-items: stretch;
+
+		&__arrow {
+			transform: rotate(90deg);
+		}
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme='light']) .dex-evolution__link--current {
+		background-color: rgba(91, 147, 232, .16);
+		border-color: var(--dex-blue-400);
+	}
+}
+
+// ============================================================================
+// Efectividades de tipo (styles.md §6.17)
+// ============================================================================
+
+.dex-matchup {
+	display: grid;
+	gap: var(--dex-space-4);
+
+	@media (min-width: 768px) {
+		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+	}
+
+	// El grupo se acota: con columnas anchas, `space-between` alejaba tanto el
+	// multiplicador de su chip que costaba emparejarlos de un vistazo.
+	&__group {
+		max-width: 180px;
+	}
+
+	&__title {
+		margin-bottom: var(--dex-space-2);
+		font-size: 12px;
+		line-height: 16px;
+		font-weight: 600;
+		letter-spacing: .08em;
+		text-transform: uppercase;
+		color: var(--dex-text-secondary);
+	}
+
+	&__list {
+		display: flex;
+		flex-direction: column;
+		gap: var(--dex-space-1);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__item {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--dex-space-2);
+	}
+
+	// El multiplicador va escrito y en cifra tabular: el color del chip
+	// identifica el tipo, nunca la magnitud del daño (styles.md §9).
+	&__factor {
+		font-family: var(--dex-font-data);
+		font-size: 13px;
+		font-variant-numeric: tabular-nums;
+		color: var(--dex-text-primary);
+	}
+}
+
+// ============================================================================
+// Progreso de la Pokédex (styles.md §6.16)
+// ============================================================================
+
+.dex-progress {
+	margin-bottom: var(--dex-space-5);
+
+	&__figures {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--dex-space-5);
+		margin-bottom: var(--dex-space-2);
+	}
+
+	&__stat {
+		display: flex;
+		align-items: baseline;
+		gap: var(--dex-space-2);
+	}
+
+	&__label {
+		font-size: 12px;
+		line-height: 16px;
+		font-weight: 600;
+		letter-spacing: .08em;
+		text-transform: uppercase;
+		color: var(--dex-text-secondary);
+
+		// El ámbar como texto no llega a contraste, así que la etiqueta de
+		// "caught" se distingue con un punto, no tiñendo la palabra
+		// (styles.md §2, reglas duras).
+		&--caught::before {
+			content: '';
+			display: inline-block;
+			width: 8px;
+			height: 8px;
+			margin-right: var(--dex-space-1);
+			border-radius: var(--dex-radius-pill);
+			background-color: var(--dex-amber-400);
+		}
+	}
+
+	&__value {
+		font-family: var(--dex-font-data);
+		font-size: 13px;
+		font-variant-numeric: tabular-nums;
+		color: var(--dex-text-primary);
+	}
+
+	// Una sola pista con dos tramos superpuestos: vistas debajo, capturadas
+	// encima. Comparten origen, así que el ámbar siempre queda dentro del azul.
+	&__track {
+		position: relative;
+		height: 6px;
+		border-radius: var(--dex-radius-pill);
+		background-color: var(--dex-gray-100);
+		overflow: hidden;
+	}
+
+	&__seen,
+	&__caught {
+		position: absolute;
+		inset-block: 0;
+		inset-inline-start: 0;
+		border-radius: var(--dex-radius-pill);
+		transition: width var(--dex-motion-slow) var(--dex-ease);
+	}
+
+	&__seen { background-color: var(--dex-blue-400); }
+	&__caught { background-color: var(--dex-amber-400); }
 }
 
 .dex-badge {
@@ -1318,4 +1571,30 @@ a {
 		border-color: var(--dex-danger);
 		color: var(--dex-danger);
 	}
+}
+
+// ============================================================================
+// Sonido del Pokémon (styles.md §6.19)
+// ============================================================================
+
+// Botón de altavoz junto al número de Pokédex. Sólo suena al pulsarlo: el audio
+// automático es intrusivo y además lo bloquean los navegadores.
+.dex-cry {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	margin-left: var(--dex-space-2);
+	padding: 0;
+	vertical-align: middle;
+	background: none;
+	border: 1px solid var(--dex-border-strong);
+	border-radius: var(--dex-radius-sm);
+	color: var(--dex-accent);
+	font-size: .85rem;
+	cursor: pointer;
+	transition: background-color var(--dex-motion-fast) var(--dex-ease);
+
+	&:hover { background-color: var(--dex-surface-sunken); }
 }

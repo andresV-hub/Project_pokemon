@@ -140,6 +140,12 @@
 	// cuando la vista no ha fijado --dex-type en el elemento.
 	--dex-type: var(--dex-gray-400);
 	--dex-type-ink: var(--dex-gray-700);
+
+	// Silueta de las especies aún no vistas (styles.md §6.5). En claro basta con
+	// apagar el sprite a negro; en oscuro hay que levantarlo a un gris o se
+	// perdería contra el fondo.
+	--dex-silhouette: brightness(0);
+	--dex-silhouette-opacity: .55;
 }
 
 // Modo oscuro: sólo se redefinen roles, nunca componentes (styles.md §2).
@@ -157,5 +163,7 @@
 		--dex-shadow-1: 0 1px 2px rgba(0, 0, 0, .40);
 		--dex-shadow-2: 0 2px 8px rgba(0, 0, 0, .48);
 		--dex-shadow-3: 0 12px 32px rgba(0, 0, 0, .56);
+		--dex-silhouette: brightness(0) invert(.45);
+		--dex-silhouette-opacity: .7;
 	}
 }

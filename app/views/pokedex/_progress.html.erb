@@ -1,0 +1,26 @@
+<%# Progreso de la Pokédex (styles.md §6.16). Una sola barra con dos tramos: el
+    azul son las especies vistas y el ámbar, dentro, las que están en el PC. %>
+<% seen_pct = total.positive? ? (seen.size * 100.0 / total).round(1) : 0 %>
+<% caught_pct = total.positive? ? (caught.size * 100.0 / total).round(1) : 0 %>
+<section class="dex-progress" aria-label="Pokédex completion">
+  <div class="dex-progress__figures">
+    <span class="dex-progress__stat">
+      <span class="dex-progress__label">Seen</span>
+      <span class="dex-progress__value"><%= seen.size %> / <%= total %></span>
+    </span>
+    <span class="dex-progress__stat">
+      <span class="dex-progress__label dex-progress__label--caught">Caught</span>
+      <span class="dex-progress__value"><%= caught.size %> / <%= total %></span>
+    </span>
+  </div>
+
+  <div class="dex-progress__track"
+       role="meter"
+       aria-label="Species caught"
+       aria-valuenow="<%= caught.size %>"
+       aria-valuemin="0"
+       aria-valuemax="<%= total %>">
+    <span class="dex-progress__seen" style="width: <%= seen_pct %>%"></span>
+    <span class="dex-progress__caught" style="width: <%= caught_pct %>%"></span>
+  </div>
+</section>

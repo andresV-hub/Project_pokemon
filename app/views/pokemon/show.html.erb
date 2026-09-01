@@ -23,7 +23,15 @@
     <div>
       <%= render 'application/sprite', pokemon: @pokemon, variant: :pixel_lg, eager: true %>
 
-      <p class="dex-hero__number"><%= @pokemon.dex_number %></p>
+      <p class="dex-hero__number">
+        <%= @pokemon.dex_number %>
+        <% if @pokemon.shiny? %>
+          <span class="dex-badge">
+            <i class="fa fa-star" aria-hidden="true"></i>
+            Shiny
+          </span>
+        <% end %>
+      </p>
       <%= render 'application/type_chips', pokemon: @pokemon %>
 
       <dl class="dex-hero__meta">
@@ -48,6 +56,9 @@
 
       <h2 class="dex-section-title">Base stats</h2>
       <%= render 'application/stat_bars', pokemon: @pokemon %>
+
+      <h2 class="dex-section-title">Type matchups</h2>
+      <%= render 'application/matchups', matchups: @matchups %>
 
       <% if @pokemon.move_list.any? %>
         <h2 class="dex-section-title">Moves</h2>

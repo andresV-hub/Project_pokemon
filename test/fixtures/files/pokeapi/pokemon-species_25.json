@@ -10,6 +10,10 @@
   "evolution_chain": {
     "url": "https://pokeapi.co/api/v2/evolution-chain/10/"
   },
+  "growth_rate": {
+    "name": "medium",
+    "url": "https://pokeapi.co/api/v2/growth-rate/2/"
+  },
   "flavor_text_entries": [
     {
       "flavor_text": "When several of\nthese POKéMON\ngather, their\felectricity could\nbuild and cause\nlightning storms.",
@@ -23,5 +27,5 @@
       }
     }
   ],
-  "_nota": "capture_rate ajustado a 255 (el real es 190) para que la captura sea determinista en los tests"
+  "_nota": "capture_rate subido de 190 a 255 a proposito: con 1.0 de probabilidad la tirada de captura es determinista y los tests comprueban la autorizacion, no el azar."
 }

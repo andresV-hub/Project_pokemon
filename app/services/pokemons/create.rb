@@ -6,11 +6,16 @@ module Pokemons
     # cifra haría que la mecánica no llegara a notarse nunca.
     SHINY_ODDS = 512
 
-  	def initialize(pokemon:, user:, description:, nickname:)
+  	# `level` es el nivel con el que se captura. Por defecto el de inicio, que es
+  	# lo que valía cuando todos los encuentros salían escalados al jugador; desde
+  	# que cada zona tiene los niveles del juego, un Hypno cazado a nivel 50 en la
+  	# Cueva Celeste llegaba al PC **como nivel 5**.
+  	def initialize(pokemon:, user:, description:, nickname:, level: nil)
   		@pokemon = pokemon
   		@user = user
   		@description = description
   		@nickname = nickname
+  		@level = (level.presence || LevelStats::STARTING_LEVEL).to_i
   	end
 
   	# Las estadísticas y los movimientos se leen del decorador, que los expone ya
@@ -23,7 +28,7 @@ module Pokemons
       stats = @pokemon.stat_list.index_by { |stat| stat[:key] }
       # Los que sabe a su nivel inicial, no los cuatro primeros del array.
       moves = MoveSet.execute(raw_pokemon: @pokemon.object,
-                              level: LevelStats::STARTING_LEVEL).value.map { |move| move['label'] }
+                              level: @level).value.map { |move| move['label'] }
       shiny = shiny?
 
       pokemon = Pokemon.new(
@@ -46,8 +51,12 @@ module Pokemons
         capture_rate: @description.capture_rate,
         base_happiness: @description.base_happiness,
         num_pokedex: @pokemon.num_pokedex,
-        level: LevelStats::STARTING_LEVEL,
-        experience: LevelStats.experience_for(LevelStats::STARTING_LEVEL),
+        level: @level,
+        growth_rate: @description.growth_rate,
+        # La experiencia tiene que corresponder al nivel y a **su** curva: con la
+        # experiencia de otra curva, el primer combate lo recalcularía a un nivel
+        # distinto del que se ve al capturarlo.
+        experience: ExperienceCurve.experience_for(@level, @description.growth_rate),
         shiny: shiny,
         # El sprite se congela en la captura: si salió variocolor, lo que se
         # guarda es la variante shiny y la ficha ya no depende de la marca.

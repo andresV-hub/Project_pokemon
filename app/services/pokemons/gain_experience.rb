@@ -16,7 +16,11 @@ module Pokemons
       @pokemon.experience = @pokemon.experience.to_i + @amount
       # `max` como red de seguridad: la experiencia sólo sube, así que el nivel
       # tampoco debería bajar nunca por mucho que se toquen los datos a mano.
-      @pokemon.level = [LevelStats.level_for(@pokemon.experience), before].max
+      # Con la curva de su especie, no con la de todos. `max` sigue de red de
+      # seguridad: si a un Pokémon antiguo se le asignara una curva más lenta que
+      # la que tenía, su experiencia correspondería a un nivel más bajo y el
+      # jugador lo vería *bajar* de nivel al ganar un combate.
+      @pokemon.level = [ExperienceCurve.level_for(@pokemon.experience, @pokemon.growth_rate), before].max
 
       events = []
       events << { type: :level_up, from: before, to: @pokemon.level } if @pokemon.level > before

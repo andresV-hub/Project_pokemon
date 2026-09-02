@@ -30,17 +30,12 @@ module Pokemons
       ((2 * base.to_i * level.to_i) / 100) + 5
     end
 
-    # Experiencia acumulada necesaria para estar en un nivel: la curva `n³` de
-    # los juegos, que hace que cada nivel cueste bastante más que el anterior.
-    def experience_for(level)
-      level.to_i**3
-    end
-
-    def level_for(experience)
-      level = Math.cbrt(experience.to_i).floor
-      level.clamp(1, MAX_LEVEL)
-    end
-
+    # La curva de experiencia **ya no vive aquí**: está en
+    # `Pokemons::ExperienceCurve`, porque depende de la especie y no sólo del
+    # nivel. Lo que había era `n³` para todo el mundo, que resultó ser exactamente
+    # la curva `medium` del juego; dejar aquí una copia sería tener dos sitios
+    # donde se decide lo mismo, y en cuanto se separen el nivel que muestra la
+    # ficha dejará de ser el que calcula el combate.
     MAX_LEVEL = 100
 
     # Nivel con el que nace un Pokémon capturado. Su experiencia tiene que

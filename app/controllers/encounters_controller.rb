@@ -322,8 +322,11 @@ class EncountersController < ApplicationController
 		description = ::Pokeapi::FindDescription.execute(id: state['num_pokedex']).value
 		return if wild.nil? || description.nil?
 
+		# Con el nivel al que se encontró: es el que has visto en la pantalla de
+		# combate y el que corresponde a la zona.
 		::Pokemons::CreateUseCase.execute(pokemon: wild, user: current_user.id,
-		                                  description: description, nickname: wild.name)
+		                                  description: description, nickname: wild.name,
+		                                  level: state['level'])
 	end
 
 	def record_sighting(num_pokedex)

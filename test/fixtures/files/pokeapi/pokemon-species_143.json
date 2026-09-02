@@ -1,0 +1,30 @@
+{
+  "id": 143,
+  "name": "snorlax",
+  "capture_rate": 25,
+  "base_happiness": 70,
+  "habitat": {
+    "name": "mountain",
+    "url": "https://pokeapi.co/api/v2/pokemon-habitat/4/"
+  },
+  "evolution_chain": {
+    "url": "https://pokeapi.co/api/v2/evolution-chain/72/"
+  },
+  "growth_rate": {
+    "name": "slow",
+    "url": "https://pokeapi.co/api/v2/growth-rate/1/"
+  },
+  "flavor_text_entries": [
+    {
+      "flavor_text": "Very lazy. Just\neats and sleeps.\nAs its rotund\fbulk builds, it\nbecomes steadily\nmore slothful.",
+      "language": {
+        "name": "en",
+        "url": "https://pokeapi.co/api/v2/language/9/"
+      },
+      "version": {
+        "name": "red",
+        "url": "https://pokeapi.co/api/v2/version/1/"
+      }
+    }
+  ]
+}

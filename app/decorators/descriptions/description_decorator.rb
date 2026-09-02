@@ -17,6 +17,13 @@ module Descriptions
       model.dig('habitat', 'name')&.capitalize || UNKNOWN
     end
 
+    # La curva de experiencia de la especie: `medium`, `slow`, `medium-slow`…
+    # Determina cuánto cuesta cada nivel, y hasta ahora se ignoraba y se aplicaba
+    # `medium` a todo el mundo.
+    def growth_rate
+      model.dig('growth_rate', 'name')
+    end
+
     def base_happiness
       model['base_happiness']
     end

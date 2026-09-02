@@ -15,21 +15,9 @@ class Pokemons::LevelStatsTest < ActiveSupport::TestCase
     assert_operator Pokemons::LevelStats.hp(35, 45), :>, sin_margen
   end
 
-  test 'la experiencia y el nivel son inversos' do
-    (2..40).step(7) do |nivel|
-      assert_equal nivel, Pokemons::LevelStats.level_for(Pokemons::LevelStats.experience_for(nivel))
-    end
-  end
-
-  test 'sin experiencia el nivel no baja de uno' do
-    assert_equal 1, Pokemons::LevelStats.level_for(0)
-  end
-
-  test 'el nivel tiene tope' do
-    enorme = Pokemons::LevelStats.experience_for(500)
-
-    assert_equal Pokemons::LevelStats::MAX_LEVEL, Pokemons::LevelStats.level_for(enorme)
-  end
+  # La ida y vuelta entre experiencia y nivel se comprueba ahora en
+  # `ExperienceCurveTest`, que es donde vive la curva desde que depende de la
+  # especie y no sólo del nivel.
 
   test 'derrotar a un rival de más nivel da más experiencia' do
     bajo = Pokemons::LevelStats.experience_from(base_experience: 112, level: 5)
@@ -42,12 +30,20 @@ class Pokemons::LevelStatsTest < ActiveSupport::TestCase
     assert_operator Pokemons::LevelStats.experience_from(base_experience: 1, level: 1), :>=, 1
   end
 
-  test 'el nivel inicial tiene la experiencia que le corresponde' do
-    # Nacer con nivel 5 y experiencia 0 hacía que el primer combate recalculara
-    # el nivel a 3: el jugador veía a su Pokémon *bajar* de nivel.
-    nivel = Pokemons::LevelStats::STARTING_LEVEL
+  test 'el nivel inicial tiene la experiencia que le corresponde, en cualquier curva' do
+    con_pokeapi_simulada do
+      # Nacer con nivel 5 y experiencia 0 hacía que el primer combate recalculara
+      # el nivel a 3: el jugador veía a su Pokémon *bajar* de nivel. Ahora hay que
+      # comprobarlo en todas las curvas, porque un Pokémon con la experiencia de
+      # una curva y el nivel de otra vuelve a tener el mismo problema.
+      nivel = Pokemons::LevelStats::STARTING_LEVEL
 
-    assert_equal nivel, Pokemons::LevelStats.level_for(Pokemons::LevelStats.experience_for(nivel))
+      %w[medium slow medium-slow fast].each do |curva|
+        coste = Pokemons::ExperienceCurve.experience_for(nivel, curva)
+
+        assert_equal nivel, Pokemons::ExperienceCurve.level_for(coste, curva), "falla en #{curva}"
+      end
+    end
   end
 
 end

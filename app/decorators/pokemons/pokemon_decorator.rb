@@ -67,7 +67,7 @@ module Pokemons
   	# Experiencia acumulada que hará falta para el siguiente nivel: sola, la
   	# cifra de experiencia no dice nada sobre lo cerca que se está.
   	def next_level_experience
-  		::Pokemons::LevelStats.experience_for(model.level.to_i + 1)
+  		::Pokemons::ExperienceCurve.experience_for(model.level.to_i + 1, model.growth_rate)
   	end
 
   	# La curva es `n³` sobre el total acumulado, así que la cifra en bruto
@@ -80,7 +80,7 @@ module Pokemons
   		# donde ya no queda nada por recorrer.
   		return 100 if max_level?
 
-  		floor = ::Pokemons::LevelStats.experience_for(model.level.to_i)
+  		floor = ::Pokemons::ExperienceCurve.experience_for(model.level.to_i, model.growth_rate)
   		span = next_level_experience - floor
   		return 100 if span <= 0
 

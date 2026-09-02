@@ -1,6 +1,6 @@
 <%= render layout: 'application/page_header',
            locals: { eyebrow: 'Wild', title: 'Explore',
-                     lead: 'Pokémon you have not met yet only show up out here.' } do %>
+                     lead: 'Pokémon you have not met yet only show up out here. Each place has its own residents.' } do %>
 <% end %>
 
 <section class="dex-surface dex-surface--padded dex-explore">
@@ -11,17 +11,56 @@
 
   <%= render 'application/sprite', pokemon: @lead_pokemon, variant: :pixel, eager: true %>
 
+  <%# Buscar un entrenador no depende del sitio: los entrenadores salen a tu
+      medida esté donde esté, y son la única fuente de dinero. %>
   <div class="dex-explore__actions">
-    <%= button_to 'Look for Pokémon',
-                  user_encounter_start_path(user_id: current_user.id),
-                  class: 'dex-btn dex-btn--accent dex-btn--form',
-                  form_class: 'dex-explore__form' %>
     <%= button_to 'Find a trainer',
                   user_encounter_trainer_path(user_id: current_user.id),
                   class: 'dex-btn dex-btn--primary dex-btn--form',
                   form_class: 'dex-explore__form' %>
   </div>
-  <p class="dex-field__hint">
-    Wild Pokémon can be caught. Trainers pay up when you beat them.
-  </p>
+  <p class="dex-field__hint">Trainers pay up when you beat them.</p>
 </section>
+
+<h2 class="dex-section-title">Where to look</h2>
+
+<%# El mapa. Las zonas cerradas se muestran, no se ocultan: saber que Cerulean Cave
+    existe y que hace falta nivel 46 es lo que da forma a la progresión. Ocultarlas
+    dejaría la pantalla vacía y sin nada por lo que volver. %>
+<div class="dex-grid dex-grid--party">
+  <% @zones.each do |zone| %>
+    <% open = zone[:unlock] <= @best_level %>
+    <article class="dex-card dex-zone <%= 'dex-zone--locked' unless open %>">
+      <div class="dex-card__top">
+        <span class="dex-card__title"><%= zone[:name] %></span>
+        <% if open %>
+          <span class="dex-badge">Lv. <%= zone[:unlock] %>+</span>
+        <% else %>
+          <span class="dex-badge dex-badge--muted">
+            <i class="fa fa-lock" aria-hidden="true"></i>
+            Lv. <%= zone[:unlock] %>
+          </span>
+        <% end %>
+      </div>
+
+      <div class="dex-card__body">
+        <p class="dex-card__species"><%= zone[:blurb] %></p>
+      </div>
+
+      <div class="dex-card__actions">
+        <% if open %>
+          <%= button_to 'Look for Pokémon',
+                        user_encounter_start_path(user_id: current_user.id, zone: zone[:key]),
+                        class: 'dex-btn dex-btn--accent dex-btn--compact dex-btn--block',
+                        form_class: 'dex-card__form' %>
+        <% else %>
+          <%# Un botón deshabilitado y no un hueco: el sitio existe, y lo que falta
+              es nivel. Decir cuánto convierte el bloqueo en un objetivo. %>
+          <span class="dex-field__hint">
+            Your strongest Pokémon is Lv. <%= @best_level %>. Come back at Lv. <%= zone[:unlock] %>.
+          </span>
+        <% end %>
+      </div>
+    </article>
+  <% end %>
+</div>

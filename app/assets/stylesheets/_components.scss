@@ -2038,6 +2038,26 @@ a {
 }
 
 // ============================================================================
+// Zonas de exploración (styles.md §6.32)
+// ============================================================================
+
+// Una zona cerrada se ve, y se ve apagada. No se oculta: saber que Cerulean Cave
+// existe y que pide nivel 46 es lo que convierte el bloqueo en un objetivo, y
+// esconderla dejaría la pantalla vacía y sin nada por lo que volver.
+.dex-zone--locked {
+	opacity: .6;
+
+	// El nombre sigue legible al 100%: lo que está atenuado es la promesa de
+	// entrar, no la información de que el sitio existe.
+	.dex-card__title { opacity: 1; }
+}
+
+.dex-badge--muted {
+	background-color: var(--dex-gray-100);
+	color: var(--dex-text-tertiary);
+}
+
+// ============================================================================
 // Estado alterado (styles.md §6.29)
 // ============================================================================
 

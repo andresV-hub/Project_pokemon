@@ -7,13 +7,25 @@ class EncountersController < ApplicationController
 	before_action :require_party, only: %i[new create]
 	before_action :require_encounter, only: %i[show attack catch item flee]
 
-	# Pantalla de exploración.
+	# Pantalla de exploración: el mapa de zonas.
 	def new
 		@lead_pokemon = lead_pokemon
+		@best_level = party_best_level
+		@zones = ::Encounters::Zones.all
 	end
 
 	def create
-		result = ::Encounters::Start.execute(trainer_pokemon: lead_pokemon)
+		zone_key = params[:zone].presence || ::Encounters::Zones.default[:key]
+
+		# Se comprueba en el servidor y no sólo escondiendo el botón: la zona llega
+		# como parámetro y sin esto bastaría con escribirla a mano para plantarse en
+		# la Cueva Celeste con un equipo de nivel 5.
+		unless ::Encounters::Zones.unlocked?(zone_key, party_best_level)
+			return redirect_to user_explore_path(user_id: current_user.id),
+				alert: 'Your team is not strong enough for that place yet.', status: :see_other
+		end
+
+		result = ::Encounters::Start.execute(trainer_pokemon: lead_pokemon, zone_key: zone_key)
 
 		if result.error
 			return redirect_to user_explore_path(user_id: current_user.id),
@@ -238,6 +250,12 @@ class EncountersController < ApplicationController
 		pokemon = current && current_user.pokemon.find_by(id: current)
 		pokemon ||= current_user.pokemon.in_party.first
 		pokemon && ::Pokemons::PokemonDecorator.decorate(pokemon)
+	end
+
+	# El nivel del mejor del equipo. Con el mejor y no con la media: llevar un
+	# Pokémon flojo de acompañante no debería cerrar una zona ya ganada.
+	def party_best_level
+		current_user.pokemon.in_party.maximum(:level).to_i
 	end
 
 	def require_party

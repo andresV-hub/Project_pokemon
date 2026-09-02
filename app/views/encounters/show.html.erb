@@ -1,7 +1,10 @@
 <% over = @state['over'].present? %>
 <% trainer_battle = @state['kind'] == 'trainer' %>
+<%# El sitio va en el sobretítulo: es lo que distingue este encuentro del
+    anterior, ahora que un Pikachu de la Central Eléctrica no es el mismo que uno
+    del Bosque Verde. %>
 <%= render layout: 'application/page_header',
-           locals: { eyebrow: trainer_battle ? "#{@state['rival']} · reward ₽#{@state['reward']}" : 'Wild encounter',
+           locals: { eyebrow: trainer_battle ? "#{@state['rival']} · reward ₽#{@state['reward']}" : "Wild encounter · #{@state['zone_name']}",
                      title: trainer_battle ? @state['name'] : "Wild #{@state['name']}" } do %>
 <% end %>
 

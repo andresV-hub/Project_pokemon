@@ -1,0 +1,149 @@
+{
+  "name": "kanto-route-1-area",
+  "pokemon_encounters": [
+    {
+      "pokemon": {
+        "name": "pidgey",
+        "url": "https://pokeapi.co/api/v2/pokemon/16/"
+      },
+      "version_details": [
+        {
+          "version": {
+            "name": "red",
+            "url": "https://pokeapi.co/api/v2/version/1/"
+          },
+          "max_chance": 50,
+          "encounter_details": [
+            {
+              "min_level": 3,
+              "max_level": 3,
+              "chance": 20,
+              "method": {
+                "name": "walk",
+                "url": "https://pokeapi.co/api/v2/encounter-method/1/"
+              },
+              "condition_values": [],
+              "pokemon_details": null
+            },
+            {
+              "min_level": 2,
+              "max_level": 2,
+              "chance": 10,
+              "method": {
+                "name": "walk",
+                "url": "https://pokeapi.co/api/v2/encounter-method/1/"
+              },
+              "condition_values": [],
+              "pokemon_details": null
+            },
+            {
+              "min_level": 3,
+              "max_level": 3,
+              "chance": 10,
+              "method": {
+                "name": "walk",
+                "url": "https://pokeapi.co/api/v2/encounter-method/1/"
+              },
+              "condition_values": [],
+              "pokemon_details": null
+            },
+            {
+              "min_level": 3,
+              "max_level": 3,
+              "chance": 5,
+              "method": {
+                "name": "walk",
+                "url": "https://pokeapi.co/api/v2/encounter-method/1/"
+              },
+              "condition_values": [],
+              "pokemon_details": null
+            },
+            {
+              "min_level": 4,
+              "max_level": 4,
+              "chance": 4,
+              "method": {
+                "name": "walk",
+                "url": "https://pokeapi.co/api/v2/encounter-method/1/"
+              },
+              "condition_values": [],
+              "pokemon_details": null
+            },
+            {
+              "min_level": 5,
+              "max_level": 5,
+              "chance": 1,
+              "method": {
+                "name": "walk",
+                "url": "https://pokeapi.co/api/v2/encounter-method/1/"
+              },
+              "condition_values": [],
+              "pokemon_details": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "pokemon": {
+        "name": "rattata",
+        "url": "https://pokeapi.co/api/v2/pokemon/19/"
+      },
+      "version_details": [
+        {
+          "version": {
+            "name": "red",
+            "url": "https://pokeapi.co/api/v2/version/1/"
+          },
+          "max_chance": 50,
+          "encounter_details": [
+            {
+              "min_level": 3,
+              "max_level": 3,
+              "chance": 20,
+              "method": {
+                "name": "walk",
+                "url": "https://pokeapi.co/api/v2/encounter-method/1/"
+              },
+              "condition_values": [],
+              "pokemon_details": null
+            },
+            {
+              "min_level": 3,
+              "max_level": 3,
+              "chance": 15,
+              "method": {
+                "name": "walk",
+                "url": "https://pokeapi.co/api/v2/encounter-method/1/"
+              },
+              "condition_values": [],
+              "pokemon_details": null
+            },
+            {
+              "min_level": 2,
+              "max_level": 2,
+              "chance": 10,
+              "method": {
+                "name": "walk",
+                "url": "https://pokeapi.co/api/v2/encounter-method/1/"
+              },
+              "condition_values": [],
+              "pokemon_details": null
+            },
+            {
+              "min_level": 4,
+              "max_level": 4,
+              "chance": 5,
+              "method": {
+                "name": "walk",
+                "url": "https://pokeapi.co/api/v2/encounter-method/1/"
+              },
+              "condition_values": [],
+              "pokemon_details": null
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

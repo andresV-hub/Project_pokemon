@@ -6,21 +6,24 @@ module Encounters
   # no sobrevive a cerrar la pestaña, igual que en el juego.
   class Start < BaseService
 
-    def initialize(trainer_pokemon:)
+    def initialize(trainer_pokemon:, zone_key: nil)
       @trainer_pokemon = trainer_pokemon
-    end
-
-    # Fuerza del Pokémon que va a combatir, para emparejar al rival con él.
-    def reference_total
-      @trainer_pokemon.stat_list.sum { |stat| stat[:value].to_i }
+      @zone_key = zone_key
     end
 
     def service_execute
-      wild = DrawOpponent.execute(reference_total: reference_total).value
-      description = wild && ::Pokeapi::FindDescription.execute(id: wild.num_pokedex).value
-      return ServiceResult.new(error: :pokeapi_unavailable) if wild.nil? || description.nil?
+      draw = DrawFromZone.execute(zone_key: @zone_key).value
+      return ServiceResult.new(error: :pokeapi_unavailable) if draw.nil?
 
-      level = Rules.rival_level(@trainer_pokemon.level)
+      wild = draw[:pokemon]
+      # El nivel lo pone la zona, no el jugador. Es lo que hace que ir a la Cueva
+      # Celeste con un equipo de nivel 20 sea una mala idea y no un trámite
+      # escalado a tu medida.
+      level = draw[:level]
+      zone = draw[:zone]
+
+      description = ::Pokeapi::FindDescription.execute(id: wild.num_pokedex).value
+      return ServiceResult.new(error: :pokeapi_unavailable) if description.nil?
       base_hp = wild.stat_list.find { |stat| stat[:key] == 'hp' }&.dig(:value).to_i
       wild_hp = ::Pokemons::LevelStats.hp(base_hp, level)
       # Con la vida que traiga, no a tope: desde que el daño se guarda, salir a
@@ -42,6 +45,8 @@ module Encounters
         'trainer_hp' => own_hp,
         'trainer_max_hp' => own_max,
         'trainer_level' => @trainer_pokemon.level,
+        'zone' => zone[:key],
+        'zone_name' => zone[:name],
         'log' => ["A wild #{wild.name} (Lv. #{level}) appeared!"]
       })
     end

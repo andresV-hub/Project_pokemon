@@ -11,5 +11,28 @@
   "damage_class": {
     "name": "special",
     "url": "https://pokeapi.co/api/v2/move-damage-class/3/"
-  }
+  },
+  "meta": {
+    "ailment": {
+      "name": "paralysis",
+      "url": "https://pokeapi.co/api/v2/move-ailment/1/"
+    },
+    "category": {
+      "name": "damage-ailment",
+      "url": "https://pokeapi.co/api/v2/move-category/4/"
+    },
+    "min_hits": null,
+    "max_hits": null,
+    "min_turns": null,
+    "max_turns": null,
+    "drain": 0,
+    "healing": 0,
+    "crit_rate": 0,
+    "ailment_chance": 30,
+    "flinch_chance": 0,
+    "stat_chance": 0
+  },
+  "stat_changes": [],
+  "priority": 0,
+  "effect_chance": 30
 }

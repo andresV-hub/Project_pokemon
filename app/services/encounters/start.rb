@@ -10,16 +10,6 @@ module Encounters
       @trainer_pokemon = trainer_pokemon
     end
 
-    # Movimientos que sabe a su nivel, con los PP con los que empieza el combate.
-    def move_set_for(num_pokedex, level)
-      raw = ::Pokeapi::Client.get("pokemon/#{num_pokedex}")
-      return [] if raw.nil?
-
-      ::Pokemons::MoveSet.execute(raw_pokemon: raw, level: level).value.map do |move|
-        move.merge('pp_left' => move['pp'])
-      end
-    end
-
     # Fuerza del Pokémon que va a combatir, para emparejar al rival con él.
     def reference_total
       @trainer_pokemon.stat_list.sum { |stat| stat[:value].to_i }
@@ -36,8 +26,8 @@ module Encounters
       own_hp = ::Pokemons::LevelStats.hp(@trainer_pokemon.hp, @trainer_pokemon.level)
 
       ServiceResult.new(value: {
-        'own_moves' => move_set_for(@trainer_pokemon.num_pokedex, @trainer_pokemon.level),
-        'rival_moves' => move_set_for(wild.num_pokedex, level),
+        'own_moves' => ::Pokemons::MoveSet.for_battle(num_pokedex: @trainer_pokemon.num_pokedex, level: @trainer_pokemon.level),
+        'rival_moves' => ::Pokemons::MoveSet.for_battle(num_pokedex: wild.num_pokedex, level: level),
         'num_pokedex' => wild.num_pokedex,
         'name' => wild.name,
         'capture_rate' => description.capture_rate.to_i,

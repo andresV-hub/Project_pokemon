@@ -18,18 +18,32 @@ class Pokemons::MoveSetTest < ActiveSupport::TestCase
     con_pokeapi_simulada do
       movimientos = Pokemons::MoveSet.execute(raw_pokemon: pikachu, level: 5).value
 
-      assert_equal ['thunder-shock'], movimientos.map { |m| m['name'] }
+      # Growl entra igual que Thunder Shock: los dos se aprenden a nivel 1, y
+      # desde que los estados existen un movimiento sin potencia también es una
+      # jugada.
+      assert_equal %w[growl thunder-shock], movimientos.map { |m| m['name'] }
     end
   end
 
-  test 'los movimientos de estado se descartan' do
+  test 'los movimientos de estado también entran' do
     con_pokeapi_simulada do
       movimientos = Pokemons::MoveSet.execute(raw_pokemon: pikachu, level: 40).value
 
-      # Growl y Agility los aprende, pero no hacen daño: sin efectos de estado
-      # implementados serían un turno perdido.
-      assert_not_includes movimientos.map { |m| m['name'] }, 'growl'
-      assert movimientos.all? { |m| m['power'].to_i.positive? }
+      # Agility no hace daño: sube la velocidad dos escalones. Cuando se
+      # descartaba lo que no tenía potencia, un Pikachu de nivel 40 salía al
+      # combate con menos movimientos de los que sabe y nada lo explicaba.
+      assert_includes movimientos.map { |m| m['name'] }, 'agility'
+      assert movimientos.any? { |m| m['damage_class'] == 'status' }
+    end
+  end
+
+  test 'aunque no haga daño, un movimiento de estado trae su efecto' do
+    con_pokeapi_simulada do
+      movimientos = Pokemons::MoveSet.execute(raw_pokemon: pikachu, level: 40).value
+      agility = movimientos.find { |m| m['name'] == 'agility' }
+
+      assert_equal [{ 'stat' => 'speed', 'change' => 2 }], agility['stat_changes']
+      assert_nil agility['power']
     end
   end
 
@@ -56,8 +70,9 @@ class Pokemons::MoveSetTest < ActiveSupport::TestCase
       # Pokémon así se mirarían eternamente.
       movimientos = Pokemons::MoveSet.execute(raw_pokemon: magikarp, level: 5).value
 
-      assert_equal ['struggle'], movimientos.map { |m| m['name'] }
-      assert_operator movimientos.first['power'], :>, 0
+      # Splash se conserva —lo sabe— y Struggle se añade para que pueda pelear.
+      assert_equal %w[splash struggle], movimientos.map { |m| m['name'] }
+      assert movimientos.any? { |m| m['power'].to_i.positive? }
     end
   end
 

@@ -1,0 +1,11 @@
+<%# Estado alterado del combate (styles.md §6.29).
+
+    Va pegado al nivel en la barra de HP porque es información del mismo tipo:
+    quién es y cómo está. Sin esto, el registro decía «Pikachu is paralyzed!» y
+    dos turnos después ya no había forma de saber si seguía estándolo. %>
+<% label = ::Encounters::Statuses.label(status) %>
+<% if label.present? %>
+  <span class="dex-status dex-status--<%= status %>" title="<%= status.to_s.capitalize %>">
+    <%= label %>
+  </span>
+<% end %>

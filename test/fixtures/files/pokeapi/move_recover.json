@@ -1,13 +1,13 @@
 {
-  "id": 97,
-  "name": "agility",
+  "id": 105,
+  "name": "recover",
   "type": {
-    "name": "psychic",
-    "url": "https://pokeapi.co/api/v2/type/14/"
+    "name": "normal",
+    "url": "https://pokeapi.co/api/v2/type/1/"
   },
   "power": null,
   "accuracy": null,
-  "pp": 30,
+  "pp": 5,
   "damage_class": {
     "name": "status",
     "url": "https://pokeapi.co/api/v2/move-damage-class/1/"
@@ -18,29 +18,21 @@
       "url": "https://pokeapi.co/api/v2/move-ailment/0/"
     },
     "category": {
-      "name": "net-good-stats",
-      "url": "https://pokeapi.co/api/v2/move-category/2/"
+      "name": "heal",
+      "url": "https://pokeapi.co/api/v2/move-category/3/"
     },
     "min_hits": null,
     "max_hits": null,
     "min_turns": null,
     "max_turns": null,
     "drain": 0,
-    "healing": 0,
+    "healing": 50,
     "crit_rate": 0,
     "ailment_chance": 0,
     "flinch_chance": 0,
     "stat_chance": 0
   },
-  "stat_changes": [
-    {
-      "change": 2,
-      "stat": {
-        "name": "speed",
-        "url": "https://pokeapi.co/api/v2/stat/6/"
-      }
-    }
-  ],
+  "stat_changes": [],
   "priority": 0,
   "effect_chance": null
 }

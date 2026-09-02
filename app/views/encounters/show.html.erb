@@ -25,6 +25,7 @@
         <span class="dex-hp__name">
           <%= @state['name'] %>
           <span class="dex-hp__level">Lv. <%= @state['level'] %></span>
+          <%= render 'application/status_chip', status: @state['rival_status'] %>
         </span>
         <span class="dex-hp__value"><%= @state['wild_hp'] %> / <%= @state['wild_max_hp'] %></span>
       </div>
@@ -50,6 +51,7 @@
         <span class="dex-hp__name">
           <%= @trainer_pokemon.display_name %>
           <span class="dex-hp__level">Lv. <%= @state['trainer_level'] || @trainer_pokemon.level %></span>
+          <%= render 'application/status_chip', status: @state['own_status'] %>
         </span>
         <span class="dex-hp__value"><%= @state['trainer_hp'] %> / <%= @state['trainer_max_hp'] %></span>
       </div>

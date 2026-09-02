@@ -150,11 +150,10 @@ class EncountersController < ApplicationController
 		fighter = current_user.pokemon.find_by(id: state['trainer_pokemon_id'])
 		return state if fighter.nil?
 
-		raw = ::Pokeapi::Client.get("pokemon/#{fighter.num_pokedex}")
-		return state if raw.nil?
+		moves = ::Pokemons::MoveSet.for_battle(num_pokedex: fighter.num_pokedex, level: fighter.level)
+		return state if moves.empty?
 
-		moves = ::Pokemons::MoveSet.execute(raw_pokemon: raw, level: fighter.level).value
-		state.merge('own_moves' => moves.map { |move| move.merge('pp_left' => move['pp']) })
+		state.merge('own_moves' => moves)
 	end
 
 	def award_experience(state)

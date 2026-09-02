@@ -30,6 +30,12 @@ module Encounters
       @state['level'] = pokemon['level']
       @state['base_experience'] = pokemon['base_experience']
       @state['rival_moves'] = pokemon['moves']
+      # El que entra no hereda lo que le pasaba al que cayó: ni el veneno ni el
+      # ataque que le habían bajado. Los escalones y los estados duran lo que dura
+      # el Pokémon en el campo, no lo que dura el combate.
+      @state['rival_status'] = nil
+      @state['rival_status_turns'] = 0
+      @state['rival_stages'] = {}
       @state.delete('over')
       @state['log'] += ["#{@state['rival']} sent out #{pokemon['name']} (Lv. #{pokemon['level']})!"]
     end

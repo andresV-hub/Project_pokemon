@@ -23,6 +23,10 @@ module Encounters
         @state['trainer_pokemon_id'] = following.id
         @state['trainer_hp'] = following.hp.to_i
         @state['trainer_max_hp'] = following.hp.to_i
+        # Entra descansado: el estado alterado y los escalones eran del que cayó.
+        @state['own_status'] = nil
+        @state['own_status_turns'] = 0
+        @state['own_stages'] = {}
         @state.delete('over')
         @state['log'] += ["Go, #{following.nickname}!"]
       end

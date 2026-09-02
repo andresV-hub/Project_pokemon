@@ -1984,6 +1984,32 @@ a {
 }
 
 // ============================================================================
+// Estado alterado (styles.md §6.29)
+// ============================================================================
+
+// Etiqueta corta pegada al nivel, como el marcador del juego: PAR, SLP, BRN…
+// Cada estado tiene su color, pero **el color no informa por sí solo** (§9): la
+// sigla se lee igual en escala de grises, y el `title` da el nombre completo.
+.dex-status {
+	display: inline-block;
+	margin-left: var(--dex-space-1);
+	padding: 1px var(--dex-space-1);
+	border-radius: var(--dex-radius-sm);
+	font-family: var(--dex-font-data);
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	color: #fff;
+	vertical-align: middle;
+
+	&--paralysis { background-color: #B8A038; }
+	&--sleep     { background-color: #6F7885; }
+	&--freeze    { background-color: #4C91B2; }
+	&--poison    { background-color: #9141CB; }
+	&--burn      { background-color: #C7502F; }
+}
+
+// ============================================================================
 // Barra de experiencia (styles.md §6.28)
 // ============================================================================
 

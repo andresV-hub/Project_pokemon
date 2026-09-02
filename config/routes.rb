@@ -50,6 +50,9 @@ Rails.application.routes.draw do
 			end
 
 			member do
+				# Elegir qué movimiento se olvida para aprender el nuevo.
+				get :learn_move
+				patch :resolve_move
 				patch :liberate_pokemon
 				patch :edit_nickname
 				patch :compare_with

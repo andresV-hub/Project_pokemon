@@ -2037,6 +2037,12 @@ a {
 	image-rendering: pixelated;
 }
 
+// El que entra se distingue de los cuatro que ya sabe: no es una quinta opción a
+// olvidar, es lo que quiere aprender (styles.md §6.35).
+.dex-move-choice--new {
+	border-color: var(--dex-accent);
+}
+
 // ============================================================================
 // Filtros del catálogo (styles.md §6.34)
 // ============================================================================

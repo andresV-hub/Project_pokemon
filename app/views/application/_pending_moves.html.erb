@@ -1,0 +1,18 @@
+<%# Movimientos esperando a que se decida qué olvidar (styles.md §6.35).
+
+    Va en el layout y no en la pantalla de combate porque la pregunta surge a
+    mitad de un turno y hay que poder contestarla después, desde donde sea. Se
+    guarda en el Pokémon, así que sobrevive a cerrar la pestaña: un movimiento que
+    ya se ha ganado no debería perderse por eso. %>
+<% pendientes = current_user.pokemon.with_pending_move %>
+<% pendientes.each do |pokemon| %>
+  <div class="dex-flash dex-flash--info" role="status">
+    <i class="fa fa-circle-info dex-flash__icon" aria-hidden="true"></i>
+    <span class="dex-flash__text">
+      <strong><%= pokemon.nickname %></strong> wants to learn <strong><%= pokemon.pending_move %></strong>,
+      but already knows four moves.
+      <%= link_to 'Choose what to forget',
+                  learn_move_user_pokemon_path(user_id: current_user.id, id: pokemon.id) %>
+    </span>
+  </div>
+<% end %>

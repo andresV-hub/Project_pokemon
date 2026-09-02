@@ -35,18 +35,23 @@ module Pokemons
     def learn(name)
       label = name.to_s.tr('-', ' ').capitalize
       return nil if known.any? { |sabido| same?(sabido, label) }
+      return nil if same?(@pokemon.pending_move, label)
 
       if known.size < SLOTS
         write(known + [label])
         { type: :learned, move: label }
       else
-        # Con los cuatro huecos llenos se olvida el más antiguo. En los juegos se
-        # pregunta cuál; preguntarlo aquí significaría parar el combate con un
-        # diálogo a mitad de turno, así que se resuelve como el juego cuando dices
-        # que sí, y **se cuenta** cuál se ha perdido para que no sea una sorpresa.
-        olvidado = known.first
-        write(known.drop(1) + [label])
-        { type: :replaced, move: label, forgot: olvidado }
+        # Con los cuatro huecos llenos, el juego pregunta cuál olvidar, así que
+        # aquí también: el movimiento queda **pendiente** y la elección se resuelve
+        # en su propia pantalla al salir del combate.
+        #
+        # Sólo uno a la vez. Si se subieran varios niveles de golpe y llegaran dos,
+        # encolarlos obligaría a una cola en la base de datos para un caso que en
+        # la práctica no ocurre: se gana un nivel por combate.
+        return nil if @pokemon.pending_move.present?
+
+        @pokemon.pending_move = label
+        { type: :pending, move: label }
       end
     end
 

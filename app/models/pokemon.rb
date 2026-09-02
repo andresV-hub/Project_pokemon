@@ -27,6 +27,13 @@ class Pokemon < ApplicationRecord
 		[atack0, atack1, atack2, atack3].compact_blank
 	end
 
+	# Los que tienen un movimiento esperando a que se decida qué olvidar.
+	scope :with_pending_move, -> { where.not(pending_move: [nil, '']) }
+
+	def pending_move?
+		pending_move.present?
+	end
+
 	# --- Vida ---------------------------------------------------------------
 	#
 	# La vida máxima no está guardada: se deriva de la estadística base y del

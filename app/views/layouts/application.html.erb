@@ -27,6 +27,7 @@
 
       <main class="dex-main">
         <%= render 'application/flash' %>
+        <%= render 'application/pending_moves' if user_signed_in? %>
         <%= yield %>
       </main>
 

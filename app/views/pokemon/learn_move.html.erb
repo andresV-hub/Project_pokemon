@@ -1,0 +1,46 @@
+<%= render layout: 'application/page_header',
+           locals: { eyebrow: 'New move', title: "#{@pokemon.display_name} wants to learn a move" } do %>
+<% end %>
+
+<%# La pregunta del juego, con su caja de diálogo (§6.20): es un momento, no un
+    formulario de ajustes. %>
+<div class="dex-dialog">
+  <span><%= @pokemon.display_name %> wants to learn <strong><%= @pokemon.pending_move %></strong>.</span>
+  <span>But <%= @pokemon.display_name %> already knows four moves.</span>
+  <span>Which one should be forgotten?</span>
+</div>
+
+<div class="dex-grid dex-grid--party">
+  <% @pokemon.move_names.each_with_index do |movimiento, indice| %>
+    <article class="dex-card dex-move-choice">
+      <div class="dex-card__body">
+        <span class="dex-card__title"><%= movimiento %></span>
+      </div>
+      <div class="dex-card__actions">
+        <%= button_to "Forget #{movimiento}",
+                      resolve_move_user_pokemon_path(user_id: current_user.id, id: @pokemon.id, slot: indice),
+                      method: :patch,
+                      class: 'dex-btn dex-btn--ghost dex-btn--compact dex-btn--block',
+                      form_class: 'dex-card__form' %>
+      </div>
+    </article>
+  <% end %>
+
+  <%# El movimiento nuevo, marcado como tal para que no se confunda con los que ya
+      sabe: es lo que entra, no una quinta opción a olvidar. %>
+  <article class="dex-card dex-move-choice dex-move-choice--new">
+    <div class="dex-card__body">
+      <span class="dex-badge">New</span>
+      <span class="dex-card__title"><%= @pokemon.pending_move %></span>
+    </div>
+    <div class="dex-card__actions">
+      <%# Decir que no es una respuesta válida en el juego: un movimiento nuevo no
+          siempre es mejor que los cuatro que ya tienes. %>
+      <%= button_to 'Do not learn it',
+                    resolve_move_user_pokemon_path(user_id: current_user.id, id: @pokemon.id, slot: 'none'),
+                    method: :patch,
+                    class: 'dex-btn dex-btn--compact dex-btn--block',
+                    form_class: 'dex-card__form' %>
+    </div>
+  </article>
+</div>

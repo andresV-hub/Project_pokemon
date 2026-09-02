@@ -269,10 +269,10 @@ class EncountersController < ApplicationController
 			         when :level_up then "#{fighter.nickname} grew to Lv. #{event[:to]}!"
 			         when :evolution then "#{fighter.nickname} evolved into #{event[:into]}!"
 			         when :learned then "#{fighter.nickname} learned #{event[:move]}!"
-			         # Se dice cuál se ha perdido: con los cuatro huecos llenos algo
-			         # tiene que salir, y enterarse a mitad del combate siguiente
-			         # sería peor.
-			         when :replaced then "#{fighter.nickname} forgot #{event[:forgot]} and learned #{event[:move]}!"
+			         # Con los cuatro huecos llenos hay que elegir qué se olvida, y
+			         # eso no se puede contestar a mitad de turno: se anuncia aquí y
+			         # se pregunta al salir del combate.
+			         when :pending then "#{fighter.nickname} wants to learn #{event[:move]}!"
 			         end
 		end
 		lines.compact

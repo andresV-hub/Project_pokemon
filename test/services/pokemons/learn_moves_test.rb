@@ -49,21 +49,71 @@ class Pokemons::LearnMovesTest < ActiveSupport::TestCase
     end
   end
 
-  test 'con los cuatro huecos llenos olvida el más antiguo y dice cuál' do
+  test 'con los cuatro huecos llenos no decide solo: deja la elección pendiente' do
     con_pokeapi_simulada do
       pikachu.update!(atack0: 'Thunder shock', atack1: 'Growl',
                       atack2: 'Thunder wave', atack3: 'Quick attack')
 
       # Swift a nivel 26.
       eventos = subir_a(26, desde: 16)
-      reemplazo = eventos.find { |e| e[:type] == :replaced }
+      pendiente = eventos.find { |e| e[:type] == :pending }
 
-      assert reemplazo, 'debería contarse como reemplazo, no como aprendizaje limpio'
-      assert_equal 'Thunder shock', reemplazo[:forgot], 'el más antiguo es el que sale'
-      assert_equal 'Swift', reemplazo[:move]
-      assert_not_includes pikachu.reload.move_names, 'Thunder shock'
-      assert_includes pikachu.move_names, 'Swift'
+      assert pendiente, 'el juego pregunta cuál olvidar; decidirlo solo no vale'
+      assert_equal 'Swift', pendiente[:move]
+      assert_equal 'Swift', pikachu.reload.pending_move
+      # Y hasta que se conteste, el repertorio no se toca.
+      assert_equal %w[Thunder\ shock Growl Thunder\ wave Quick\ attack], pikachu.move_names
     end
+  end
+
+  test 'no se encola un segundo pendiente encima del primero' do
+    con_pokeapi_simulada do
+      pikachu.update!(atack0: 'Thunder shock', atack1: 'Growl',
+                      atack2: 'Thunder wave', atack3: 'Quick attack',
+                      pending_move: 'Swift')
+
+      eventos = subir_a(43, desde: 26)
+
+      assert_empty eventos.select { |e| e[:type] == :pending }
+      assert_equal 'Swift', pikachu.reload.pending_move, 'el primero sigue esperando'
+    end
+  end
+
+  test 'elegir un hueco sustituye ese movimiento' do
+    pikachu.update!(atack0: 'Thunder shock', atack1: 'Growl',
+                    atack2: 'Thunder wave', atack3: 'Quick attack',
+                    pending_move: 'Swift')
+
+    datos = Pokemons::ResolvePendingMove.execute(pokemon: pikachu, slot: '1').value
+
+    assert_equal :forgotten, datos[:outcome]
+    assert_equal 'Growl', datos[:forgot]
+    assert_equal %w[Thunder\ shock Swift Thunder\ wave Quick\ attack], pikachu.reload.move_names
+    assert_nil pikachu.pending_move
+  end
+
+  test 'se puede decir que no, como en el juego' do
+    pikachu.update!(atack0: 'Thunder shock', atack1: 'Growl',
+                    atack2: 'Thunder wave', atack3: 'Quick attack',
+                    pending_move: 'Swift')
+
+    datos = Pokemons::ResolvePendingMove.execute(pokemon: pikachu, slot: 'none').value
+
+    assert_equal :declined, datos[:outcome]
+    assert_not_includes pikachu.reload.move_names, 'Swift'
+    assert_nil pikachu.pending_move, 'la pregunta no puede quedarse repitiéndose'
+  end
+
+  test 'un hueco fuera de rango se trata como no aprenderlo' do
+    pikachu.update!(atack0: 'Thunder shock', atack1: 'Growl',
+                    atack2: 'Thunder wave', atack3: 'Quick attack',
+                    pending_move: 'Swift')
+
+    # El hueco llega como parámetro: sin acotarlo, un 9 escribiría en `atack9`.
+    datos = Pokemons::ResolvePendingMove.execute(pokemon: pikachu, slot: '9').value
+
+    assert_equal :declined, datos[:outcome]
+    assert_equal 4, pikachu.reload.move_names.size
   end
 
   test 'nunca pasa de cuatro movimientos' do

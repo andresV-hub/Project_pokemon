@@ -85,6 +85,29 @@ class PokemonController < ApplicationController
 			notice: "#{result.value.nickname} is ready to go. Head out and explore!", status: :see_other
 	end
 
+	# La pregunta del juego: «Bulbasaur wants to learn Razor leaf. Which move should
+	# be forgotten?». Vive en su propia pantalla porque el momento en que se aprende
+	# es a mitad de un turno de combate, y ahí no se puede contestar.
+	def learn_move
+		@pokemon = ::Pokemons::PokemonDecorator.decorate(owned_pokemon)
+
+		return redirect_to user_pokemon_path(user_id: current_user.id, id: @pokemon.id),
+			status: :see_other unless @pokemon.pending_move?
+	end
+
+	def resolve_move
+		pokemon = owned_pokemon
+		datos = ::Pokemons::ResolvePendingMove.execute(pokemon: pokemon, slot: params[:slot]).value
+
+		notice = case datos && datos[:outcome]
+		         when :forgotten then "#{pokemon.nickname} forgot #{datos[:forgot]} and learned #{datos[:learned]}!"
+		         when :declined then "#{pokemon.nickname} did not learn #{datos[:learned]}."
+		         end
+
+		redirect_to user_pokemon_path(user_id: current_user.id, id: pokemon.id),
+			notice: notice, status: :see_other
+	end
+
 	def edit_nickname
 		pokemon = owned_pokemon
 		nickname = params[:pokemon][:nickname]

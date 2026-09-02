@@ -33,3 +33,11 @@
 
 # Documentación de trabajo local (no se versiona)
 /docs
+
+# Base de datos SQLite del entorno de test. El nombre lo decide la variable
+# SETTINGS__DATABASE__DB_NAME del contenedor, que pisa el `project_pokemon` de
+# config/settings/test.yml: por eso el fichero se llama `project_pokemon_dev`
+# aunque sea la base de test y no la de desarrollo.
+/project_pokemon_dev
+*.sqlite3
+*.sqlite3-journal

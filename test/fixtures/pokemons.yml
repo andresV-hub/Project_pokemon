@@ -1,11 +1,35 @@
-# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# Un Pokémon por entrenador, para poder comprobar que nadie toca los del otro.
+#
+# Sin `created_at` ni `updated_at`: la tabla `pokemons` viene de la primera
+# versión del proyecto y se creó sin timestamps.
 
-# This model initially had no columns defined. If you add columns to the
-# model remove the '{}' from the fixture names and add the columns immediately
-# below each fixture, per the syntax in the comments below
-#
-one: {}
-# column: value
-#
-two: {}
-# column: value
+bulbasaur_del_entrenador:
+  user: entrenador
+  name: Bulbasaur
+  nickname: Verdecito
+  num_pokedex: 1
+  hp: 45
+  atack: 49
+  defense: 49
+  special_atack: 65
+  special_defense: 65
+  speed: 45
+  type_of_pokemon: Grass
+  level: 5
+  experience: 125
+  party_position: 1
+
+charmander_del_rival:
+  user: rival
+  name: Charmander
+  nickname: Llamita
+  num_pokedex: 4
+  hp: 39
+  atack: 52
+  defense: 43
+  special_atack: 60
+  special_defense: 50
+  speed: 65
+  type_of_pokemon: Fire
+  level: 5
+  experience: 125

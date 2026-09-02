@@ -1,11 +1,27 @@
-# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# Dos entrenadores con datos mínimos pero válidos.
+#
+# Las fixtures que generaba Rails venían vacías (`one: {}`) y, como `email` tiene
+# índice único con valor por defecto vacío, las dos filas chocaban entre sí: la
+# suite entera fallaba al cargar, antes de ejecutar ni un test.
+#
+# `encrypted_password` no es un hash real ni hace falta que lo sea: los tests de
+# integración entran con el `sign_in` de Devise, que no comprueba la contraseña.
+# Generarla con BCrypt en cada carga sería lento y no aportaría nada.
 
-# This model initially had no columns defined. If you add columns to the
-# model remove the '{}' from the fixture names and add the columns immediately
-# below each fixture, per the syntax in the comments below
-#
-one: {}
-# column: value
-#
-two: {}
-# column: value
+entrenador:
+  email: entrenador@example.test
+  encrypted_password: sin-hash-real-no-se-usa-en-tests
+  name: Ash
+  last_name: Ketchum
+  money: 1000
+  created_at: <%= 1.week.ago.to_fs(:db) %>
+  updated_at: <%= 1.week.ago.to_fs(:db) %>
+
+rival:
+  email: rival@example.test
+  encrypted_password: sin-hash-real-no-se-usa-en-tests
+  name: Gary
+  last_name: Oak
+  money: 0
+  created_at: <%= 1.week.ago.to_fs(:db) %>
+  updated_at: <%= 1.week.ago.to_fs(:db) %>

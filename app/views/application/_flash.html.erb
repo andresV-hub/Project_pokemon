@@ -1,7 +1,32 @@
-<%# Mensajes de la aplicación (styles.md §2, Estados). %>
+<%# Mensajes de la aplicación (styles.md §6.30).
+
+    Los cuatro estados de §2 tienen aquí su nombre de Rails. Antes se colapsaba
+    todo lo que no fuese `alert` en `notice`, así que un aviso de datos parciales
+    salía en verde de captura conseguida.
+
+    `alert` y `notice` son los que usa Devise y los que emiten los controladores;
+    `warning` e `info` existen para cuando hagan falta y ya no saldrán mal. %>
+<% tipos = {
+     'notice' => { variante: 'success', icono: 'fa-circle-check',        rol: 'status' },
+     'success' => { variante: 'success', icono: 'fa-circle-check',       rol: 'status' },
+     'alert' => { variante: 'danger',    icono: 'fa-circle-exclamation', rol: 'alert' },
+     'error' => { variante: 'danger',    icono: 'fa-circle-exclamation', rol: 'alert' },
+     'warning' => { variante: 'warning', icono: 'fa-triangle-exclamation', rol: 'alert' },
+     'info' => { variante: 'info',       icono: 'fa-circle-info',        rol: 'status' }
+   } %>
+
 <% flash.each do |type, message| %>
   <% next if message.blank? %>
-  <div class="dex-flash dex-flash--<%= type.to_s == 'alert' ? 'alert' : 'notice' %>" role="status">
-    <%= message %>
+  <% estilo = tipos.fetch(type.to_s, tipos['info']) %>
+
+  <%# `role="alert"` sólo para lo que va mal: interrumpe la lectura en curso de un
+      lector de pantalla, y usarlo para todo haría que dejara de significar
+      «atención». Un fallo de inicio de sesión anunciado como «status» pasaba
+      desapercibido. %>
+  <div class="dex-flash dex-flash--<%= estilo[:variante] %>" role="<%= estilo[:rol] %>">
+    <%# El icono es lo que hace que el estado se distinga sin depender del color
+        (§9), como los chips de tipo llevan su nombre escrito. %>
+    <i class="fa <%= estilo[:icono] %> dex-flash__icon" aria-hidden="true"></i>
+    <span class="dex-flash__text"><%= message %></span>
   </div>
 <% end %>

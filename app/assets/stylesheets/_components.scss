@@ -1565,22 +1565,55 @@ a {
 }
 
 .dex-flash {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--dex-space-3);
 	margin-bottom: var(--dex-space-4);
 	padding: var(--dex-space-3) var(--dex-space-4);
 	border-radius: var(--dex-radius-md);
 	border-left: 4px solid;
 	font-size: 15px;
 
-	&--notice {
+	// El icono no informa por sí solo, pero es lo que permite distinguir el
+	// estado sin depender del color (§9). Alineado con la primera línea, no
+	// centrado: un mensaje de dos líneas dejaría el icono flotando en medio.
+	&__icon {
+		flex-shrink: 0;
+		margin-top: 2px;
+		font-size: 16px;
+	}
+
+	// El texto se corta a lo ancho como cualquier otro párrafo del sistema (§3);
+	// a pantalla completa un aviso de una frase se estiraba metro y medio.
+	&__text {
+		max-width: 62ch;
+	}
+
+	// Los cuatro estados de §2, cada uno con su par de tokens. El fondo y la
+	// tinta se redefinen en modo oscuro, así que aquí no hay ningún color
+	// literal: la variante sólo dice cuál de los cuatro es.
+	&--success {
 		background-color: var(--dex-success-bg);
 		border-color: var(--dex-success);
 		color: var(--dex-success);
 	}
 
-	&--alert {
+	&--warning {
+		background-color: var(--dex-warning-bg);
+		border-color: var(--dex-warning);
+		color: var(--dex-warning);
+	}
+
+	&--danger {
 		background-color: var(--dex-danger-bg);
 		border-color: var(--dex-danger);
 		color: var(--dex-danger);
+	}
+
+	&--info {
+		background-color: var(--dex-info-bg);
+		border-color: var(--dex-accent);
+		color: var(--dex-accent);
 	}
 }
 

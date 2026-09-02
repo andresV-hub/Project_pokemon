@@ -72,6 +72,10 @@
 	--dex-warning-bg: #FFF6E0;
 	--dex-danger: #B3261E;
 	--dex-danger-bg: #FDECEA;
+	// El cuarto estado de styles.md §2 —informativo— estaba documentado pero no
+	// tenía token, así que no había forma de usarlo sin escribir el hex a mano.
+	// Su tinta es `--dex-accent`, que ya existe.
+	--dex-info-bg: #EEF4FC;
 
 	// ---- Roles de superficie y texto --------------------------------------
 	// Son los únicos que se redefinen en modo oscuro.
@@ -193,5 +197,21 @@
 		--dex-shadow-3: 0 12px 32px rgba(0, 0, 0, .56);
 		--dex-silhouette: brightness(0) invert(.45);
 		--dex-silhouette-opacity: .7;
+
+		// Los estados también cambian de piel. Sin esto, un aviso de captura
+		// conseguida pintaba su fondo claro —#E7F5EE— sobre el lienzo oscuro y se
+		// convertía en la banda más luminosa de la pantalla, más que el propio
+		// contenido: el modo oscuro se rompía justo en el momento en que la
+		// aplicación quiere decir algo.
+		//
+		// El fondo pasa a ser un tinte oscuro del mismo matiz y el texto, la
+		// versión clara: se invierte la relación, no el color.
+		--dex-success: #5CCB92;
+		--dex-success-bg: #10291E;
+		--dex-warning: #E5B65C;
+		--dex-warning-bg: #2E2410;
+		--dex-danger: #F2857C;
+		--dex-danger-bg: #331715;
+		--dex-info-bg: #101F33;
 	}
 }

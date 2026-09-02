@@ -1491,6 +1491,15 @@ a {
 			border-bottom: 1px solid var(--dex-border-subtle);
 		}
 
+		// La fila de experiencia lleva barra bajo la cifra, así que deja de ser
+		// «etiqueta a un lado, valor al otro»: en media fila la barra queda
+		// demasiado corta para leerse como progreso.
+		div.dex-hero__meta-full {
+			flex-direction: column;
+			align-items: stretch;
+			gap: var(--dex-space-1);
+		}
+
 		dt {
 			font-size: 12px;
 			font-weight: 600;
@@ -1974,6 +1983,64 @@ a.dex-nav__money:hover {
 	font-weight: 500;
 	font-variant-numeric: tabular-nums;
 	color: var(--dex-text-tertiary);
+}
+
+// ============================================================================
+// Barra de experiencia (styles.md §6.28)
+// ============================================================================
+
+// Deliberadamente más fina y más apagada que la de HP, y siempre debajo de
+// ella. El HP es la información con la que se decide el turno en curso; la
+// experiencia es progreso de fondo y no debe competir por la mirada mientras
+// se elige movimiento.
+//
+// La cifra de al lado dice lo que falta, no lo acumulado: con una curva `n³`
+// el total en bruto no dice nada sobre lo cerca que se está del siguiente
+// nivel, que es justo lo que se quiere saber.
+.dex-exp {
+	display: flex;
+	align-items: center;
+	gap: var(--dex-space-2);
+	margin-top: var(--dex-space-1);
+
+	&__label {
+		font-family: var(--dex-font-data);
+		font-size: 10px;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		color: var(--dex-text-tertiary);
+	}
+
+	&__track {
+		flex: 1;
+		height: 4px;
+		border-radius: var(--dex-radius-pill);
+		background-color: var(--dex-gray-100);
+		overflow: hidden;
+	}
+
+	&__fill {
+		display: block;
+		height: 100%;
+		border-radius: var(--dex-radius-pill);
+		background-color: var(--dex-blue-400);
+		transition: width var(--dex-motion-slow) var(--dex-ease);
+	}
+
+	&__value {
+		font-family: var(--dex-font-data);
+		font-size: 11px;
+		font-variant-numeric: tabular-nums;
+		color: var(--dex-text-tertiary);
+		white-space: nowrap;
+	}
+}
+
+// En la ficha la barra es la información principal de su fila, no un apunte al
+// margen de un combate en curso, así que recupera grosor.
+.dex-exp--detail {
+	.dex-exp__track { height: 8px; }
+	.dex-exp__value { font-size: 12px; }
 }
 
 // ============================================================================

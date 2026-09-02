@@ -111,10 +111,15 @@ class EncountersController < ApplicationController
 		)
 
 		if rand < probability
+			# Capturar también entrena, como en los juegos: si no, la opción que
+			# el juego quiere premiar era la única que no daba nada a cambio de
+			# gastarte una bola, y convenía debilitar al rival y rematarlo.
+			gained = grant_experience(state)
 			store_captured(state)
 			session.delete(:encounter)
 			return redirect_to user_pokemon_index_path(user_id: current_user.id),
-				notice: "Gotcha! #{state['name']} was caught and sent to your PC.", status: :see_other
+				notice: ["Gotcha! #{state['name']} was caught and sent to your PC.", *gained].join(' '),
+				status: :see_other
 		end
 
 		state['log'] = ["You threw a #{::Shop::Catalog.name(kind)}…", "Oh no! #{state['name']} broke free!"]
@@ -149,8 +154,17 @@ class EncountersController < ApplicationController
 	end
 
 	def award_experience(state)
+		state.merge('log' => state['log'] + grant_experience(state))
+	end
+
+	# Reparte la experiencia del rival y devuelve las líneas que contarlo.
+	#
+	# Está separado de `award_experience` porque la captura también la reparte y
+	# no tiene registro donde escribirla: sale por el aviso de la página
+	# siguiente. Lo común es el reparto, no dónde se cuenta.
+	def grant_experience(state)
 		fighter = current_user.pokemon.find_by(id: state['trainer_pokemon_id'])
-		return state if fighter.nil?
+		return [] if fighter.nil?
 
 		amount = ::Pokemons::LevelStats.experience_from(
 			base_experience: state['base_experience'],
@@ -158,15 +172,14 @@ class EncountersController < ApplicationController
 		)
 		result = ::Pokemons::GainExperience.execute(pokemon: fighter, amount: amount).value
 
-		log = state['log'] + ["#{fighter.nickname} gained #{amount} EXP."]
+		lines = ["#{fighter.nickname} gained #{amount} EXP."]
 		Array(result[:events]).each do |event|
-			log << case event[:type]
-			       when :level_up then "#{fighter.nickname} grew to Lv. #{event[:to]}!"
-			       when :evolution then "#{fighter.nickname} evolved into #{event[:into]}!"
-			       end
+			lines << case event[:type]
+			         when :level_up then "#{fighter.nickname} grew to Lv. #{event[:to]}!"
+			         when :evolution then "#{fighter.nickname} evolved into #{event[:into]}!"
+			         end
 		end
-
-		state.merge('log' => log.compact)
+		lines.compact
 	end
 
 	# Quien está combatiendo: durante un combate lo dice el estado, porque puede

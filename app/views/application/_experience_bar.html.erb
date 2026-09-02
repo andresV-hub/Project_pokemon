@@ -1,0 +1,25 @@
+<%# Progreso hacia el siguiente nivel (styles.md §6.28).
+
+    Sin esto la experiencia sólo existía como un número en la ficha, y encima
+    acumulado: «179 / 216» no se lee como «te queda poco» a menos que sepas que
+    el nivel 5 empezaba en 125. Ganar 37 EXP en un combate no parecía acercar a
+    nada, y subir de nivel parecía no pasar nunca.
+
+    `variant: :detail` engorda la barra para la ficha, donde es el contenido de
+    su fila y no un apunte al margen de un combate. %>
+<% detail = local_assigns[:variant] == :detail %>
+<div class="dex-exp <%= 'dex-exp--detail' if detail %>">
+  <span class="dex-exp__label">EXP</span>
+  <div class="dex-exp__track" role="meter"
+       aria-label="<%= pokemon.display_name %> experience towards the next level"
+       aria-valuenow="<%= pokemon.experience_percent %>" aria-valuemin="0" aria-valuemax="100">
+    <span class="dex-exp__fill" style="width: <%= pokemon.experience_percent %>%"></span>
+  </div>
+  <span class="dex-exp__value">
+    <% if pokemon.max_level? %>
+      Max level
+    <% else %>
+      <%= number_with_delimiter(pokemon.experience_to_next_level) %> to Lv. <%= pokemon.level + 1 %>
+    <% end %>
+  </span>
+</div>

@@ -61,6 +61,8 @@
         <span class="dex-hp__fill <%= 'dex-hp__fill--low' if mine <= 25 %> <%= 'dex-hp__fill--mid' if mine > 25 && mine <= 50 %>"
               style="width: <%= mine.round %>%"></span>
       </div>
+
+      <%= render 'application/experience_bar', pokemon: @trainer_pokemon %>
     </div>
 
     <%= render 'application/sprite', pokemon: @trainer_pokemon, variant: :pixel, eager: true %>

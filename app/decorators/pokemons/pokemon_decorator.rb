@@ -70,6 +70,34 @@ module Pokemons
   		::Pokemons::LevelStats.experience_for(model.level.to_i + 1)
   	end
 
+  	# La curva es `n³` sobre el total acumulado, así que la cifra en bruto
+  	# tampoco dice nada: 179 de experiencia no parece «casi 6» hasta que sabes
+  	# que el nivel 5 empezaba en 125 y el 6 llega en 216. Esto es lo que
+  	# convierte esos tres números en una fracción del nivel en curso.
+  	def experience_percent
+  		# Al tope la barra se llena. La curva sigue dando un nivel 101 que nadie
+  		# alcanzará, y medir contra él dejaba la barra a cero justo en el punto
+  		# donde ya no queda nada por recorrer.
+  		return 100 if max_level?
+
+  		floor = ::Pokemons::LevelStats.experience_for(model.level.to_i)
+  		span = next_level_experience - floor
+  		return 100 if span <= 0
+
+  		(((model.experience.to_i - floor) * 100.0) / span).clamp(0, 100).round
+  	end
+
+  	# Lo que falta, que es la pregunta que se hace de verdad quien mira la barra.
+  	def experience_to_next_level
+  		return 0 if max_level?
+
+  		[next_level_experience - model.experience.to_i, 0].max
+  	end
+
+  	def max_level?
+  		model.level.to_i >= ::Pokemons::LevelStats::MAX_LEVEL
+  	end
+
   	def sprite_alt
   		"#{species_name}, Pokédex ##{num_pokedex}"
   	end

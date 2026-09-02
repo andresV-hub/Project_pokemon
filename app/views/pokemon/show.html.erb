@@ -39,9 +39,12 @@
           <dt>Level</dt>
           <dd><%= @pokemon.level %></dd>
         </div>
-        <div>
+        <div class="dex-hero__meta-full">
           <dt>Experience</dt>
-          <dd><%= number_with_delimiter(@pokemon.experience) %> / <%= number_with_delimiter(@pokemon.next_level_experience) %></dd>
+          <dd>
+            <%= number_with_delimiter(@pokemon.experience) %> / <%= number_with_delimiter(@pokemon.next_level_experience) %>
+            <%= render 'application/experience_bar', pokemon: @pokemon, variant: :detail %>
+          </dd>
         </div>
         <div>
           <dt>Species</dt>

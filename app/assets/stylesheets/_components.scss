@@ -2038,6 +2038,83 @@ a {
 }
 
 // ============================================================================
+// Filtros del catálogo (styles.md §6.34)
+// ============================================================================
+
+.dex-filters {
+	display: flex;
+	flex-direction: column;
+	gap: var(--dex-space-2);
+	margin-bottom: var(--dex-space-4);
+
+	&__row {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--dex-space-2);
+	}
+
+	&__label {
+		flex: 0 0 60px;
+		font-family: var(--dex-font-data);
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--dex-text-tertiary);
+	}
+}
+
+.dex-filter {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--dex-space-1);
+	padding: 2px var(--dex-space-2);
+	border: 1px solid var(--dex-border-subtle);
+	border-radius: var(--dex-radius-pill);
+	font-size: 12px;
+	color: var(--dex-text-secondary);
+	text-decoration: none;
+	transition: border-color var(--dex-motion-fast) var(--dex-ease),
+				color var(--dex-motion-fast) var(--dex-ease);
+
+	&:hover {
+		border-color: var(--dex-accent);
+		color: var(--dex-text-primary);
+		text-decoration: none;
+	}
+
+	// El filtro activo se marca con relleno, no sólo con color: es la diferencia
+	// entre «este está puesto» y «este me gusta más», y a un vistazo tiene que
+	// verse cuál de los diecinueve manda.
+	&--on {
+		border-color: var(--dex-accent);
+		background-color: var(--dex-accent);
+		color: #fff;
+		font-weight: 600;
+	}
+
+	// El punto acompaña al nombre escrito, nunca lo sustituye (§9).
+	&__dot {
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		border: 1px solid var(--dex-border-strong);
+
+		&--black  { background-color: #303030; }
+		&--blue   { background-color: #3F7FD6; }
+		&--brown  { background-color: #8B5A2B; }
+		&--gray   { background-color: #8A8A8A; }
+		&--green  { background-color: #3FA65B; }
+		&--pink   { background-color: #EE9BC4; }
+		&--purple { background-color: #8B5FBF; }
+		&--red    { background-color: #D2483F; }
+		&--white  { background-color: #F0F0F0; }
+		&--yellow { background-color: #E5C020; }
+	}
+}
+
+// ============================================================================
 // Banquillo del combate (styles.md §6.33)
 // ============================================================================
 
@@ -2119,6 +2196,14 @@ a {
 	// El nombre sigue legible al 100%: lo que está atenuado es la promesa de
 	// entrar, no la información de que el sitio existe.
 	.dex-card__title { opacity: 1; }
+}
+
+// Legendario: ámbar, que es el acento reservado de la marca (§2). Cinco especies
+// de 151 lo llevan, así que gastarlo aquí está justificado.
+.dex-badge--legendary {
+	background-color: var(--dex-amber-500);
+	color: var(--dex-gray-900);
+	font-weight: 700;
 }
 
 .dex-badge--muted {

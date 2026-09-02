@@ -24,6 +24,32 @@ module Descriptions
       model.dig('growth_rate', 'name')
     end
 
+    def color
+      model.dig('color', 'name')
+    end
+
+    def legendary?
+      model['is_legendary'] || model['is_mythical'] || false
+    end
+
+    # `gender_rate` es la probabilidad de que sea hembra, en octavos: 0 es siempre
+    # macho, 8 siempre hembra y −1 significa que la especie no tiene género. La
+    # cifra en bruto no dice nada, así que se traduce aquí.
+    def gender_label
+      rate = model['gender_rate']
+      return nil if rate.nil?
+      return 'Genderless' if rate.negative?
+      return 'Always female' if rate >= 8
+      return 'Always male' if rate.zero?
+
+      female = (rate * 100.0 / 8).round
+      "#{100 - female}% male · #{female}% female"
+    end
+
+    def egg_groups
+      Array(model['egg_groups']).map { |group| group['name'].to_s.tr('-', ' ') }
+    end
+
     def base_happiness
       model['base_happiness']
     end

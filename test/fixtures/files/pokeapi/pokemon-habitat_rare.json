@@ -1,0 +1,46 @@
+{
+  "id": 5,
+  "name": "rare",
+  "pokemon_species": [
+    {
+      "name": "articuno",
+      "url": "https://pokeapi.co/api/v2/pokemon-species/144/"
+    },
+    {
+      "name": "zapdos",
+      "url": "https://pokeapi.co/api/v2/pokemon-species/145/"
+    },
+    {
+      "name": "moltres",
+      "url": "https://pokeapi.co/api/v2/pokemon-species/146/"
+    },
+    {
+      "name": "mewtwo",
+      "url": "https://pokeapi.co/api/v2/pokemon-species/150/"
+    },
+    {
+      "name": "mew",
+      "url": "https://pokeapi.co/api/v2/pokemon-species/151/"
+    },
+    {
+      "name": "unown",
+      "url": "https://pokeapi.co/api/v2/pokemon-species/201/"
+    },
+    {
+      "name": "lugia",
+      "url": "https://pokeapi.co/api/v2/pokemon-species/249/"
+    },
+    {
+      "name": "ho-oh",
+      "url": "https://pokeapi.co/api/v2/pokemon-species/250/"
+    },
+    {
+      "name": "rayquaza",
+      "url": "https://pokeapi.co/api/v2/pokemon-species/384/"
+    },
+    {
+      "name": "deoxys",
+      "url": "https://pokeapi.co/api/v2/pokemon-species/386/"
+    }
+  ]
+}

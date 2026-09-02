@@ -21,12 +21,18 @@ module Pokeapi
 
     attr_reader :page, :per_page
 
-    def initialize(page: nil, per_page: nil)
+    # `ids` restringe el listado a unos números concretos —los de un hábitat o un
+    # color—. Con lista, la paginación se hace sobre ella y no contra la API:
+    # `limit`/`offset` sirven para recorrer el catálogo en orden, no para recorrer
+    # un subconjunto disperso.
+    def initialize(page: nil, per_page: nil, ids: nil)
       @page = normalize_page(page)
       @per_page = normalize_per_page(per_page)
+      @ids = ids
     end
 
     def service_execute
+      return ServiceResult.new(value: filtered_page) if @ids
       return ServiceResult.new(value: empty_page) unless remaining.positive?
 
       listing = Client.get('pokemon', limit: remaining, offset: offset)
@@ -61,6 +67,19 @@ module Pokeapi
         detail = Client.get_url(result['url'])
         ::Pokedex::PokedexDecorator.decorate(detail) if detail
       end
+    end
+
+    # Sólo se piden los detalles de la página que se va a pintar: el grupo puede
+    # traer ochenta especies y en pantalla caben quince.
+    def filtered_page
+      pagina = Array(@ids)[offset, per_page] || []
+      decorados = pagina.filter_map do |number|
+        detalle = Client.get("pokemon/#{number}")
+        ::Pokedex::PokedexDecorator.decorate(detalle) if detalle
+      end
+
+      Kaminari.paginate_array(decorados, total_count: Array(@ids).size,
+                                         limit: per_page, offset: offset)
     end
 
     def empty_page

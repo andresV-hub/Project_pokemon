@@ -33,10 +33,41 @@
       </p>
       <%= render 'application/type_chips', pokemon: @pokemon %>
 
+      <%# El distintivo de legendario va junto al nombre y no perdido entre las
+          filas de datos: es lo que distingue a cinco especies de las otras 146 y
+          se busca de un vistazo. %>
+      <% if @description&.legendary? %>
+        <p class="dex-hero__flags">
+          <span class="dex-badge dex-badge--legendary">
+            <i class="fa fa-star" aria-hidden="true"></i>
+            Legendary
+          </span>
+        </p>
+      <% end %>
+
       <dl class="dex-hero__meta">
         <div>
           <dt>Habitat</dt>
-          <dd><%= @description&.habitat || 'Unknown' %></dd>
+          <dd><%= @description&.habitat&.tr('-', ' ')&.capitalize || 'Unknown' %></dd>
+        </div>
+        <div>
+          <dt>Colour</dt>
+          <dd>
+            <% if @description&.color %>
+              <span class="dex-filter__dot dex-filter__dot--<%= @description.color %>" aria-hidden="true"></span>
+              <%= @description.color.capitalize %>
+            <% else %>
+              —
+            <% end %>
+          </dd>
+        </div>
+        <div>
+          <dt>Gender</dt>
+          <dd><%= @description&.gender_label || '—' %></dd>
+        </div>
+        <div>
+          <dt>Egg groups</dt>
+          <dd><%= @description&.egg_groups&.map(&:capitalize)&.join(', ').presence || '—' %></dd>
         </div>
         <div>
           <dt>Catch rate</dt>

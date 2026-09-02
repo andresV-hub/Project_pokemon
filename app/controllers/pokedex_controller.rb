@@ -10,10 +10,14 @@ class PokedexController < ApplicationController
 	# Listado paginado del catálogo completo de la PokeAPI. La paginación se hace
 	# contra la propia API (limit/offset), así que sólo se descarga la página pedida.
 	def index
-		@pokemons = ::Pokeapi::SearchPokemons.execute(page: params[:page], per_page: params[:per_page]).value
+		@filter_kind, @filter_name = filter_from_params
+		ids = @filter_kind && ::Pokeapi::FindSpeciesGroup.execute(kind: @filter_kind, name: @filter_name).value
+
+		@pokemons = ::Pokeapi::SearchPokemons.execute(page: params[:page], per_page: params[:per_page],
+		                                              ids: ids).value
 		@captured_numbers = captured_numbers
 		@seen_numbers = seen_numbers
-		@pokedex_total = ::Pokeapi::SearchPokemons::POKEDEX_LIMIT
+		@pokedex_total = ids ? ids.size : ::Pokeapi::SearchPokemons::POKEDEX_LIMIT
 	end
 
 	def show
@@ -89,6 +93,21 @@ class PokedexController < ApplicationController
 	end
 
 	private
+
+	# Un filtro y sólo uno: hábitat **o** color. Cruzarlos exigiría intersecar dos
+	# listas y una interfaz con dos desplegables que se contradicen entre sí, y
+	# para 151 especies no compensa.
+	#
+	# Se valida contra la lista de la API: el nombre llega por la URL y sin esto
+	# cualquier cosa acabaría en una petición a un recurso inventado.
+	def filter_from_params
+		%i[habitat color].each do |kind|
+			name = params[kind].presence
+			return [kind, name] if name && ::Pokeapi::FindSpeciesGroup.valid?(kind, name)
+		end
+
+		[nil, nil]
+	end
 
 	# Números de Pokédex que el usuario ya tiene en su PC, en una sola consulta:
 	# la tarjeta del catálogo marca con un badge las especies capturadas

@@ -1,0 +1,32 @@
+<%# Filtros del catálogo (styles.md §6.34).
+
+    Hábitat y color son las dos formas de agrupar que la API da enteras en una
+    petición, así que filtrar sale casi gratis. El hábitat `rare` es además la
+    lista exacta de legendarios y míticos de Kanto, y por eso lleva el nombre
+    «Legendary» en pantalla: es lo que un jugador busca cuando pulsa ahí. %>
+<section class="dex-filters" aria-label="Filter the Pokédex">
+  <div class="dex-filters__row">
+    <span class="dex-filters__label">Habitat</span>
+    <%= link_to 'All', user_pokedex_index_path(user_id: current_user.id),
+                class: "dex-filter #{'dex-filter--on' if kind.nil?}" %>
+    <% ::Pokeapi::FindSpeciesGroup::HABITATS.each do |habitat| %>
+      <%= link_to user_pokedex_index_path(user_id: current_user.id, habitat: habitat),
+                  class: "dex-filter #{'dex-filter--on' if kind == :habitat && name == habitat}" do %>
+        <%= habitat == 'rare' ? 'Legendary' : habitat.tr('-', ' ').capitalize %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="dex-filters__row">
+    <span class="dex-filters__label">Colour</span>
+    <% ::Pokeapi::FindSpeciesGroup::COLORS.each do |color| %>
+      <%# El nombre va escrito además del punto: el color solo no informa (§9), y
+          aquí sería especialmente cruel porque el filtro *es* un color. %>
+      <%= link_to user_pokedex_index_path(user_id: current_user.id, color: color),
+                  class: "dex-filter dex-filter--swatch #{'dex-filter--on' if kind == :color && name == color}" do %>
+        <span class="dex-filter__dot dex-filter__dot--<%= color %>" aria-hidden="true"></span>
+        <%= color.capitalize %>
+      <% end %>
+    <% end %>
+  </div>
+</section>

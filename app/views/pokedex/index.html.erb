@@ -1,6 +1,6 @@
 <%= render layout: 'application/page_header',
            locals: { eyebrow: 'Catalog', title: 'Pokédex',
-                     lead: 'Search for a species and catch it to store it in your PC.' } do %>
+                     lead: 'Every species of the first generation. You will meet them out in the wild.' } do %>
   <%= link_to user_pokemon_index_path(user_id: current_user.id),
               class: 'dex-btn dex-btn--ghost' do %>
     <i class="fa fa-desktop" aria-hidden="true"></i>
@@ -9,6 +9,8 @@
 <% end %>
 
 <%= render 'progress', seen: @seen_numbers, caught: @captured_numbers, total: @pokedex_total %>
+
+<%= render 'filters', kind: @filter_kind, name: @filter_name %>
 
 <% if @pokemons.any? %>
   <%= render 'application/pagination', collection: @pokemons %>

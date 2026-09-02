@@ -25,7 +25,9 @@ module Encounters
 
       ServiceResult.new(value: {
         'kind' => 'trainer',
-        'own_moves' => ::Pokemons::MoveSet.for_battle(num_pokedex: @trainer_pokemon.num_pokedex, level: @trainer_pokemon.level),
+        'own_moves' => ::Pokemons::MoveSet.for_battle(num_pokedex: @trainer_pokemon.num_pokedex,
+                                                     level: @trainer_pokemon.level,
+                                                     known: @trainer_pokemon.move_names),
         'rival_moves' => first['moves'],
         'rival' => rival,
         'team' => team,

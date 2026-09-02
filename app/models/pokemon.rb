@@ -20,6 +20,13 @@ class Pokemon < ApplicationRecord
 		party_position.present?
 	end
 
+	# Los movimientos que sabe, en orden de aprendizaje. Son la **única** fuente:
+	# el combate ya no los recalcula por nivel, porque tener dos listas hacía que la
+	# ficha enseñara un repertorio y el combate usara otro.
+	def move_names
+		[atack0, atack1, atack2, atack3].compact_blank
+	end
+
 	# --- Vida ---------------------------------------------------------------
 	#
 	# La vida máxima no está guardada: se deriva de la estadística base y del

@@ -32,7 +32,9 @@ module Encounters
       own_hp = @trainer_pokemon.current_hp
 
       ServiceResult.new(value: {
-        'own_moves' => ::Pokemons::MoveSet.for_battle(num_pokedex: @trainer_pokemon.num_pokedex, level: @trainer_pokemon.level),
+        'own_moves' => ::Pokemons::MoveSet.for_battle(num_pokedex: @trainer_pokemon.num_pokedex,
+                                                     level: @trainer_pokemon.level,
+                                                     known: @trainer_pokemon.move_names),
         'rival_moves' => ::Pokemons::MoveSet.for_battle(num_pokedex: wild.num_pokedex, level: level),
         'num_pokedex' => wild.num_pokedex,
         'name' => wild.name,

@@ -237,7 +237,8 @@ class EncountersController < ApplicationController
 		fighter = current_user.pokemon.find_by(id: state['trainer_pokemon_id'])
 		return state if fighter.nil?
 
-		moves = ::Pokemons::MoveSet.for_battle(num_pokedex: fighter.num_pokedex, level: fighter.level)
+		moves = ::Pokemons::MoveSet.for_battle(num_pokedex: fighter.num_pokedex, level: fighter.level,
+		                                       known: fighter.move_names)
 		return state if moves.empty?
 
 		state.merge('own_moves' => moves)
@@ -267,6 +268,11 @@ class EncountersController < ApplicationController
 			lines << case event[:type]
 			         when :level_up then "#{fighter.nickname} grew to Lv. #{event[:to]}!"
 			         when :evolution then "#{fighter.nickname} evolved into #{event[:into]}!"
+			         when :learned then "#{fighter.nickname} learned #{event[:move]}!"
+			         # Se dice cuál se ha perdido: con los cuatro huecos llenos algo
+			         # tiene que salir, y enterarse a mitad del combate siguiente
+			         # sería peor.
+			         when :replaced then "#{fighter.nickname} forgot #{event[:forgot]} and learned #{event[:move]}!"
 			         end
 		end
 		lines.compact

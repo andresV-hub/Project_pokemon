@@ -29,6 +29,10 @@ module Pokemons
       events << { type: :evolution, into: evolution[:name] } if evolution
 
       @pokemon.save!
+
+      # Los movimientos, después de guardar el nivel y la evolución: lo que se
+      # aprende depende de las dos cosas, y de la especie nueva si ha evolucionado.
+      events.concat(LearnMoves.execute(pokemon: @pokemon, from_level: before).value) if @pokemon.level > before
       ServiceResult.new(value: { pokemon: @pokemon, gained: @amount, events: events })
     end
 

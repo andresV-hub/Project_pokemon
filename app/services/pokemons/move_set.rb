@@ -46,13 +46,50 @@ module Pokemons
     #
     # Vivía copiado en `Encounters::Start`, en `Encounters::StartTrainer` y en el
     # controlador, con el mismo cuerpo en los tres sitios.
-    def self.for_battle(num_pokedex:, level:)
+    # `known` son los movimientos que el Pokémon tiene guardados. Cuando se pasan,
+    # el combate usa **esos** y no los que le tocarían por nivel: son la misma
+    # cosa, y tenerlas separadas hacía que la ficha enseñara un repertorio y el
+    # combate usara otro. Un Bulbasaur capturado a nivel 5 y subido a 30 mostraba
+    # Tackle y Growl mientras peleaba con Razor Leaf.
+    def self.for_battle(num_pokedex:, level:, known: nil)
+      moves = if known.present?
+        known.filter_map { |name| ::Pokeapi::FindMove.execute(name: name).value }
+      else
+        raw = ::Pokeapi::Client.get("pokemon/#{num_pokedex}")
+        raw && execute(raw_pokemon: raw, level: level).value
+      end
+      return [] if moves.blank?
+
+      # Struggle ocupa el último hueco y no reemplaza al repertorio entero: un
+      # Magikarp sigue sabiendo Splash aunque no le sirva para ganar, igual que en
+      # `service_execute`.
+      moves = moves.last(SLOTS - 1) + [STRUGGLE.dup] if moves.none? { |move| move['power'].to_i.positive? }
+
+      moves.map { |move| move.slice(*SESSION_FIELDS).merge('pp_left' => move['pp']) }
+    end
+
+    # Los movimientos que se aprenden **al pasar** de un nivel a otro. Es lo que
+    # permite anunciarlo: hasta ahora el repertorio se recalculaba entero en cada
+    # combate y cambiaba sin que nadie lo contase.
+    def self.learned_between(num_pokedex:, from:, to:)
       raw = ::Pokeapi::Client.get("pokemon/#{num_pokedex}")
       return [] if raw.nil?
 
-      execute(raw_pokemon: raw, level: level).value.map do |move|
-        move.slice(*SESSION_FIELDS).merge('pp_left' => move['pp'])
-      end
+      names_with_levels(raw, to).select { |_, level| level > from.to_i }.map(&:first)
+    end
+
+    # Nombres y nivel de aprendizaje, del más antiguo al más reciente.
+    def self.names_with_levels(raw, level)
+      Array(raw['moves']).filter_map do |entry|
+        detail = Array(entry['version_group_details']).find do |version|
+          version.dig('version_group', 'name') == VERSION_GROUP &&
+            version.dig('move_learn_method', 'name') == 'level-up' &&
+            version['level_learned_at'].to_i <= level.to_i
+        end
+        next if detail.nil?
+
+        [entry.dig('move', 'name'), detail['level_learned_at'].to_i]
+      end.sort_by(&:last)
     end
 
     def initialize(raw_pokemon:, level:)
@@ -75,19 +112,8 @@ module Pokemons
 
     private
 
-    # Nombres de los movimientos que aprende por nivel hasta el suyo, del más
-    # antiguo al más reciente.
     def learnable_names
-      Array(@raw['moves']).filter_map do |entry|
-        detail = Array(entry['version_group_details']).find do |version|
-          version.dig('version_group', 'name') == VERSION_GROUP &&
-            version.dig('move_learn_method', 'name') == 'level-up' &&
-            version['level_learned_at'].to_i <= @level
-        end
-        next if detail.nil?
-
-        [entry.dig('move', 'name'), detail['level_learned_at'].to_i]
-      end.sort_by(&:last).map(&:first)
+      self.class.names_with_levels(@raw, @level).map(&:first)
     end
 
   end

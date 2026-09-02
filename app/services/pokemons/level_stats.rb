@@ -10,24 +10,27 @@ module Pokemons
 
     module_function
 
-    # Margen de resistencia. Con movimientos reales, cuya potencia llega a 120,
-    # la fórmula de HP a secas dejaba a un Pokémon KO de un solo golpe: un Petal
-    # Dance con bonus de tipo hacía el 124% de su vida.
+    # Estadísticas de primera generación, con los DV.
     #
-    # No se toca el daño porque su dispersión es deseable —que un movimiento
-    # fuerte y súper efectivo se lleve el combate es lo que hace que elegir
-    # importe—; lo que faltaba era aguante para que esa decisión llegue a
-    # tomarse más de una vez.
-    HP_SCALE = 1.5
-
-    # El HP crece más deprisa que el resto: es lo que hace que un Pokémon de
-    # nivel alto aguante, y no sólo pegue más fuerte.
-    def hp(base, level)
-      ((((2 * base.to_i * level.to_i) / 100) + level.to_i + 10) * HP_SCALE).round
+    #   HP    = ((2 × (Base + DV)) × Nivel) / 100 + Nivel + 10
+    #   Resto = ((2 × (Base + DV)) × Nivel) / 100 + 5
+    #
+    # Los DV faltaban, y esa omisión salía cara por partida doble: todas las
+    # estadísticas quedaban bajas, y el HP proporcionalmente más que el ataque. Para
+    # que un combate no se resolviera de un golpe se multiplicaba el HP por 1.5, lo
+    # que acababa inflándolo un 40% **por encima** del juego —un Snorlax de nivel 50
+    # con 330 puntos donde le tocaban 228— y alargaba los combates en vez de
+    # acortarlos. Medido con la fórmula correcta, un combate normal pasa de 5,8
+    # turnos a 4.
+    #
+    # `dv` por defecto a 0 para los rivales de los que no se guarda ninguno; en el
+    # juego eso es el peor Pokémon posible de su especie, que es un respaldo honesto.
+    def hp(base, level, dv = 0)
+      (((2 * (base.to_i + dv.to_i)) * level.to_i) / 100) + level.to_i + 10
     end
 
-    def stat(base, level)
-      ((2 * base.to_i * level.to_i) / 100) + 5
+    def stat(base, level, dv = 0)
+      (((2 * (base.to_i + dv.to_i)) * level.to_i) / 100) + 5
     end
 
     # La curva de experiencia **ya no vive aquí**: está en

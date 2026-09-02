@@ -25,7 +25,12 @@ module Encounters
       description = ::Pokeapi::FindDescription.execute(id: wild.num_pokedex).value
       return ServiceResult.new(error: :pokeapi_unavailable) if description.nil?
       base_hp = wild.stat_list.find { |stat| stat[:key] == 'hp' }&.dig(:value).to_i
-      wild_hp = ::Pokemons::LevelStats.hp(base_hp, level)
+      # El salvaje también tiene los suyos, sorteados una vez y guardados en el
+      # estado: si se sortearan en cada turno, sus estadísticas cambiarían a mitad
+      # del combate.
+      rival_dv = ::Pokemons::DeterminantValues.random
+      wild_hp = ::Pokemons::LevelStats.hp(base_hp, level,
+                                          ::Pokemons::DeterminantValues.hp_from(**rival_dv.symbolize_keys))
       # Con la vida que traiga, no a tope: desde que el daño se guarda, salir a
       # explorar con el equipo tocado es una decisión y no un trámite.
       own_max = @trainer_pokemon.max_hp
@@ -41,6 +46,7 @@ module Encounters
         # El valor crudo de la API, de 0 a 255: es el que usa la fórmula del juego.
         # El porcentaje se sigue enseñando en la ficha, pero convertir y volver
         # perdía precisión justo en las especies difíciles.
+        'rival_dv' => rival_dv,
         'capture_rate' => description.raw_capture_rate.to_i,
         'level' => level,
         'base_experience' => wild.base_experience,

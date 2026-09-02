@@ -23,7 +23,7 @@ class PokemonHealthTest < ActiveSupport::TestCase
     assert_operator pokemon.max_hp, :<, pokemon.hp
 
     pokemon.update!(level: 40)
-    assert_operator pokemon.max_hp, :>, pokemon.hp * 2
+    assert_operator pokemon.max_hp, :>, pokemon.hp
   end
 
   test 'subir de nivel sube la vida actual, no sólo el máximo' do

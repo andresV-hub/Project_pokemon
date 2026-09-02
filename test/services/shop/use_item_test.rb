@@ -23,6 +23,10 @@ class Shop::UseItemTest < ActiveSupport::TestCase
 
   test 'una poción cura y se gasta' do
     con('potion')
+    # Con la fórmula real —sin el `HP_SCALE` que inflaba la vida— un Bulbasaur de
+    # nivel 5 tiene 19 puntos, así que quitarle 25 lo dejaba KO y la poción se
+    # negaba con razón. Se le quita lo justo para que le falten más de 20.
+    pokemon.update!(level: 30)
     pokemon.take_damage!(25)
 
     resultado = usar('potion')

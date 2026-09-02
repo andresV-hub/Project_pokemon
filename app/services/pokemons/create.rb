@@ -30,6 +30,9 @@ module Pokemons
       moves = MoveSet.execute(raw_pokemon: @pokemon.object,
                               level: @level).value.map { |move| move['label'] }
       shiny = shiny?
+      # Los DV se sortean una vez, al aparecer, y ya no cambian: son lo que hace
+      # que este Pikachu no sea igual que el siguiente.
+      dv = DeterminantValues.random
 
       pokemon = Pokemon.new(
        	name: @pokemon.name,
@@ -58,6 +61,10 @@ module Pokemons
         # distinto del que se ve al capturarlo.
         experience: ExperienceCurve.experience_for(@level, @description.growth_rate),
         shiny: shiny,
+        dv_attack: dv['attack'],
+        dv_defense: dv['defense'],
+        dv_speed: dv['speed'],
+        dv_special: dv['special'],
         # El sprite se congela en la captura: si salió variocolor, lo que se
         # guarda es la variante shiny y la ficha ya no depende de la marca.
         image: shiny ? @pokemon.image_shiny : @pokemon.image

@@ -351,7 +351,8 @@ module Encounters
     # por la mitad de ataque que trae la quemadura.
     def offensive_value(actor, move)
       key = move['damage_class'] == 'special' ? 'special-attack' : 'attack'
-      base = ::Pokemons::LevelStats.stat(offensive_stat(actor, move), actor == :own ? own_level : rival_level)
+      base = ::Pokemons::LevelStats.stat(offensive_stat(actor, move), actor == :own ? own_level : rival_level,
+                                         dv_of(actor, move['damage_class'] == 'special' ? 'special' : 'attack'))
       value = ::Pokemons::StatStages.apply(base, stages_of(actor)[key])
       value = (value * Statuses::BURN_ATTACK_FACTOR).round if status_of(actor) == 'burn' && key == 'attack'
 
@@ -361,9 +362,25 @@ module Encounters
     def defensive_value(actor, move)
       target = other(actor)
       key = move['damage_class'] == 'special' ? 'special-defense' : 'defense'
-      base = ::Pokemons::LevelStats.stat(defensive_stat(actor, move), actor == :own ? rival_level : own_level)
+      base = ::Pokemons::LevelStats.stat(defensive_stat(actor, move), actor == :own ? rival_level : own_level,
+                                         dv_of(target, move['damage_class'] == 'special' ? 'special' : 'defense'))
 
       ::Pokemons::StatStages.apply(base, stages_of(target)[key])
+    end
+
+    # El DV que toca. Los del jugador salen de su fila; los del rival se sortearon
+    # al aparecer y viajan en el estado del encuentro, porque un rival salvaje no
+    # tiene fila donde guardarlos y tienen que ser los mismos durante todo el
+    # combate.
+    #
+    # En primera generación **una sola estadística especial** cubre ataque y
+    # defensa especiales, así que las dos comparten DV.
+    def dv_of(actor, key)
+      if actor == :own
+        @trainer_pokemon.dv(key)
+      else
+        Hash(@state['rival_dv'])[key].to_i
+      end
     end
 
     # Velocidad base de la especie. La del jugador está en su fila; la del rival,

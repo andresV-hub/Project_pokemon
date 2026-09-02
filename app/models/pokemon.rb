@@ -40,8 +40,24 @@ class Pokemon < ApplicationRecord
 	# nivel, igual que en el combate. Guardarla sería un dato que habría que
 	# recalcular cada vez que se sube de nivel o se evoluciona.
 
+	# Los DV de cada estadística. Los capturados antes de que existieran no tienen
+	# ninguno guardado: cuentan como 0, que en el juego es el peor Pokémon posible
+	# de su especie. Es preferible a sortearlos al vuelo, que haría que sus
+	# estadísticas cambiaran en cada consulta.
+	def dv(key)
+		public_send("dv_#{key}").to_i
+	end
+
+	# El DV de HP no se guarda: se arma con el bit menos significativo de los otros
+	# cuatro, como en primera generación.
+	def dv_hp
+		::Pokemons::DeterminantValues.hp_from(
+			attack: dv(:attack), defense: dv(:defense), speed: dv(:speed), special: dv(:special)
+		)
+	end
+
 	def max_hp
-		::Pokemons::LevelStats.hp(hp, level)
+		::Pokemons::LevelStats.hp(hp, level, dv_hp)
 	end
 
 	# Lo que le queda. `damage` puede quedarse por encima del máximo si el máximo

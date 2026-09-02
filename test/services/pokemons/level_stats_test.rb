@@ -7,12 +7,26 @@ class Pokemons::LevelStatsTest < ActiveSupport::TestCase
     assert_operator Pokemons::LevelStats.hp(35, 50), :>, Pokemons::LevelStats.hp(35, 5)
   end
 
-  test 'el HP lleva margen de resistencia sobre la fórmula base' do
-    # Sin ese margen, un movimiento potente con bonus de tipo dejaba KO de un
-    # solo golpe y el combate no llegaba a jugarse.
-    sin_margen = ((2 * 35 * 45) / 100) + 45 + 10
+  test 'el HP es exactamente el del juego' do
+    # Sin inventos: hubo un `HP_SCALE = 1.5` que inflaba esto un 40% por encima
+    # del original para compensar unas estadísticas que salían bajas porque
+    # faltaban los DV. Corregida la causa, el parche sobra.
+    assert_equal ((2 * 35 * 45) / 100) + 45 + 10, Pokemons::LevelStats.hp(35, 45)
+  end
 
-    assert_operator Pokemons::LevelStats.hp(35, 45), :>, sin_margen
+  test 'un DV alto sube la estadística, y el HP más que el resto' do
+    # Es lo que hace que dos Pokémon de la misma especie y nivel no sean iguales.
+    assert_operator Pokemons::LevelStats.hp(45, 50, 15), :>, Pokemons::LevelStats.hp(45, 50, 0)
+    assert_operator Pokemons::LevelStats.stat(49, 50, 15), :>, Pokemons::LevelStats.stat(49, 50, 0)
+  end
+
+  test 'el DV de HP se arma con los bits de los otros cuatro' do
+    # En primera generación no se guarda aparte. Con las cuatro estadísticas
+    # impares sale 15, el máximo; con las cuatro pares, 0.
+    assert_equal 15, Pokemons::DeterminantValues.hp_from(attack: 15, defense: 15, speed: 15, special: 15)
+    assert_equal 0, Pokemons::DeterminantValues.hp_from(attack: 0, defense: 0, speed: 0, special: 0)
+    # 1010 en binario: ataque y velocidad impares.
+    assert_equal 10, Pokemons::DeterminantValues.hp_from(attack: 5, defense: 2, speed: 7, special: 4)
   end
 
   # La ida y vuelta entre experiencia y nivel se comprueba ahora en

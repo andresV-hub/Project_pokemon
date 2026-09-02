@@ -28,10 +28,26 @@ module Encounters
     # Los intentos de captura ya no son un número fijo: se gastan bolas del
     # inventario, y quedarse sin ellas es lo que da valor a la tienda.
 
-    # Tope blando de turnos. La fórmula sólo mira ataque y defensa, así que un
-    # rival con mucha vida y defensa media —Snorlax, 160 PS— se eternizaba: 16
-    # turnos pulsando el mismo botón. El suelo de daño garantiza que ningún
-    # combate pase de aquí, sin tocar los que ya se resolvían rápido.
+    # Tope blando de turnos: ningún combate pasa de aquí, porque el daño nunca baja
+    # de la vida máxima del rival dividida entre este número.
+    #
+    # **Es la única constante que sigue sin venir del juego**, y no por falta de
+    # dato: es que el formato es distinto. Contra un Golem, el original también
+    # tarda veinte turnos; allí son veinte segundos con animaciones y aquí veinte
+    # clics con sus recargas.
+    #
+    # Lo que cuesta, medido con la fórmula ya corregida —daño real frente a suelo—:
+    #
+    #   Bulbasaur Lv25 vs Oddish    11,0  vs   9   no se activa
+    #   Bulbasaur Lv25 vs Gloom      9,4  vs  10   ×1,1
+    #   Pikachu Lv25 vs Onix         5,5  vs   9   ×1,6
+    #   Bulbasaur Lv30 vs Snorlax   11,4  vs  21   ×1,8
+    #   Pikachu Lv40 vs Golem        8,3  vs  19   ×2,3
+    #
+    # En un combate normal no llega a activarse: la media medida jugando es de 4,6
+    # turnos. Donde entra es contra los muy defensivos, y ahí llega a doblar el
+    # daño. Subirlo a 12 reduciría la distorsión a la mitad a cambio de combates
+    # más largos; es una decisión que sólo se puede tomar jugando.
     MAX_TURNS = 8
 
     # --- Entrenadores -------------------------------------------------------

@@ -3,12 +3,20 @@
            locals: { eyebrow: 'Project Pokédex',
                      title: 'Relive the first generation',
                      lead: 'Browse the full PokeAPI catalog, catch species, and store them with nicknames in your PC.' } do %>
+  <%# Una sola llamada a la acción. «Log in» y «Sign up» ya están en la barra de
+      navegación, que es donde se busca el acceso: repetirlos aquí duplicaba los
+      mismos dos enlaces a dos alturas distintas de la misma pantalla.
+
+      Con sesión iniciada el botón lleva a explorar y no al catálogo, porque
+      explorar es la acción principal del juego —y «Pokédex» también está ya en
+      la barra—. %>
   <% if user_signed_in? %>
-    <%= link_to 'Open Pokédex', user_pokedex_index_path(user_id: current_user.id),
-                class: 'dex-btn dex-btn--primary' %>
+    <%= link_to user_explore_path(user_id: current_user.id), class: 'dex-btn dex-btn--accent' do %>
+      <i class="fa fa-compass" aria-hidden="true"></i>
+      <span>Start exploring</span>
+    <% end %>
   <% else %>
-    <%= link_to 'Sign up', new_user_registration_path, class: 'dex-btn dex-btn--primary' %>
-    <%= link_to 'Log in', new_user_session_path, class: 'dex-btn dex-btn--ghost' %>
+    <%= link_to 'Create your account', new_user_registration_path, class: 'dex-btn dex-btn--primary' %>
   <% end %>
 <% end %>
 

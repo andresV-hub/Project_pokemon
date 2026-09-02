@@ -68,13 +68,17 @@ class EncountersController < ApplicationController
 
 		# Y si el que cae es el tuyo, entra el siguiente de tu equipo: por eso
 		# tener seis huecos llenos importa.
+		#
+		# Vale igual contra un salvaje que contra un entrenador. El relevo se
+		# escribió resolviendo los combates de entrenador, y se quedó atado a
+		# ellos: contra un salvaje el combate terminaba al caer el primero, con
+		# los otros cinco intactos en el equipo. Sólo se acaba cuando no queda
+		# ninguno en pie, que es de lo que `NextOwnPokemon` ya se ocupa.
 		if state['over'] == 'trainer_fainted'
-			state = if state['kind'] == 'trainer'
-				::Encounters::NextOwnPokemon.execute(state: state, user: current_user).value
-					.then { |next_state| reload_own_moves(next_state) }
-			else
-				state.merge('log' => state['log'] + ['You flee from the battle.'])
-			end
+			state = ::Encounters::NextOwnPokemon.execute(state: state, user: current_user).value
+			# Los movimientos son los del que entra, y sólo si entra alguien: si
+			# el equipo se agotó, el combate ha terminado y no hay turno que armar.
+			state = reload_own_moves(state) if state['over'].blank?
 		end
 
 		session[:encounter] = state

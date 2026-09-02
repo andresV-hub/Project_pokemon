@@ -9,8 +9,7 @@
 <% end %>
 
 <% if @pokemons.any? %>
-  <%= render 'application/pagination', collection: @pokemons %>
-
+  <%# Sólo debajo de la rejilla, como en la Pokédex. %>
   <div class="dex-grid">
     <% @pokemons.each do |pokemon| %>
       <%= render 'stored_card', pokemon: pokemon %>

@@ -1,0 +1,43 @@
+{
+  "id": 133,
+  "name": "eevee",
+  "capture_rate": 45,
+  "base_happiness": 70,
+  "habitat": {
+    "name": "urban",
+    "url": "https://pokeapi.co/api/v2/pokemon-habitat/8/"
+  },
+  "evolution_chain": {
+    "url": "https://pokeapi.co/api/v2/evolution-chain/67/"
+  },
+  "growth_rate": {
+    "name": "medium",
+    "url": "https://pokeapi.co/api/v2/growth-rate/2/"
+  },
+  "color": {
+    "name": "brown",
+    "url": "https://pokeapi.co/api/v2/pokemon-color/3/"
+  },
+  "is_legendary": false,
+  "is_mythical": false,
+  "gender_rate": 1,
+  "egg_groups": [
+    {
+      "name": "ground",
+      "url": "https://pokeapi.co/api/v2/egg-group/5/"
+    }
+  ],
+  "flavor_text_entries": [
+    {
+      "flavor_text": "Its genetic code\nis irregular.\nIt may mutate if\fit is exposed to\nradiation from\nelement STONEs.",
+      "language": {
+        "name": "en",
+        "url": "https://pokeapi.co/api/v2/language/9/"
+      },
+      "version": {
+        "name": "red",
+        "url": "https://pokeapi.co/api/v2/version/1/"
+      }
+    }
+  ]
+}

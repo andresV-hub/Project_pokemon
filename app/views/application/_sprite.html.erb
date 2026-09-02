@@ -8,8 +8,15 @@
 <%# El texto alternativo tampoco puede revelar el nombre de una especie que el
     usuario no ha encontrado todavía. %>
 <% alt = silhouette ? "Unseen species, Pokédex #{pokemon.dex_number}" : pokemon.sprite_alt %>
+<%# El sprite se congela al capturar, así que un Pokémon guardado mientras la
+    PokeAPI fallaba puede no tener ninguno. `image_tag(nil)` levanta «Nil location
+    provided» y se lleva por delante la página entera: Mi PC, el equipo o el
+    combate dejaban de pintarse por una imagen que falta. Se cae al sprite oficial,
+    que se puede construir desde el número de Pokédex. %>
+<% fuente = (variant == :artwork ? pokemon.artwork : pokemon.image).presence ||
+            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/#{pokemon.num_pokedex}.png" %>
 <div class="dex-sprite <%= modifier %> <%= 'dex-sprite--silhouette' if silhouette %> dex-tinted--<%= silhouette ? 'unknown' : pokemon.type_slug %>">
-  <%= image_tag(variant == :artwork ? pokemon.artwork : pokemon.image,
+  <%= image_tag(fuente,
                 alt: alt,
                 width: size,
                 height: size,

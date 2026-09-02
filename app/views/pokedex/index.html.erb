@@ -13,8 +13,10 @@
 <%= render 'filters', kind: @filter_kind, name: @filter_name %>
 
 <% if @pokemons.any? %>
-  <%= render 'application/pagination', collection: @pokemons %>
-
+  <%# La paginación va sólo debajo de la rejilla. Estaba también encima, y ahí no
+      sirve para nada: cuando llegas a una página aún no has visto lo que trae, así
+      que pasar a la siguiente no es una decisión que puedas tomar todavía. Abajo,
+      en cambio, es exactamente donde acabas. %>
   <div class="dex-grid">
     <% @pokemons.each do |pokemon| %>
       <%= render 'species_card',

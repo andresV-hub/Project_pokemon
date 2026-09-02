@@ -1,0 +1,47 @@
+{
+  "id": 4,
+  "name": "charmander",
+  "capture_rate": 45,
+  "base_happiness": 70,
+  "habitat": {
+    "name": "mountain",
+    "url": "https://pokeapi.co/api/v2/pokemon-habitat/4/"
+  },
+  "evolution_chain": {
+    "url": "https://pokeapi.co/api/v2/evolution-chain/2/"
+  },
+  "growth_rate": {
+    "name": "medium-slow",
+    "url": "https://pokeapi.co/api/v2/growth-rate/4/"
+  },
+  "color": {
+    "name": "red",
+    "url": "https://pokeapi.co/api/v2/pokemon-color/8/"
+  },
+  "is_legendary": false,
+  "is_mythical": false,
+  "gender_rate": 1,
+  "egg_groups": [
+    {
+      "name": "monster",
+      "url": "https://pokeapi.co/api/v2/egg-group/1/"
+    },
+    {
+      "name": "dragon",
+      "url": "https://pokeapi.co/api/v2/egg-group/14/"
+    }
+  ],
+  "flavor_text_entries": [
+    {
+      "flavor_text": "Obviously prefers\nhot places. When\nit rains, steam\fis said to spout\nfrom the tip of\nits tail.",
+      "language": {
+        "name": "en",
+        "url": "https://pokeapi.co/api/v2/language/9/"
+      },
+      "version": {
+        "name": "red",
+        "url": "https://pokeapi.co/api/v2/version/1/"
+      }
+    }
+  ]
+}

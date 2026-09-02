@@ -23,6 +23,11 @@ gem 'jbuilder', '~> 2.15'
 # Reduce el tiempo de arranque cacheando operaciones costosas; requerido en config/boot.rb
 gem 'bootsnap', '>= 1.18', require: false
 
+# Caché en base de datos. Las respuestas de la PokeAPI se guardan 30 días y son
+# lo que hace la aplicación usable; con el caché en memoria se perdían en cada
+# reinicio, y con el de ficheros no se comparte entre procesos ni entre máquinas.
+gem 'solid_cache', '~> 1.0'
+
 # Cliente HTTP para consumir la PokeAPI
 gem 'rest-client', '~> 2.1'
 

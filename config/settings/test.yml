@@ -1,6 +1,12 @@
 app_name: ProyectoPokemon
 app_domain: http://localhost:3000
 
+# MySQL y no SQLite: con motores distintos, un test puede pasar aquí y fallar en
+# producción. Pasó de hecho — el volcado del esquema desde MySQL usa `size: :long`
+# para los blobs, que SQLite no entiende, y la suite dejó de arrancar.
 database:
-  db_adapter:  sqlite3
-  db_name: project_pokemon
+  db_adapter:  mysql2
+  db_host:     db
+  db_port:     3306
+  db_name:     project_pokemon_test
+  db_username: andres

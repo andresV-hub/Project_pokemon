@@ -18,11 +18,13 @@ default: &default
 development:
   <<: *default
 
-# Warning: The database defined as "test" will be erased and
-# re-generated from your development database when you run "rake".
-# Do not set this db to the same as development or production.
+# El nombre se fija aquí y no se toma de Settings a propósito: las variables
+# SETTINGS__DATABASE__* del contenedor apuntan a la base de desarrollo, y como
+# Rails borra y regenera la base de test en cada ejecución, heredarlas habría
+# hecho que `rails test` destruyera los datos de desarrollo.
 test:
   <<: *default
+  database: project_pokemon_test
 
 production:
   <<: *default

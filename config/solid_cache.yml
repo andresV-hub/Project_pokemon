@@ -1,0 +1,25 @@
+# Configuración de Solid Cache.
+#
+# `database: primary` porque el proyecto tiene una sola base de datos: Rails 8
+# usa por defecto una aparte, y añadir una segunda sólo para el caché
+# complicaría el despliegue sin resolver nada aquí.
+default: &default
+  store_options:
+    # Poda automática: sin esto la tabla crecería sin fin. Lo que se guarda son
+    # respuestas de la PokeAPI, que caducan solas a los 30 días, así que el
+    # límite es holgado.
+    max_age: <%= 30.days.to_i %>
+    max_size: <%= 256.megabytes %>
+    namespace: <%= Rails.env %>
+
+development:
+  <<: *default
+  database: primary
+
+test:
+  <<: *default
+  database: primary
+
+production:
+  <<: *default
+  database: primary

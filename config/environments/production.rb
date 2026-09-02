@@ -42,7 +42,11 @@ Rails.application.configure do
   config.active_support.report_deprecations = false
 
   # Replace the default in-process memory cache store with a durable alternative.
-  config.cache_store = :file_store, Rails.root.join('tmp/cache')
+  # Solid Cache y no `:file_store`: aquel vive en el disco de cada proceso, así
+  # que con más de un worker o más de una máquina cada uno se construía su propio
+  # caché y las peticiones a la PokeAPI se multiplicaban por el número de
+  # procesos.
+  config.cache_store = :solid_cache_store
 
   # Replace the default in-process and non-durable queuing backend for Active Job.
   # config.active_job.queue_adapter = :resque

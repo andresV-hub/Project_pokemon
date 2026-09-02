@@ -61,13 +61,14 @@ Rails.application.routes.draw do
 			end
 		end
 
+		# Sólo lectura. Capturar desde el catálogo se retiró con el cambio de rumbo:
+		# los Pokémon se descubren y se cogen combatiendo, en su zona y gastando
+		# bolas. Las rutas se quedaron vivas aunque su modal ya no se renderizaba en
+		# ninguna vista, y con ellas se podía coger cualquier especie sin pelear,
+		# sin gastar una bola y sin pisar la zona donde vive.
 		resources :pokedex, only: [:show, :index] do
 			collection do
 				get :information
-				# La captura son dos pasos: primero la tirada, y sólo si sale bien
-				# se pide el apodo y se guarda.
-				post :attempt_capture
-				post :add_pokemon_to_team
 			end
 		end
 	end

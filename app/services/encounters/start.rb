@@ -38,7 +38,10 @@ module Encounters
         'rival_moves' => ::Pokemons::MoveSet.for_battle(num_pokedex: wild.num_pokedex, level: level),
         'num_pokedex' => wild.num_pokedex,
         'name' => wild.name,
-        'capture_rate' => description.capture_rate.to_i,
+        # El valor crudo de la API, de 0 a 255: es el que usa la fórmula del juego.
+        # El porcentaje se sigue enseñando en la ficha, pero convertir y volver
+        # perdía precisión justo en las especies difíciles.
+        'capture_rate' => description.raw_capture_rate.to_i,
         'level' => level,
         'base_experience' => wild.base_experience,
         'wild_hp' => wild_hp,

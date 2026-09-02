@@ -55,11 +55,20 @@ module Descriptions
     end
 
     # Fórmula propia de Pokémon, sin cálculos sobre nivel, HP, etc.
+    # Como porcentaje, para enseñarlo en la ficha.
     def capture_rate
       rate = model['capture_rate']
       return nil if rate.nil?
 
       ((rate * 100) / CAPTURE_RATE_MAX).round
+    end
+
+    # El valor tal cual lo da la API, de 0 a 255. Es el que entra en la fórmula de
+    # captura del juego, que no trabaja con porcentajes: convertirlo y volver
+    # perdería precisión justo donde más se nota, en las especies difíciles —
+    # Chansey tiene 30 y Mewtwo 3, y en porcentaje redondean a 12% y 1%.
+    def raw_capture_rate
+      model['capture_rate']
     end
 
     private

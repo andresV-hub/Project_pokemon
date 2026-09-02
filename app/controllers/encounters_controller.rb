@@ -129,14 +129,17 @@ class EncountersController < ApplicationController
 			return redirect_to user_encounter_path(user_id: current_user.id), status: :see_other
 		end
 
-		probability = ::Encounters::Rules.capture_probability(
+		# La fórmula del juego, con sus dos tiradas: el tipo de bola ya no es un
+		# multiplicador sobre una probabilidad propia, sino que cambia los topes de
+		# las tiradas, como en primera generación. Y el estado alterado del rival
+		# cuenta: dormirlo antes de lanzar es la jugada clásica.
+		if ::Encounters::Rules.caught?(
 			capture_rate: state['capture_rate'],
 			current_hp: state['wild_hp'],
 			max_hp: state['wild_max_hp'],
-			multiplier: ::Shop::Catalog.multiplier(kind)
+			kind: kind,
+			status: state['rival_status']
 		)
-
-		if rand < probability
 			# Capturar también entrena, como en los juegos: si no, la opción que
 			# el juego quiere premiar era la única que no daba nada a cambio de
 			# gastarte una bola, y convenía debilitar al rival y rematarlo.

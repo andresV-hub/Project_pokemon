@@ -32,7 +32,11 @@ module Encounters
         'rival' => rival,
         'team' => team,
         'index' => 0,
-        'reward' => Rules.trainer_reward,
+        # Como en el juego: la clase del entrenador por el nivel de su último
+        # Pokémon. Se calcula aquí y no al cobrar porque el premio se enseña en la
+        # cabecera del combate antes de pelear, que es lo que hace decidir si vale
+        # la pena.
+        'reward' => Rules.trainer_reward(rival: rival, level: team.last['level']),
         'name' => first['name'],
         'num_pokedex' => first['num_pokedex'],
         'wild_hp' => first['hp'],

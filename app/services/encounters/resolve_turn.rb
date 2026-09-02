@@ -236,20 +236,28 @@ module Encounters
       own = actor == :own
       factor = effectiveness(move['type'], own ? @wild.type_slugs : @trainer_pokemon.type_slugs)
 
-      dealt = Rules.damage(
+      golpe = Rules.damage(
         attack: offensive_value(actor, move),
         defense: defensive_value(actor, move),
         effectiveness: factor,
         defender_max_hp: own ? @state['wild_max_hp'] : @state['trainer_max_hp'],
         level: own ? own_level : rival_level,
         power: move['power'],
-        same_type: same_type?(actor, move)
+        same_type: same_type?(actor, move),
+        # La velocidad **base** de la especie, no la del nivel: en primera
+        # generación es lo que decide la probabilidad de crítico.
+        base_speed: base_speed_of(actor)
       )
+      dealt = golpe[:amount]
 
       target = other(actor)
       write_hp(target, current_hp(target) - dealt)
 
-      lines = ["#{display_name(target)} takes #{dealt} damage.#{note(factor)}"]
+      lines = []
+      # El crítico se anuncia antes del daño, como en el juego: primero pasa, luego
+      # se ve cuánto. Sin decirlo, un golpe que quita el triple parece un fallo.
+      lines << 'A critical hit!' if golpe[:critical]
+      lines << "#{display_name(target)} takes #{dealt} damage.#{note(factor)}"
 
       # Un movimiento inmune por tipo no envenena ni paraliza: si no llegó a
       # tocarle, no le hizo nada.
@@ -356,6 +364,12 @@ module Encounters
       base = ::Pokemons::LevelStats.stat(defensive_stat(actor, move), actor == :own ? rival_level : own_level)
 
       ::Pokemons::StatStages.apply(base, stages_of(target)[key])
+    end
+
+    # Velocidad base de la especie. La del jugador está en su fila; la del rival,
+    # en la respuesta de la API.
+    def base_speed_of(actor)
+      actor == :own ? @trainer_pokemon.speed : api_stat(@wild, 'speed')
     end
 
     def api_stat(pokemon, key)

@@ -1897,6 +1897,16 @@ a {
 		overflow: hidden;
 	}
 
+	// Dentro de una tarjeta la barra es un dato más de la ficha y no el centro de
+	// atención que es en combate, así que adelgaza y deja de imponer su ancho.
+	&--compact {
+		max-width: none;
+		margin-top: var(--dex-space-2);
+
+		.dex-hp__track { height: 6px; }
+		.dex-hp__name { font-size: 12px; color: var(--dex-text-secondary); }
+	}
+
 	// Verde, ámbar y rojo según lo que queda: el color avisa, pero la cifra de
 	// al lado es la que informa (§9).
 	&__fill {
@@ -2016,6 +2026,17 @@ a {
 	color: var(--dex-text-tertiary);
 }
 
+// Sprite del objeto en la tienda. Pixelado a propósito: son los sprites
+// originales del juego, de 30 px, y suavizarlos al ampliarlos los deja borrosos.
+.dex-shop__sprite {
+	display: block;
+	width: 48px;
+	height: 48px;
+	margin: 0 auto var(--dex-space-2);
+	object-fit: contain;
+	image-rendering: pixelated;
+}
+
 // ============================================================================
 // Estado alterado (styles.md §6.29)
 // ============================================================================
@@ -2034,6 +2055,10 @@ a {
 	letter-spacing: 0.04em;
 	color: #fff;
 	vertical-align: middle;
+
+	// Debilitado no es un estado alterado del combate —no lo trae la API—, pero
+	// se lee igual y va en el mismo sitio, así que comparte componente.
+	&--fainted   { background-color: var(--dex-gray-500); }
 
 	&--paralysis { background-color: #B8A038; }
 	&--sleep     { background-color: #6F7885; }

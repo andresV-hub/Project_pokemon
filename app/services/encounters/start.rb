@@ -23,7 +23,10 @@ module Encounters
       level = Rules.rival_level(@trainer_pokemon.level)
       base_hp = wild.stat_list.find { |stat| stat[:key] == 'hp' }&.dig(:value).to_i
       wild_hp = ::Pokemons::LevelStats.hp(base_hp, level)
-      own_hp = ::Pokemons::LevelStats.hp(@trainer_pokemon.hp, @trainer_pokemon.level)
+      # Con la vida que traiga, no a tope: desde que el daño se guarda, salir a
+      # explorar con el equipo tocado es una decisión y no un trámite.
+      own_max = @trainer_pokemon.max_hp
+      own_hp = @trainer_pokemon.current_hp
 
       ServiceResult.new(value: {
         'own_moves' => ::Pokemons::MoveSet.for_battle(num_pokedex: @trainer_pokemon.num_pokedex, level: @trainer_pokemon.level),
@@ -37,7 +40,7 @@ module Encounters
         'wild_max_hp' => wild_hp,
         'trainer_pokemon_id' => @trainer_pokemon.id,
         'trainer_hp' => own_hp,
-        'trainer_max_hp' => own_hp,
+        'trainer_max_hp' => own_max,
         'trainer_level' => @trainer_pokemon.level,
         'log' => ["A wild #{wild.name} (Lv. #{level}) appeared!"]
       })

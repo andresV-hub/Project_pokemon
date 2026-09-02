@@ -1,0 +1,64 @@
+<%= render layout: 'application/page_header',
+           locals: { eyebrow: 'Pokémon Center', title: 'Nurse Joy',
+                     lead: 'Rest your team and heal every Pokémon back to full health. Always free.' } do %>
+  <%# La cura es la acción principal de la página, así que va en la cabecera y no
+      escondida al final de la lista. %>
+  <% if @needs_healing %>
+    <%= button_to user_pokemon_center_heal_path(user_id: current_user.id),
+                  class: 'dex-btn dex-btn--accent', form_class: 'dex-header__form' do %>
+      <i class="fa fa-heart-pulse" aria-hidden="true"></i>
+      <span>Heal my Pokémon</span>
+    <% end %>
+  <% else %>
+    <span class="dex-field__hint">Everyone is already at full health.</span>
+  <% end %>
+  <%= link_to user_explore_path(user_id: current_user.id), class: 'dex-btn dex-btn--ghost' do %>
+    <i class="fa fa-compass" aria-hidden="true"></i>
+    <span>Explore</span>
+  <% end %>
+<% end %>
+
+<% if @party.any? %>
+  <h2 class="dex-section-title">Your party</h2>
+  <div class="dex-grid dex-grid--party">
+    <% @party.each do |pokemon| %>
+      <article class="dex-card dex-card--stored dex-tinted--<%= pokemon.type_slug %>">
+        <div class="dex-card__top">
+          <span class="dex-card__slot">Slot <%= pokemon.party_position %></span>
+          <span class="dex-card__number">Lv. <%= pokemon.level %></span>
+        </div>
+        <div class="dex-card__body">
+          <%= render 'application/sprite', pokemon: pokemon, variant: :pixel %>
+          <h3 class="dex-card__title"><%= pokemon.display_name %></h3>
+          <%= render 'application/health_bar', pokemon: pokemon %>
+        </div>
+      </article>
+    <% end %>
+  </div>
+<% else %>
+  <%= render 'application/empty_state',
+             icon: 'fa-heart-pulse',
+             title: 'No Pokémon in your party',
+             message: 'Add a Pokémon to your party from your PC before heading out.' %>
+<% end %>
+
+<% if @stored_hurt.any? %>
+  <%# Los del PC no combaten, pero si quedaron heridos al guardarlos conviene
+      verlos: si no, «heal my Pokémon» curaría cosas que no se ven por ninguna
+      parte. %>
+  <h2 class="dex-section-title">Resting in your PC</h2>
+  <div class="dex-grid dex-grid--party">
+    <% @stored_hurt.each do |pokemon| %>
+      <article class="dex-card dex-card--stored dex-tinted--<%= pokemon.type_slug %>">
+        <div class="dex-card__top">
+          <span class="dex-card__number"><%= pokemon.dex_number %> · Lv. <%= pokemon.level %></span>
+        </div>
+        <div class="dex-card__body">
+          <%= render 'application/sprite', pokemon: pokemon, variant: :pixel %>
+          <h3 class="dex-card__title"><%= pokemon.display_name %></h3>
+          <%= render 'application/health_bar', pokemon: pokemon %>
+        </div>
+      </article>
+    <% end %>
+  </div>
+<% end %>

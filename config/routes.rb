@@ -24,12 +24,19 @@ Rails.application.routes.draw do
 		get 'shop', to: 'shop#show', as: :shop
 		post 'shop/buy', to: 'shop#buy', as: :shop_buy
 
+		# El Centro Pokémon, gratis como en el juego. La cura es un POST porque
+		# cambia el estado del equipo, y tiene su propia página porque es donde se
+		# ve de un vistazo cómo está todo el mundo.
+		get 'center', to: 'pokemon_center#show', as: :pokemon_center
+		post 'center/heal', to: 'pokemon_center#heal', as: :pokemon_center_heal
+
 		get 'explore', to: 'encounters#new', as: :explore
 		get 'encounter', to: 'encounters#show', as: :encounter
 		post 'encounter/start', to: 'encounters#create', as: :encounter_start
 		post 'encounter/trainer', to: 'encounters#create_trainer', as: :encounter_trainer
 		post 'encounter/attack', to: 'encounters#attack', as: :encounter_attack
 		post 'encounter/catch', to: 'encounters#catch', as: :encounter_catch
+		post 'encounter/item', to: 'encounters#item', as: :encounter_item
 		post 'encounter/flee', to: 'encounters#flee', as: :encounter_flee
 
 		resources :pokemon, only: [:show, :index] do

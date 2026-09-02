@@ -5,7 +5,7 @@
 class EncountersController < ApplicationController
 
 	before_action :require_party, only: %i[new create]
-	before_action :require_encounter, only: %i[show attack catch flee]
+	before_action :require_encounter, only: %i[show attack catch item flee]
 
 	# Pantalla de exploración.
 	def new
@@ -56,6 +56,11 @@ class EncountersController < ApplicationController
 		                                          move_index: params[:move].to_i)
 		state = result.value
 
+		# El daño se guarda aquí, en cuanto se recibe, y no al final del método: si
+		# se guardara después, la derrota —que cura al equipo al recogerte— dejaría
+		# escrito otra vez el daño que acababa de borrar.
+		persist_damage(state)
+
 		# Derribar a un rival da experiencia, sea salvaje o de entrenador: es lo
 		# que hace que combatir sirva para algo aunque no captures nada.
 		state = award_experience(state) if state['over'] == 'wild_fainted'
@@ -78,7 +83,12 @@ class EncountersController < ApplicationController
 			state = ::Encounters::NextOwnPokemon.execute(state: state, user: current_user).value
 			# Los movimientos son los del que entra, y sólo si entra alguien: si
 			# el equipo se agotó, el combate ha terminado y no hay turno que armar.
-			state = reload_own_moves(state) if state['over'].blank?
+			if state['over'].blank?
+				state = reload_own_moves(state)
+			else
+				# Se agotó el equipo: esto ya es la derrota, no un relevo más.
+				state = lose_battle(state)
+			end
 		end
 
 		session[:encounter] = state
@@ -130,6 +140,42 @@ class EncountersController < ApplicationController
 		session[:encounter] = state
 		finish_if_over
 
+		redirect_to user_encounter_path(user_id: current_user.id), status: :see_other
+	end
+
+	# Usar un objeto de curación. Gasta el turno, como en el juego: si curar fuese
+	# gratis en tiempo, la decisión sería siempre «cúrate», y no habría decisión.
+	def item
+		state = encounter_state
+		fighter = current_user.pokemon.find_by(id: state['trainer_pokemon_id'])
+
+		result = ::Shop::UseItem.execute(user: current_user, kind: params[:kind], pokemon: fighter)
+
+		if result.error
+			state['log'] = [item_error_message(result.error)]
+			session[:encounter] = state
+			return redirect_to user_encounter_path(user_id: current_user.id), status: :see_other
+		end
+
+		state['trainer_hp'] = fighter.current_hp
+		usado = ["You used a #{::Shop::Catalog.name(params[:kind])}!",
+		         "#{fighter.nickname} recovered #{result.value} HP."]
+
+		# El rival aprovecha el turno. Se resuelve con el mismo motor de siempre
+		# pasándole un movimiento nulo por nuestra parte, para no duplicar aquí las
+		# reglas de estado, precisión y daño.
+		wild = ::Pokeapi::FindPokemon.execute(id: state['num_pokedex']).value
+		state = ::Encounters::ResolveTurn.execute(state: state, trainer_pokemon: lead_pokemon,
+		                                          wild: wild, move_index: -1, skip_own: true).value
+
+		# El motor reemplaza el registro con las líneas de *su* turno, así que lo
+		# del objeto se antepone después: si no, curarse no aparecía por ningún
+		# lado y sólo se veía el golpe del rival.
+		state['log'] = usado + Array(state['log'])
+		persist_damage(state)
+
+		session[:encounter] = state
+		finish_if_over
 		redirect_to user_encounter_path(user_id: current_user.id), status: :see_other
 	end
 
@@ -209,6 +255,44 @@ class EncountersController < ApplicationController
 
 	# El encuentro se cierra en el siguiente `show`: así el jugador llega a leer
 	# el último mensaje antes de que desaparezca la escena.
+	def item_error_message(error)
+		case error
+		when :out_of_stock then 'You have none left!'
+		when :already_full then 'Its HP is already full!'
+		when :not_fainted then 'That Pokémon is not fainted.'
+		when :already_fainted then "It won't have any effect on a fainted Pokémon."
+		else "That item can't be used here."
+		end
+	end
+
+	# Caer con todo el equipo cuesta la mitad del dinero, y luego te recogen y te
+	# curan, como en el juego. Lo segundo no es un regalo: sin ello el jugador se
+	# quedaría con el equipo entero debilitado y sin poder hacer nada más que ir a
+	# pie al Centro, que es exactamente el paso que el juego te ahorra.
+	def lose_battle(state)
+		lost = ::Encounters::Rules.defeat_penalty(current_user.money)
+		current_user.update!(money: current_user.money - lost) if lost.positive?
+		::Pokemons::HealAll.execute(user: current_user)
+
+		lines = ['You are out of usable Pokémon!']
+		lines << "You panicked and dropped ₽#{ActiveSupport::NumberHelper.number_to_delimited(lost)}." if lost.positive?
+		lines << 'You scurried to the Pokémon Center, healing your team.'
+
+		state.merge('log' => state['log'] + lines)
+	end
+
+	# Guarda en el Pokémon el daño que lleva en el combate.
+	#
+	# Se hace en cada turno y no al terminar: si se guardara al final, cerrar la
+	# pestaña a media pelea curaría al equipo, y huir de un combate perdido saldría
+	# gratis. El daño tiene que ser real en el momento en que se recibe.
+	def persist_damage(state)
+		fighter = current_user.pokemon.find_by(id: state['trainer_pokemon_id'])
+		return if fighter.nil?
+
+		fighter.update!(damage: [state['trainer_max_hp'].to_i - state['trainer_hp'].to_i, 0].max)
+	end
+
 	def finish_if_over
 		return if session[:encounter].blank? || session[:encounter]['over'].blank?
 

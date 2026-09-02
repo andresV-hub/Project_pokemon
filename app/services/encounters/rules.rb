@@ -59,6 +59,20 @@ module Encounters
       rand(REWARD_RANGE)
     end
 
+    # --- Perder -------------------------------------------------------------
+
+    # Qué parte del dinero se pierde al caer el equipo entero. La mitad, como en
+    # Rojo y Azul.
+    #
+    # Es lo único que hace que el dinero importe: el Centro Pokémon cura gratis
+    # —también como en el juego—, así que si perder no costara nada, no habría
+    # ninguna razón para comprar una poción ni para huir de un combate perdido.
+    DEFEAT_MONEY_DIVISOR = 2
+
+    def defeat_penalty(money)
+      money.to_i / DEFEAT_MONEY_DIVISOR
+    end
+
     # ¿Acierta el movimiento? Una precisión vacía significa que nunca falla.
     def hits?(accuracy)
       return true if accuracy.nil?

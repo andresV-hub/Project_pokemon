@@ -102,18 +102,31 @@
     </div>
     <%# Una acción por tipo de bola que se tenga: elegir cuál gastar es la
         decisión que la tienda hace interesante. %>
+    <%# Sólo las bolas: desde que el inventario también guarda pociones, recorrerlo
+        entero ponía una Potion entre las opciones de captura. %>
+    <% balls = current_user.inventory_items.available.select { |item| ::Shop::Catalog.ball?(item.kind) } %>
     <% unless trainer_battle %>
-      <% current_user.inventory_items.available.each do |item| %>
+      <% balls.each do |item| %>
         <%= button_to "#{item.name} (#{item.quantity})",
                       user_encounter_catch_path(user_id: current_user.id, kind: item.kind),
                       class: 'dex-btn dex-btn--accent', form_class: 'dex-encounter__form' %>
       <% end %>
-      <% if current_user.inventory_items.available.none? %>
+      <% if balls.none? %>
         <span class="dex-field__hint">
           No balls left —
           <%= link_to 'visit the shop', user_shop_path(user_id: current_user.id) %>.
         </span>
       <% end %>
+    <% end %>
+
+    <%# Los objetos de curación sí valen en los dos tipos de combate: es el único
+        momento en que sirven de algo, porque fuera cura el Centro y es gratis.
+        Usar uno gasta el turno, como en el juego. %>
+    <% remedios = current_user.inventory_items.available.reject { |item| ::Shop::Catalog.ball?(item.kind) } %>
+    <% remedios.each do |item| %>
+      <%= button_to "#{item.name} (#{item.quantity})",
+                    user_encounter_item_path(user_id: current_user.id, kind: item.kind),
+                    class: 'dex-btn dex-btn--ghost', form_class: 'dex-encounter__form' %>
     <% end %>
     <%= button_to 'Run', user_encounter_flee_path(user_id: current_user.id),
                   class: 'dex-btn dex-btn--ghost', form_class: 'dex-encounter__form' %>

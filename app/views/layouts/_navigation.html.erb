@@ -42,6 +42,10 @@
                           class: "dex-nav__link #{'dex-nav__link--active' if in_storage && action_name != 'party'}" %>
             </li>
             <li>
+              <%= link_to 'Center', user_pokemon_center_path(user_id: current_user.id),
+                          class: "dex-nav__link #{'dex-nav__link--active' if controller_name == 'pokemon_center'}" %>
+            </li>
+            <li>
               <%= link_to 'Shop', user_shop_path(user_id: current_user.id),
                           class: "dex-nav__link #{'dex-nav__link--active' if controller_name == 'shop'}" %>
             </li>

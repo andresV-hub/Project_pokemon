@@ -39,6 +39,18 @@ class Encounters::ResolveTurnTest < ActiveSupport::TestCase
                                     wild: salvaje, move_index: indice).value
   end
 
+  # Para los movimientos que pueden fallar la tirada de precisión —Thunder Wave
+  # tiene 90— y cuyo efecto es justo lo que se quiere comprobar. Sin esto el test
+  # falla una de cada diez veces por el azar y no por el comportamiento.
+  def resolver_acertando(state, indice = 0)
+    10.times do
+      final = resolver(state, indice)
+      return final unless final['log'].join(' ').include?('missed')
+    end
+
+    flunk 'el movimiento falló diez veces seguidas: revisa la precisión del fixture'
+  end
+
   test 'ambos atacan y ambos pierden vida' do
     con_pokeapi_simulada do
       final = resolver(estado)
@@ -128,7 +140,7 @@ class Encounters::ResolveTurnTest < ActiveSupport::TestCase
 
   test 'un movimiento de estado paraliza al rival y no le quita vida' do
     con_pokeapi_simulada do
-      final = resolver(estado(mio: 'thunder-wave'))
+      final = resolver_acertando(estado(mio: 'thunder-wave'))
 
       assert_equal 'paralysis', final['rival_status']
       assert_equal 200, final['wild_hp'], 'Thunder Wave no hace daño'
@@ -264,8 +276,8 @@ class Encounters::ResolveTurnTest < ActiveSupport::TestCase
 
   test 'relanzar un estado sobre quien ya lo tiene falla y lo dice' do
     con_pokeapi_simulada do
-      final = resolver(estado(mio: 'thunder-wave', 'rival_status' => 'paralysis',
-                              'own_stages' => { 'speed' => 6 }))
+      final = resolver_acertando(estado(mio: 'thunder-wave', 'rival_status' => 'paralysis',
+                                        'own_stages' => { 'speed' => 6 }))
 
       assert_match(/But it failed!/, final['log'].join(' '))
       assert_no_match(/nothing happened/, final['log'].join(' '))

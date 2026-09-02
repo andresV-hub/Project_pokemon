@@ -20,4 +20,46 @@ class Pokemon < ApplicationRecord
 		party_position.present?
 	end
 
+	# --- Vida ---------------------------------------------------------------
+	#
+	# La vida máxima no está guardada: se deriva de la estadística base y del
+	# nivel, igual que en el combate. Guardarla sería un dato que habría que
+	# recalcular cada vez que se sube de nivel o se evoluciona.
+
+	def max_hp
+		::Pokemons::LevelStats.hp(hp, level)
+	end
+
+	# Lo que le queda. `damage` puede quedarse por encima del máximo si el máximo
+	# baja —evolucionar a una forma con menos HP no pasa en gen 1, pero el `max`
+	# lo cubre igual—, y nunca devuelve un número negativo.
+	def current_hp
+		[max_hp - damage.to_i, 0].max
+	end
+
+	def fainted?
+		current_hp.zero?
+	end
+
+	def full_health?
+		damage.to_i.zero?
+	end
+
+	# Cura una cantidad, o hasta arriba si no se dice cuánta. Devuelve lo que ha
+	# recuperado de verdad, que es lo que hay que contar: «recuperó 20 PS» cuando
+	# sólo le faltaban 5 sería mentira, y además significa que la poción se
+	# desperdició.
+	def heal!(amount = nil)
+		before = current_hp
+		self.damage = amount.nil? ? 0 : [damage.to_i - amount.to_i, 0].max
+		save!
+
+		current_hp - before
+	end
+
+	def take_damage!(amount)
+		self.damage = [damage.to_i + amount.to_i, max_hp].min
+		save!
+	end
+
 end

@@ -20,7 +20,8 @@ module Encounters
 
       rival = NAMES.sample
       first = team.first
-      own_hp = ::Pokemons::LevelStats.hp(@trainer_pokemon.hp, @trainer_pokemon.level)
+      own_max = @trainer_pokemon.max_hp
+      own_hp = @trainer_pokemon.current_hp
 
       ServiceResult.new(value: {
         'kind' => 'trainer',
@@ -38,7 +39,7 @@ module Encounters
         'base_experience' => first['base_experience'],
         'trainer_pokemon_id' => @trainer_pokemon.id,
         'trainer_hp' => own_hp,
-        'trainer_max_hp' => own_hp,
+        'trainer_max_hp' => own_max,
         'trainer_level' => @trainer_pokemon.level,
         'log' => ["#{rival} wants to battle!", "#{rival} sent out #{first['name']}!"]
       })

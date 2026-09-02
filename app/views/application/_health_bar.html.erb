@@ -1,0 +1,25 @@
+<%# Vida fuera del combate (styles.md §6.31).
+
+    Es la misma barra del combate (§6.26) en versión compacta. Que sea la misma
+    es el punto: la vida que ves en el Centro es exactamente la que llevarás al
+    siguiente encuentro, y usar dos lenguajes visuales para el mismo dato haría
+    dudar de si son lo mismo. %>
+<% ratio = pokemon.max_hp.positive? ? pokemon.current_hp * 100.0 / pokemon.max_hp : 0 %>
+<div class="dex-hp dex-hp--compact">
+  <div class="dex-hp__head">
+    <span class="dex-hp__name">
+      HP
+      <% if pokemon.fainted? %>
+        <span class="dex-status dex-status--fainted" title="Fainted">FNT</span>
+      <% end %>
+    </span>
+    <span class="dex-hp__value"><%= pokemon.current_hp %> / <%= pokemon.max_hp %></span>
+  </div>
+  <div class="dex-hp__track" role="meter"
+       aria-label="<%= pokemon.display_name %> HP"
+       aria-valuenow="<%= pokemon.current_hp %>" aria-valuemin="0"
+       aria-valuemax="<%= pokemon.max_hp %>">
+    <span class="dex-hp__fill <%= 'dex-hp__fill--low' if ratio <= 25 %> <%= 'dex-hp__fill--mid' if ratio > 25 && ratio <= 50 %>"
+          style="width: <%= ratio.round %>%"></span>
+  </div>
+</div>

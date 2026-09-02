@@ -22,19 +22,29 @@ module Encounters
   # los juegos.
   class ResolveTurn < BaseService
 
-    def initialize(state:, trainer_pokemon:, wild:, move_index:)
+    # `skip_own` resuelve el turno sin que el jugador ataque: es lo que pasa cuando
+    # gasta su turno en usar un objeto. El rival responde igual, y el desgaste de
+    # fin de turno y las comprobaciones de KO son las mismas, así que reutilizar
+    # este servicio evita tener dos sitios donde vivan las reglas del combate.
+    def initialize(state:, trainer_pokemon:, wild:, move_index:, skip_own: false)
       @state = state.dup
       @trainer_pokemon = trainer_pokemon
       @wild = wild
       @move_index = move_index.to_i
+      @skip_own = skip_own
     end
 
     def service_execute
       log = []
 
-      first, second = turn_order
-      log.concat(take_turn(actor: first, move: chosen_move(first)))
-      log.concat(take_turn(actor: second, move: chosen_move(second))) if both_standing?
+      # Usando un objeto sólo actúa el rival, y le toca sí o sí: la iniciativa ya
+      # se ha gastado en el objeto.
+      actores = @skip_own ? [:rival] : turn_order
+      actores.each do |actor|
+        break unless both_standing?
+
+        log.concat(take_turn(actor: actor, move: chosen_move(actor)))
+      end
       log.concat(end_of_turn) if both_standing?
       log.concat(resolve_outcome)
 

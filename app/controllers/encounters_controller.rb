@@ -5,7 +5,7 @@
 class EncountersController < ApplicationController
 
 	before_action :require_party, only: %i[new create]
-	before_action :require_encounter, only: %i[show attack catch item flee]
+	before_action :require_encounter, only: %i[show attack catch item switch flee]
 
 	# Pantalla de exploración: el mapa de zonas.
 	def new
@@ -177,13 +177,42 @@ class EncountersController < ApplicationController
 		# pasándole un movimiento nulo por nuestra parte, para no duplicar aquí las
 		# reglas de estado, precisión y daño.
 		wild = ::Pokeapi::FindPokemon.execute(id: state['num_pokedex']).value
-		state = ::Encounters::ResolveTurn.execute(state: state, trainer_pokemon: lead_pokemon,
+		state = ::Encounters::ResolveTurn.execute(state: state, trainer_pokemon: pokemon_in_field(state),
 		                                          wild: wild, move_index: -1, skip_own: true).value
 
 		# El motor reemplaza el registro con las líneas de *su* turno, así que lo
 		# del objeto se antepone después: si no, curarse no aparecía por ningún
 		# lado y sólo se veía el golpe del rival.
 		state['log'] = usado + Array(state['log'])
+		persist_damage(state)
+
+		session[:encounter] = state
+		finish_if_over
+		redirect_to user_encounter_path(user_id: current_user.id), status: :see_other
+	end
+
+	# Cambiar de Pokémon a voluntad. Gasta el turno, como en el juego.
+	def switch
+		result = ::Encounters::SwitchPokemon.execute(state: encounter_state, user: current_user,
+		                                            pokemon_id: params[:pokemon_id])
+
+		if result.error
+			state = encounter_state
+			state['log'] = [switch_error_message(result.error)]
+			session[:encounter] = state
+			return redirect_to user_encounter_path(user_id: current_user.id), status: :see_other
+		end
+
+		state = reload_own_moves(result.value)
+		entrada = state['log']
+
+		# El rival aprovecha el turno, con el mismo motor de siempre: así el cambio
+		# tiene el mismo coste que usar un objeto y las reglas de estado, precisión
+		# y daño viven en un solo sitio.
+		wild = ::Pokeapi::FindPokemon.execute(id: state['num_pokedex']).value
+		state = ::Encounters::ResolveTurn.execute(state: state, trainer_pokemon: pokemon_in_field(state),
+		                                          wild: wild, move_index: -1, skip_own: true).value
+		state['log'] = entrada + Array(state['log'])
 		persist_damage(state)
 
 		session[:encounter] = state
@@ -252,6 +281,18 @@ class EncountersController < ApplicationController
 		pokemon && ::Pokemons::PokemonDecorator.decorate(pokemon)
 	end
 
+	# Quién está en el campo **según un estado concreto**, y no según el que hay
+	# guardado en la sesión.
+	#
+	# Hace falta cuando el estado ya ha cambiado pero todavía no se ha escrito: al
+	# cambiar de Pokémon, `lead_pokemon` devolvía el que acababa de salir, así que
+	# el rival golpeaba contra las estadísticas del que ya no estaba y el registro
+	# anunciaba su nombre. El daño se calculaba mal, no sólo el texto.
+	def pokemon_in_field(state)
+		pokemon = current_user.pokemon.find_by(id: state['trainer_pokemon_id'])
+		pokemon && ::Pokemons::PokemonDecorator.decorate(pokemon)
+	end
+
 	# El nivel del mejor del equipo. Con el mejor y no con la media: llevar un
 	# Pokémon flojo de acompañante no debería cerrar una zona ya ganada.
 	def party_best_level
@@ -273,6 +314,14 @@ class EncountersController < ApplicationController
 
 	# El encuentro se cierra en el siguiente `show`: así el jugador llega a leer
 	# el último mensaje antes de que desaparezca la escena.
+	def switch_error_message(error)
+		case error
+		when :already_out then 'That Pokémon is already in battle!'
+		when :fainted then 'That Pokémon has no energy left!'
+		else 'That Pokémon is not in your party.'
+		end
+	end
+
 	def item_error_message(error)
 		case error
 		when :out_of_stock then 'You have none left!'

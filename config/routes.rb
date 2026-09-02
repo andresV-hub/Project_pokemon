@@ -37,6 +37,7 @@ Rails.application.routes.draw do
 		post 'encounter/attack', to: 'encounters#attack', as: :encounter_attack
 		post 'encounter/catch', to: 'encounters#catch', as: :encounter_catch
 		post 'encounter/item', to: 'encounters#item', as: :encounter_item
+		post 'encounter/switch', to: 'encounters#switch', as: :encounter_switch
 		post 'encounter/flee', to: 'encounters#flee', as: :encounter_flee
 
 		resources :pokemon, only: [:show, :index] do

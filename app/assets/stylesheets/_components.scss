@@ -2038,6 +2038,75 @@ a {
 }
 
 // ============================================================================
+// Banquillo del combate (styles.md §6.33)
+// ============================================================================
+
+// El resto del equipo, en su propia fila bajo las acciones. Va aparte de los
+// movimientos por el mismo motivo que ellos van aparte de Catch y Run: elegir
+// ataque y decidir un cambio son decisiones de distinto tipo, y mezcladas
+// parecían el mismo grupo de botones.
+.dex-bench {
+	flex-basis: 100%;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: var(--dex-space-2);
+	margin-top: var(--dex-space-3);
+	padding-top: var(--dex-space-3);
+	border-top: 1px solid var(--dex-border-subtle);
+
+	&__label {
+		font-family: var(--dex-font-data);
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--dex-text-tertiary);
+	}
+
+	&__slot {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--dex-space-2);
+		padding: var(--dex-space-1) var(--dex-space-3) var(--dex-space-1) var(--dex-space-1);
+		border: 1px solid var(--dex-border-subtle);
+		border-radius: var(--dex-radius-pill);
+		background-color: var(--dex-surface-raised);
+		color: var(--dex-text-primary);
+		font-size: 13px;
+		cursor: pointer;
+		transition: border-color var(--dex-motion-fast) var(--dex-ease),
+					background-color var(--dex-motion-fast) var(--dex-ease);
+
+		&:hover:not(:disabled) {
+			border-color: var(--dex-accent);
+			background-color: var(--dex-surface-sunken);
+		}
+
+		// El debilitado se muestra apagado, no oculto: saber que te queda uno y
+		// que está KO es información del combate, y esconderlo haría creer que ya
+		// no tienes equipo.
+		&--down,
+		&:disabled {
+			opacity: .45;
+			cursor: not-allowed;
+		}
+	}
+
+	&__sprite {
+		image-rendering: pixelated;
+	}
+
+	&__hp {
+		font-family: var(--dex-font-data);
+		font-size: 11px;
+		font-variant-numeric: tabular-nums;
+		color: var(--dex-text-tertiary);
+	}
+}
+
+// ============================================================================
 // Zonas de exploración (styles.md §6.32)
 // ============================================================================
 

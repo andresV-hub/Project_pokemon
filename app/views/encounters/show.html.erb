@@ -133,5 +133,31 @@
     <% end %>
     <%= button_to 'Run', user_encounter_flee_path(user_id: current_user.id),
                   class: 'dex-btn dex-btn--ghost', form_class: 'dex-encounter__form' %>
+
+    <%# El banquillo, en su propia fila. Sacar al de tipo Agua contra el de Fuego
+        es la jugada más básica del juego, y hasta ahora el equipo era una cola de
+        reservas donde sólo entraba el siguiente cuando caía el anterior.
+
+        Se muestran los debilitados, deshabilitados: saber que te queda uno y que
+        está KO es información del combate, y esconderlo haría creer que ya no
+        tienes equipo. %>
+    <% banquillo = current_user.pokemon.in_party.reject { |p| p.id == @state['trainer_pokemon_id'] } %>
+    <% if banquillo.any? %>
+      <div class="dex-bench">
+        <span class="dex-bench__label">Switch</span>
+        <% banquillo.each do |companero| %>
+          <%= button_to user_encounter_switch_path(user_id: current_user.id, pokemon_id: companero.id),
+                        class: "dex-bench__slot #{'dex-bench__slot--down' if companero.fainted?}",
+                        form_class: 'dex-encounter__form',
+                        disabled: companero.fainted?,
+                        title: "#{companero.nickname} · #{companero.current_hp}/#{companero.max_hp} HP" do %>
+            <%= image_tag "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/#{companero.num_pokedex}.png",
+                          alt: '', width: 40, height: 40, loading: 'lazy', class: 'dex-bench__sprite' %>
+            <span class="dex-bench__name"><%= companero.nickname %></span>
+            <span class="dex-bench__hp"><%= companero.current_hp %>/<%= companero.max_hp %></span>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
   <% end %>
 </div>

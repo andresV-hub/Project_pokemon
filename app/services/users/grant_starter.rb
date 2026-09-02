@@ -26,9 +26,12 @@ module Users
 
       # El inicial va directo al equipo: es el Pokémon con el que se empieza a
       # jugar, no algo que haya que ir a sacar del PC.
-      ::Pokemons::AddToParty.execute(pokemon: @user.pokemon.reload.last)
+      # Con orden explícito: `last` sin `order` deja al motor elegir la fila, y lo
+      # que hace falta es el que se acaba de crear.
+      nuevo = @user.pokemon.reload.order(:id).last
+      ::Pokemons::AddToParty.execute(pokemon: nuevo)
 
-      ServiceResult.new(value: @user.pokemon.last)
+      ServiceResult.new(value: nuevo)
     end
 
   end

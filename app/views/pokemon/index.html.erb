@@ -19,10 +19,29 @@
 
   <%= render 'application/pagination', collection: @pokemons %>
 <% else %>
-  <%= render layout: 'application/empty_state',
-             locals: { title: 'Your PC is empty',
-                       text: 'You have not caught any Pokémon yet. Open the Pokédex, choose a species, and give it a nickname.' } do %>
-    <%= link_to 'Explore the Pokédex', user_pokedex_index_path(user_id: current_user.id),
-                class: 'dex-btn dex-btn--primary' %>
+  <% if current_user.pokemon.exists? %>
+    <%# Hay Pokémon, pero todos están en el equipo. %>
+    <%= render layout: 'application/empty_state',
+               locals: { title: 'Your PC is empty',
+                         text: 'Every Pokémon you own is in your party right now. Catch more out in the wild and they will wait for you here.' } do %>
+      <%= link_to 'Go exploring', user_explore_path(user_id: current_user.id),
+                  class: 'dex-btn dex-btn--primary' %>
+    <% end %>
+  <% else %>
+    <%# Ni uno solo: la cuenta está atascada. Explorar exige equipo y la Pokédex ya
+        no captura, así que sin esta salida no habría forma de empezar a jugar. El
+        texto anterior seguía diciendo que se capturaba desde el catálogo, que es
+        como se hacía antes de que los Pokémon se descubrieran combatiendo. %>
+    <%= form_with url: starter_user_pokemon_index_path(user_id: current_user.id),
+                  method: :post, class: 'dex-surface dex-surface--padded' do %>
+      <h2 class="dex-section-title">You do not have any Pokémon</h2>
+      <p class="dex-field__hint">
+        You need a partner before heading out. Pick one and it will join your party.
+      </p>
+      <%= render 'application/starter_picker',
+                 legend: 'Choose your first partner',
+                 field: 'starter_num_pokedex' %>
+      <%= submit_tag 'Take this one', class: 'dex-btn dex-btn--accent' %>
+    <% end %>
   <% end %>
 <% end %>

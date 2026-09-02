@@ -1,0 +1,20 @@
+<%# Elección de Pokémon inicial (styles.md §6.22).
+
+    Se usa en el registro y en el PC cuando no queda ninguno. Es el mismo momento
+    del juego en los dos casos —el Profesor te da tu primer compañero—, así que
+    comparte presentación; lo único que cambia es si el formulario lo envía Devise
+    o va por su cuenta. %>
+<fieldset class="dex-starter">
+  <legend class="dex-field__label"><%= legend %></legend>
+  <div class="dex-starter__options">
+    <% User::STARTERS.each_with_index do |(num, starter), index| %>
+      <label class="dex-starter__option dex-tinted--<%= starter[:type] %>">
+        <%= radio_button_tag field, num, index.zero?, class: 'dex-starter__radio' %>
+        <%= image_tag "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/#{num}.png",
+                      alt: '', width: 72, height: 72, loading: 'lazy',
+                      class: 'dex-starter__sprite' %>
+        <span class="dex-starter__name"><%= starter[:name] %></span>
+      </label>
+    <% end %>
+  </div>
+</fieldset>

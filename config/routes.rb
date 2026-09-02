@@ -42,6 +42,10 @@ Rails.application.routes.draw do
 		resources :pokemon, only: [:show, :index] do
 			collection do
 				get :party
+				# Un entrenador sin ningún Pokémon no tiene forma de conseguir uno:
+				# explorar exige equipo y la Pokédex ya no captura. Esta es la
+				# salida, y sólo funciona cuando de verdad no queda ninguno.
+				post :starter
 			end
 
 			member do

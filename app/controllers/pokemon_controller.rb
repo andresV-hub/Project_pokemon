@@ -52,8 +52,37 @@ class PokemonController < ApplicationController
 		# `owned_pokemon` primero: `Pokemons::Liberate` resuelve el id por su
 		# cuenta y sin esta comprobación borraba el Pokémon de cualquiera.
 		pokemon = owned_pokemon
+
+		# El juego no te deja quedarte sin ninguno, y aquí menos: explorar exige
+		# equipo y la Pokédex ya no captura, así que soltar el último dejaba la
+		# cuenta sin ninguna forma de seguir jugando.
+		if current_user.pokemon.count <= 1
+			return redirect_to user_pokemon_path(user_id: current_user.id, id: pokemon.id),
+				alert: "That's your last Pokémon! You can't release it.", status: :see_other
+		end
+
 		::Pokemons::Liberate.execute(id: pokemon.id)
-		redirect_to user_pokemon_index_path(user_id: current_user.id), status: :see_other
+		redirect_to user_pokemon_index_path(user_id: current_user.id),
+			notice: "#{pokemon.nickname} was released. Bye!", status: :see_other
+	end
+
+	# La red de seguridad: si por lo que sea la cuenta se quedó sin ningún Pokémon
+	# —la PokeAPI estaba caída al registrarse y no se llegó a regalar el inicial—,
+	# aquí se elige uno.
+	def starter
+		if current_user.pokemon.exists?
+			return redirect_to user_pokemon_index_path(user_id: current_user.id), status: :see_other
+		end
+
+		result = ::Users::GrantStarter.execute(user: current_user, num_pokedex: params[:starter_num_pokedex])
+
+		if result.error
+			return redirect_to user_pokemon_index_path(user_id: current_user.id),
+				alert: 'We could not reach the PokeAPI. Try again in a few seconds.', status: :see_other
+		end
+
+		redirect_to user_pokemon_index_path(user_id: current_user.id),
+			notice: "#{result.value.nickname} is ready to go. Head out and explore!", status: :see_other
 	end
 
 	def edit_nickname

@@ -1,0 +1,15 @@
+{
+  "id": 98,
+  "name": "quick-attack",
+  "type": {
+    "name": "normal",
+    "url": "https://pokeapi.co/api/v2/type/1/"
+  },
+  "power": 40,
+  "accuracy": 100,
+  "pp": 30,
+  "damage_class": {
+    "name": "physical",
+    "url": "https://pokeapi.co/api/v2/move-damage-class/2/"
+  }
+}

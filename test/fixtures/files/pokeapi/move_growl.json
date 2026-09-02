@@ -1,0 +1,15 @@
+{
+  "id": 45,
+  "name": "growl",
+  "type": {
+    "name": "normal",
+    "url": "https://pokeapi.co/api/v2/type/1/"
+  },
+  "power": null,
+  "accuracy": 100,
+  "pp": 40,
+  "damage_class": {
+    "name": "status",
+    "url": "https://pokeapi.co/api/v2/move-damage-class/1/"
+  }
+}

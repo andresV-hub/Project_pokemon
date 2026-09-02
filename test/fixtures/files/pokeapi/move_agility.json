@@ -1,0 +1,15 @@
+{
+  "id": 97,
+  "name": "agility",
+  "type": {
+    "name": "psychic",
+    "url": "https://pokeapi.co/api/v2/type/14/"
+  },
+  "power": null,
+  "accuracy": null,
+  "pp": 30,
+  "damage_class": {
+    "name": "status",
+    "url": "https://pokeapi.co/api/v2/move-damage-class/1/"
+  }
+}

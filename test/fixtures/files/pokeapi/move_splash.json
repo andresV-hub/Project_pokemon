@@ -1,0 +1,15 @@
+{
+  "id": 150,
+  "name": "splash",
+  "type": {
+    "name": "normal",
+    "url": "https://pokeapi.co/api/v2/type/1/"
+  },
+  "power": null,
+  "accuracy": null,
+  "pp": 40,
+  "damage_class": {
+    "name": "status",
+    "url": "https://pokeapi.co/api/v2/move-damage-class/1/"
+  }
+}

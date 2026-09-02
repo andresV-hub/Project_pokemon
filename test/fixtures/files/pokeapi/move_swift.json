@@ -1,0 +1,15 @@
+{
+  "id": 129,
+  "name": "swift",
+  "type": {
+    "name": "normal",
+    "url": "https://pokeapi.co/api/v2/type/1/"
+  },
+  "power": 60,
+  "accuracy": null,
+  "pp": 20,
+  "damage_class": {
+    "name": "special",
+    "url": "https://pokeapi.co/api/v2/move-damage-class/3/"
+  }
+}

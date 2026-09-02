@@ -1,0 +1,27 @@
+{
+  "id": 25,
+  "name": "pikachu",
+  "capture_rate": 255,
+  "base_happiness": 70,
+  "habitat": {
+    "name": "forest",
+    "url": "https://pokeapi.co/api/v2/pokemon-habitat/2/"
+  },
+  "evolution_chain": {
+    "url": "https://pokeapi.co/api/v2/evolution-chain/10/"
+  },
+  "flavor_text_entries": [
+    {
+      "flavor_text": "When several of\nthese POKéMON\ngather, their\felectricity could\nbuild and cause\nlightning storms.",
+      "language": {
+        "name": "en",
+        "url": "https://pokeapi.co/api/v2/language/9/"
+      },
+      "version": {
+        "name": "red",
+        "url": "https://pokeapi.co/api/v2/version/1/"
+      }
+    }
+  ],
+  "_nota": "capture_rate ajustado a 255 (el real es 190) para que la captura sea determinista en los tests"
+}

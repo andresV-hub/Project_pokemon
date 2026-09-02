@@ -107,7 +107,10 @@
                       class: 'dex-btn dex-btn--accent', form_class: 'dex-encounter__form' %>
       <% end %>
       <% if current_user.inventory_items.available.none? %>
-        <span class="dex-field__hint">No balls left — visit the shop.</span>
+        <span class="dex-field__hint">
+          No balls left —
+          <%= link_to 'visit the shop', user_shop_path(user_id: current_user.id) %>.
+        </span>
       <% end %>
     <% end %>
     <%= button_to 'Run', user_encounter_flee_path(user_id: current_user.id),

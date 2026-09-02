@@ -1969,11 +1969,9 @@ a {
 	color: var(--dex-text-secondary);
 }
 
-// El saldo enlaza a la tienda, así que necesita afordancia de enlace.
-a.dex-nav__money:hover {
-	text-decoration: none;
-	color: var(--dex-amber-300);
-}
+// El saldo ya no enlaza: es un indicador y la tienda tiene su propio enlace en
+// la fila de secciones. Cuando era enlace, la palabra «Shop» sólo estaba en el
+// `title` y no había forma de encontrarla sin pasar el ratón por una cifra.
 
 // Nivel junto al nombre en la barra de HP (styles.md §6.26).
 .dex-hp__level {

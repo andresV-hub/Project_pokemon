@@ -32,7 +32,6 @@ gem 'config', '~> 5.6'
 # Autenticación, roles y autorización
 gem 'devise', '~> 5.0'
 gem 'rolify', '~> 6.0'
-gem 'pundit', '~> 2.5'
 
 # Paginación
 gem 'kaminari', '~> 1.2'

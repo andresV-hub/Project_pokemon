@@ -1,8 +1,5 @@
 class ApplicationController < ActionController::Base
 
-	# Pundit 2.x: `include Pundit` fue sustituido por `Pundit::Authorization`.
-	include Pundit::Authorization
-
 	# Todas las vistas usan `current_user`, así que sin sesión hay que mandar al
 	# login en lugar de reventar con un nil. Los controladores de Devise quedan
 	# fuera para poder iniciar sesión y registrarse.

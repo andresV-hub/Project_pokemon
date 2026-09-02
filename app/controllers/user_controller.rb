@@ -1,8 +1,5 @@
+# Sin acciones: `resources :user` sólo sirve para anidar las rutas de pokédex,
+# pokémon, tienda y encuentros. Se conserva la clase porque Rails la espera al
+# resolver el nombre del recurso.
 class UserController < ApplicationController
-
-	def show
-		pokemons = JSON.parse(RestClient.get("https://pokeapi.co/api/v2/pokemon?limit=151&offset=0"))
-	end
-	
-	
 end

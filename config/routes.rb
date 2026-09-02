@@ -16,7 +16,10 @@ Rails.application.routes.draw do
 		end
 	end
 
-	resources :user do
+	# `only: []` porque este recurso sólo existe para anidar lo de dentro: no tiene
+	# páginas propias. Su `show` era una ruta viva que pedía las 151 especies a la
+	# PokeAPI, tiraba el resultado y renderizaba una vista vacía.
+	resources :user, only: [] do
 		# Encuentros salvajes: la única puerta a los Pokémon que aún no tienes.
 		get 'shop', to: 'shop#show', as: :shop
 		post 'shop/buy', to: 'shop#buy', as: :shop_buy

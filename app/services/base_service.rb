@@ -1,14 +1,37 @@
 =begin
 
-Cada servicio debe sobreescribir `service_execute`, donde se ejecuta la lógica
-del servicio. Este método no debe invocarse nunca directamente, sino que siempre
-se debe invocar el método `execute`.
+Base de los servicios de la aplicación.
 
-Los servicios tienen que devolver SIEMPRE un objeto `ServiceResult`. 
-Para saber si un servicio funcionó bien o no, estos objetos tienen un método `success?`.
-- Si funcionan bien, el resultado está accesible a través del método `.value`.
-- Si fallan, el resultado captura la expeción, y la deja disponible en
-el método `.error`.
+Cada servicio implementa `service_execute`, que no debe invocarse directamente:
+se llama siempre a través de `execute`, que es lo que permitiría añadir
+instrumentación o control de errores en un solo sitio.
+
+== Qué devuelve un servicio
+
+No todos devuelven lo mismo, y es deliberado:
+
+* Los que hablan con la PokeAPI (`Pokeapi::*`, `Encounters::Start`…) devuelven un
+  `ServiceResult`, porque necesitan distinguir «no hay resultado» de «falló la
+  consulta», y quien los llama tiene que poder reaccionar a cada caso.
+* Los de escritura sencilla (`Pokemons::Create`, `Pokemons::Update`…) devuelven el
+  objeto o el resultado del guardado. Envolverlos no aportaría nada: si algo va
+  mal, `save!` ya levanta la excepción.
+
+El comentario original de esta clase afirmaba que **todos** devolvían
+`ServiceResult` y traía comentada una comprobación que lo habría impuesto. No era
+cierto, así que se ha documentado la convención real en lugar de mantener una
+promesa que el código no cumple.
+
+== Por qué no hay un rescue genérico aquí
+
+Lo hubo comentado, y se decidió no activarlo. Un `rescue` en la clase base
+convertiría también los errores internos en objetos de resultado: el
+`RecordNotFound` de `Base::Find`, por ejemplo, produce hoy un 404 correcto, y
+envuelto reventaría más tarde en la vista y lejos de la causa.
+
+Los fallos del sistema externo se capturan donde ocurren, en
+`Pokeapi::Client#request`, que traduce a `nil` la red caída, los tiempos de espera
+y las respuestas ilegibles.
 
 =end
 class BaseService
@@ -32,15 +55,7 @@ class BaseService
   end
 
   def execute
-    # begin
-      result = service_execute
-    # rescue Exception => e
-    #   return ServiceResult.new(error: e)
-    # end
-    
-    # raise TypeError, 'Los servicios tienen que devolver un objeto de tipo ServiceResult' unless result.is_a?(ServiceResult)
-
-    result
+    service_execute
   end
 
   def service_execute

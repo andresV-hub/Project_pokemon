@@ -45,9 +45,12 @@ module Encounters
     #   Pikachu Lv40 vs Golem        8,3  vs  19   ×2,3
     #
     # En un combate normal no llega a activarse: la media medida jugando es de 4,6
-    # turnos. Donde entra es contra los muy defensivos, y ahí llega a doblar el
-    # daño. Subirlo a 12 reduciría la distorsión a la mitad a cambio de combates
-    # más largos; es una decisión que sólo se puede tomar jugando.
+    # turnos. Donde entra es contra los muy defensivos, y ahí llega a doblar el daño.
+    #
+    # **Validado jugando y se queda en 8.** Se valoró subirlo a 12 para reducir la
+    # distorsión a la mitad, a cambio de combates más largos, y no hace falta: el
+    # ritmo con este valor es el que se quería. No es una constante pendiente de
+    # ajustar, es una decisión tomada.
     MAX_TURNS = 8
 
     # --- Entrenadores -------------------------------------------------------

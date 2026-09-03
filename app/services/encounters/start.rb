@@ -47,6 +47,7 @@ module Encounters
         # El porcentaje se sigue enseñando en la ficha, pero convertir y volver
         # perdía precisión justo en las especies difíciles.
         'rival_dv' => rival_dv,
+        'rival_ability' => wild.ability,
         'capture_rate' => description.raw_capture_rate.to_i,
         'level' => level,
         'base_experience' => wild.base_experience,

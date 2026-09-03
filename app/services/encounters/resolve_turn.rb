@@ -187,6 +187,10 @@ module Encounters
       # duerme, y encadenarlos sería un combate ganado con un solo movimiento.
       return [] if status_of(target).present?
 
+      if blocked_status?(target, ailment)
+        return ["#{display_name(target)}'s #{::Pokemons::Abilities.label(ability_of(target))} prevents it!"]
+      end
+
       @state[status_key(target)] = ailment
       @state[turns_key(target)] = Statuses.turns_for(ailment)
 
@@ -203,6 +207,13 @@ module Encounters
         next if amount.zero?
 
         target = amount.positive? ? actor : other(actor)
+
+        # Hyper Cutter, Keen Eye, Clear Body: a su dueño no se le baja. Sólo
+        # protege de lo que le hacen, no de lo que se hace él mismo.
+        if amount.negative? && ::Pokemons::Abilities.guards_stat?(ability_of(target), change['stat'])
+          next "#{display_name(target)}'s #{::Pokemons::Abilities.label(ability_of(target))} prevents it!"
+        end
+
         stages = stages_of(target)
         updated, moved = ::Pokemons::StatStages.add(stages[change['stat']], amount)
         stages[change['stat']] = updated
@@ -234,10 +245,30 @@ module Encounters
 
     def apply_damage(actor:, move:)
       own = actor == :own
+      target = other(actor)
+
+      # La habilidad del que recibe puede anular el golpe entero, y en dos casos
+      # además curarle. Se comprueba antes de calcular nada: si es inmune, no hay
+      # daño que repartir ni efecto secundario que aplicar.
+      blocked = absorb_if_immune(target: target, move: move)
+      return blocked if blocked
+
       factor = effectiveness(move['type'], own ? @wild.type_slugs : @trainer_pokemon.type_slugs)
+      factor *= ::Pokemons::Abilities::THICK_FAT_FACTOR if
+        ::Pokemons::Abilities.thick_fat?(ability_of(target), move['type'])
+
+      # Overgrow, Blaze, Torrent y Swarm: con un tercio de vida o menos, los
+      # movimientos de su tipo pegan un 50% más. Va sobre el ataque y no sobre la
+      # efectividad porque es lo que hace el juego, y así no se confunde con una
+      # ventaja de tipo en el registro.
+      atacante = offensive_value(actor, move)
+      if ::Pokemons::Abilities.pinch_boost?(ability_of(actor), move['type'], current_hp(actor),
+                                            actor == :own ? @state['trainer_max_hp'] : @state['wild_max_hp'])
+        atacante = (atacante * ::Pokemons::Abilities::PINCH_FACTOR).round
+      end
 
       golpe = Rules.damage(
-        attack: offensive_value(actor, move),
+        attack: atacante,
         defense: defensive_value(actor, move),
         effectiveness: factor,
         defender_max_hp: own ? @state['wild_max_hp'] : @state['trainer_max_hp'],
@@ -250,7 +281,6 @@ module Encounters
       )
       dealt = golpe[:amount]
 
-      target = other(actor)
       write_hp(target, current_hp(target) - dealt)
 
       lines = []
@@ -264,8 +294,53 @@ module Encounters
       if factor.positive?
         lines.concat(drain(actor: actor, move: move, dealt: dealt))
         lines.concat(inflict_status(actor: actor, move: move))
+        lines.concat(contact_effect(attacker: actor, move: move))
       end
       lines
+    end
+
+    # Static, Poison Point y Flame Body: tocar a su dueño sale caro. Sólo con
+    # movimientos físicos, que es lo que significa «por contacto».
+    def contact_effect(attacker:, move:)
+      return [] unless move['damage_class'] == 'physical'
+
+      defender = other(attacker)
+      status = ::Pokemons::Abilities.contact_status(ability_of(defender))
+      return [] if status.blank?
+      return [] unless rand(1..100) <= ::Pokemons::Abilities::CONTACT_CHANCE
+      return [] if status_of(attacker).present? || blocked_status?(attacker, status)
+
+      @state[status_key(attacker)] = status
+      @state[turns_key(attacker)] = Statuses.turns_for(status)
+
+      ["#{display_name(defender)}'s #{::Pokemons::Abilities.label(ability_of(defender))}!",
+       "#{display_name(attacker)} #{Statuses.applied_message(status)}"]
+    end
+
+    # Levitate, Water Absorb, Volt Absorb y Flash Fire.
+    def absorb_if_immune(target:, move:)
+      ability = ability_of(target)
+      return nil unless ::Pokemons::Abilities.immune_type(ability) == move['type']
+
+      lines = ["#{display_name(target)}'s #{::Pokemons::Abilities.label(ability)}!"]
+
+      if ::Pokemons::Abilities.absorbs?(ability)
+        max = target == :own ? @state['trainer_max_hp'].to_i : @state['wild_max_hp'].to_i
+        curado = [(max / ::Pokemons::Abilities::ABSORB_FRACTION.to_f).round, max - current_hp(target)].min
+        if curado.positive?
+          write_hp(target, current_hp(target) + curado)
+          lines << "#{display_name(target)} absorbed the attack and regained health!"
+          return lines
+        end
+      end
+
+      lines << "It doesn't affect #{display_name(target)}…"
+      lines
+    end
+
+    # Limber, Immunity, Insomnia y compañía.
+    def blocked_status?(actor, status)
+      ::Pokemons::Abilities.blocks_status?(ability_of(actor), status)
     end
 
     def drain(actor:, move:, dealt:)
@@ -285,7 +360,8 @@ module Encounters
     # El veneno y la quemadura desgastan cuando los dos ya han actuado, no en
     # mitad del intercambio.
     def end_of_turn
-      %i[own rival].filter_map do |actor|
+      lineas = shed_skin
+      lineas + %i[own rival].filter_map do |actor|
         status = status_of(actor)
         max = actor == :own ? @state['trainer_max_hp'] : @state['wild_max_hp']
         dealt = Statuses.residual_damage(status: status, max_hp: max)
@@ -293,6 +369,19 @@ module Encounters
 
         write_hp(actor, current_hp(actor) - dealt)
         "#{display_name(actor)} #{Statuses.residual_message(status)}"
+      end
+    end
+
+    # Shed Skin: se quita el estado solo de vez en cuando.
+    def shed_skin
+      %i[own rival].filter_map do |actor|
+        next unless ability_of(actor).to_s == ::Pokemons::Abilities::SHED_SKIN
+        next if status_of(actor).blank?
+        next unless rand < ::Pokemons::Abilities::SHED_SKIN_CHANCE
+
+        @state[status_key(actor)] = nil
+        @state[turns_key(actor)] = 0
+        "#{display_name(actor)}'s Shed Skin cured its status!"
       end
     end
 
@@ -354,7 +443,14 @@ module Encounters
       base = ::Pokemons::LevelStats.stat(offensive_stat(actor, move), actor == :own ? own_level : rival_level,
                                          dv_of(actor, move['damage_class'] == 'special' ? 'special' : 'attack'))
       value = ::Pokemons::StatStages.apply(base, stages_of(actor)[key])
-      value = (value * Statuses::BURN_ATTACK_FACTOR).round if status_of(actor) == 'burn' && key == 'attack'
+
+      # Guts convierte el estado alterado en ventaja, y de paso cancela la rebaja
+      # de la quemadura: es lo que la hace interesante y no un simple bonus.
+      if ability_of(actor).to_s == ::Pokemons::Abilities::GUTS && status_of(actor).present?
+        value = (value * ::Pokemons::Abilities::GUTS_FACTOR).round
+      elsif status_of(actor) == 'burn' && key == 'attack'
+        value = (value * Statuses::BURN_ATTACK_FACTOR).round
+      end
 
       [value, 1].max
     end
@@ -381,6 +477,10 @@ module Encounters
       else
         Hash(@state['rival_dv'])[key].to_i
       end
+    end
+
+    def ability_of(actor)
+      actor == :own ? @trainer_pokemon.ability : @state['rival_ability']
     end
 
     # Velocidad base de la especie. La del jugador está en su fila; la del rival,

@@ -46,6 +46,20 @@
             <%= render 'application/experience_bar', pokemon: @pokemon, variant: :detail %>
           </dd>
         </div>
+        <% if @pokemon.ability.present? %>
+          <div>
+            <dt>Ability</dt>
+            <dd>
+              <%= ::Pokemons::Abilities.label(@pokemon.ability) %>
+              <%# Se avisa si el combate todavía no sabe aplicarla: prometer una
+                  habilidad que no hace nada es peor que no enseñarla, porque el
+                  jugador contaría con ella. %>
+              <% unless ::Pokemons::Abilities.supported?(@pokemon.ability) %>
+                <span class="dex-badge dex-badge--muted">No effect yet</span>
+              <% end %>
+            </dd>
+          </div>
+        <% end %>
         <div>
           <dt>Species</dt>
           <dd><%= @pokemon.species_name %></dd>

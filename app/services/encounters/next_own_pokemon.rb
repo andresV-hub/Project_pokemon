@@ -21,7 +21,7 @@ module Encounters
       else
         @state['fainted'] = Array(@state['fainted']) + [@state['trainer_pokemon_id']]
         SendOut.call(@state, following)
-        @state['log'] += ["Go, #{following.nickname}!"]
+        @state['log'] += ["Go, #{following.nickname}!", SendOut.intimidate(@state, following)].compact
       end
 
       ServiceResult.new(value: @state)

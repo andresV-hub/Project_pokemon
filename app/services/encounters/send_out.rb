@@ -31,5 +31,22 @@ module Encounters
       state
     end
 
+    # Intimidate baja el ataque del rival nada más salir. Se aplica aquí y no en el
+    # turno porque ocurre **al entrar**, y aquí entran los dos caminos: el relevo
+    # forzado y el cambio voluntario.
+    #
+    # Devuelve la línea que contarlo, o `nil` si no hay nada que contar.
+    def intimidate(state, pokemon, rival_key: 'rival_stages')
+      return nil unless pokemon.respond_to?(:ability)
+      return nil unless pokemon.ability.to_s == ::Pokemons::Abilities::INTIMIDATE
+
+      stages = state[rival_key] ||= {}
+      updated, moved = ::Pokemons::StatStages.add(stages['attack'], -1)
+      return nil unless moved
+
+      stages['attack'] = updated
+      "#{pokemon.nickname}'s Intimidate cuts the foe's attack!"
+    end
+
   end
 end

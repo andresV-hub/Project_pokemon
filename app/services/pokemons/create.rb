@@ -61,6 +61,7 @@ module Pokemons
         # distinto del que se ve al capturarlo.
         experience: ExperienceCurve.experience_for(@level, @description.growth_rate),
         shiny: shiny,
+        ability: @pokemon.ability,
         dv_attack: dv['attack'],
         dv_defense: dv['defense'],
         dv_speed: dv['speed'],

@@ -95,6 +95,15 @@ module Pokedex
 
     # Claves inglesas de la PokeAPI: son la clave estable con la que se forma el
     # modificador `dex-type--{tipo}` (styles.md §6.2).
+    # La habilidad de la primera ranura, nunca una oculta: las ocultas llegaron más
+    # tarde todavía y en varias especies son claramente mejores, así que repartirlas
+    # al azar convertiría la captura en una lotería con premio.
+    def ability
+      Array(model['abilities']).reject { |entry| entry['is_hidden'] }
+                               .min_by { |entry| entry['slot'].to_i }
+                               &.dig('ability', 'name')
+    end
+
     def type_slugs
       Array(model['types']).filter_map { |type| type.dig('type', 'name') }
     end

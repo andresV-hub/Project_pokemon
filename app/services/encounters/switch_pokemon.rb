@@ -30,7 +30,8 @@ module Encounters
       # línea, en un combate largo no se sabe a quién se acaba de retirar.
       @state['log'] = [
         leaving ? "#{leaving.nickname}, come back!" : nil,
-        "Go, #{target.nickname}!"
+        "Go, #{target.nickname}!",
+        SendOut.intimidate(@state, target)
       ].compact
 
       ServiceResult.new(value: @state)

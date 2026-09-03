@@ -35,10 +35,13 @@ services:
       # Propshaft sirve los assets desde la propia aplicación: no hay CDN delante.
       - key: RAILS_SERVE_STATIC_FILES
         value: "true"
-      # El plan gratuito da poca memoria, así que un solo hilo por proceso y sin
-      # trabajadores: es una aplicación de lectura con caché, no necesita más.
-      - key: WEB_CONCURRENCY
-        value: "0"
+      # Sin `WEB_CONCURRENCY`: la línea `workers` de `config/puma.rb` está
+      # comentada, así que Puma arranca en modo simple y esa variable no la lee
+      # nadie. Declararla sólo servía para que pareciera que hace algo — y Render
+      # además rechaza el valor 0.
+      #
+      # Tres hilos y un proceso es lo que cabe en la memoria del plan gratuito, y
+      # de sobra para una aplicación de lectura con caché.
       - key: RAILS_MAX_THREADS
         value: "3"
       # Ponlo a "false" **sólo** si la cadena de Supabase usa el puerto 6543, que

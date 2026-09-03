@@ -36,6 +36,12 @@ RUN npm ci
 
 COPY . .
 
+# El bit de ejecución de `bin/` no sobrevive a un repositorio clonado en Windows, y
+# sin él la imagen se construye bien pero no arranca: el ENTRYPOINT no se puede
+# lanzar y el despliegue muere con un código que no dice nada. El `Dockerfile` de
+# desarrollo ya lo hacía; aquí faltaba.
+RUN chmod +x bin/*
+
 # Los assets se precompilan al montar la imagen, no al arrancar: arrancar es lo que
 # hace esperar al primer visitante cuando la máquina estaba dormida.
 #

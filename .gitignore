@@ -41,3 +41,8 @@
 /project_pokemon_dev
 *.sqlite3
 *.sqlite3-journal
+
+# Skills de agentes instaladas con `npx skills add`. Se versiona el lock, que
+# permite reinstalarlas, y no los ficheros: son dependencias descargadas, como
+# node_modules.
+.agents/

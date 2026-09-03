@@ -23,5 +23,11 @@ module ProjectPokemon
     # Propshaft sirve los assets ya compilados desde app/assets/builds
     # (generados por `npm run build:css`) además de images y stylesheets.
     config.assets.excluded_paths << Rails.root.join('app/assets/stylesheets')
+
+    # Las imágenes vienen todas de la PokeAPI por URL y no se sube ninguna, así que
+    # Active Storage no genera variantes. Sin esto avisa en cada arranque de que le
+    # falta `image_processing`, que sería una gema más que instalar para algo que no
+    # se usa.
+    config.active_storage.variant_processor = :disabled
   end
 end

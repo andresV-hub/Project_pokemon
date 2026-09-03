@@ -1,5 +1,6 @@
 # syntax=docker/dockerfile:1
-# Imagen de producción, la que despliega Fly.io.
+# Imagen de producción, la que despliega Render (`render.yaml` la señala con
+# `dockerfilePath`).
 #
 # Va aparte del `Dockerfile` de desarrollo a propósito: aquel monta el código como
 # volumen, corre en modo desarrollo y trae las herramientas de compilar. Aquí el

@@ -15,9 +15,10 @@ default: &default
   socket:       <%= Settings.database.db_socket %>
 <% end %>
 
-# En producción manda `DATABASE_URL`, que es lo que inyectan las plataformas de
-# despliegue —Fly.io incluido— al enlazar una base de datos. Rails la usa por
-# encima de estos valores, así que producción no necesita saber nada de Settings.
+# En producción manda `DATABASE_URL`. Rails la usa por encima de estos valores, así
+# que producción no necesita saber nada de Settings. Aquí no la inyecta la
+# plataforma: la base vive en Supabase, fuera de Render, y la cadena se escribe a
+# mano en el panel (`sync: false` en `render.yaml`).
 
 
 development:

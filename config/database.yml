@@ -33,3 +33,14 @@ test:
 
 production:
   <<: *default
+  # Supabase no da conexión directa por IPv4 en el plan gratuito, así que hay que
+  # conectarse por su pooler (Supavisor). Tiene dos modos y la diferencia importa:
+  #
+  #   * puerto 5432, modo sesión      → funciona sin tocar nada
+  #   * puerto 6543, modo transacción → hay que apagar las sentencias preparadas
+  #
+  # En modo transacción, el pooler reparte la misma conexión entre peticiones y las
+  # sentencias que Rails deja preparadas dejan de existir de una a otra: el error
+  # que sale es un `PG::InvalidSqlStatementName` intermitente, difícil de atar a
+  # esto. Con la variable a "false" se evita.
+  prepared_statements: <%= ENV.fetch('DB_PREPARED_STATEMENTS', 'true') == 'true' %>

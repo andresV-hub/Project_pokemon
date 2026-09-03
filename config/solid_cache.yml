@@ -23,3 +23,11 @@ test:
 production:
   <<: *default
   database: primary
+  store_options:
+    max_age: <%= 30.days.to_i %>
+    # Mucho menos que en local, y a propósito: la base de datos gratuita de Neon o
+    # Supabase da medio giga **en total**, y un caché de 256 MB se comería la mitad
+    # del plan para guardar sprites y descripciones. Con 48 MB caben de sobra las
+    # 151 especies, que es todo lo que este catálogo consulta.
+    max_size: <%= 48.megabytes %>
+    namespace: <%= Rails.env %>

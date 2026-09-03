@@ -1,0 +1,47 @@
+# Despliegue en Render.
+#
+# Se eligió tras descartar Fly.io, que pide tarjeta para crear recursos aunque
+# tenga crédito gratuito.
+#
+# La base de datos **no se declara aquí a propósito**: el PostgreSQL gratuito de
+# Render caduca a los noventa días, y entonces la aplicación se queda sin base sin
+# previo aviso. Se usa uno externo —Neon o Supabase, ambos con capa gratuita sin
+# caducidad— y se le pasa la conexión por `DATABASE_URL`.
+services:
+  - type: web
+    name: project-pokemon
+    runtime: docker
+    dockerfilePath: ./Dockerfile.production
+    plan: free
+    region: frankfurt
+
+    # `/up` es el endpoint de salud de Rails 8. Sin él, Render da por buena una
+    # máquina que arrancó pero cuya aplicación no responde.
+    healthCheckPath: /up
+
+    envVars:
+      # `sync: false` significa que el valor se escribe a mano en el panel y no
+      # viaja en este fichero, que sí está en el repositorio. Son los dos secretos.
+      - key: RAILS_MASTER_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+
+      - key: RAILS_ENV
+        value: production
+      # Los logs van a la salida estándar, que es de donde los recoge Render.
+      - key: RAILS_LOG_TO_STDOUT
+        value: "true"
+      # Propshaft sirve los assets desde la propia aplicación: no hay CDN delante.
+      - key: RAILS_SERVE_STATIC_FILES
+        value: "true"
+      # El plan gratuito da poca memoria, así que un solo hilo por proceso y sin
+      # trabajadores: es una aplicación de lectura con caché, no necesita más.
+      - key: WEB_CONCURRENCY
+        value: "0"
+      - key: RAILS_MAX_THREADS
+        value: "3"
+      # Ponlo a "false" **sólo** si la cadena de Supabase usa el puerto 6543, que
+      # es el pooler en modo transacción. Con el 5432 se deja como está.
+      - key: DB_PREPARED_STATEMENTS
+        value: "true"

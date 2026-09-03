@@ -1,0 +1,44 @@
+# Despliegue en Fly.io.
+#
+# El nombre de la aplicación y la región los fija `fly launch` la primera vez; si
+# se cambian a mano, tienen que coincidir con los de la cuenta.
+app = "project-pokemon"
+primary_region = "mad"
+
+[build]
+  dockerfile = "Dockerfile.production"
+
+[env]
+  RAILS_ENV = "production"
+  # Los logs van a la salida estándar, que es de donde los recoge Fly.
+  RAILS_LOG_TO_STDOUT = "true"
+  # Los assets los sirve Propshaft desde la propia aplicación: no hay CDN ni
+  # servidor de estáticos delante.
+  RAILS_SERVE_STATIC_FILES = "true"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  # La aplicación se apaga sola cuando nadie la usa y arranca con la primera
+  # petición. En la capa gratuita eso es lo que la hace gratuita; el precio es que
+  # la primera visita tras un rato de calma tarda unos segundos.
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+  [[http_service.checks]]
+    # `/up` es el endpoint de salud que trae Rails 8. Sin esto, Fly da por buena
+    # una máquina que arrancó pero cuya aplicación no responde.
+    interval = "15s"
+    timeout = "4s"
+    grace_period = "20s"
+    method = "GET"
+    path = "/up"
+
+[[vm]]
+  # El tamaño más pequeño llega de sobra: la aplicación cachea la PokeAPI en la
+  # base de datos y no calcula nada pesado.
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1

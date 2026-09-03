@@ -5,7 +5,11 @@ ruby '>= 3.2.0'
 gem 'rails', '~> 8.1.3'
 
 # Base de datos
-gem 'mysql2', '~> 0.5'
+# PostgreSQL y no MySQL: es lo que ofrecen gratis las plataformas de despliegue
+# —Fly.io entre ellas—, mientras que un MySQL gestionado gratuito es difícil de
+# encontrar. El proyecto no usaba nada específico de MySQL salvo el juego de
+# caracteres del esquema, que se regenera solo.
+gem 'pg', '~> 1.5'
 
 # Servidor de aplicaciones
 gem 'puma', '~> 8.0'

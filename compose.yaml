@@ -2,18 +2,20 @@ name: project-pokemon
 
 services:
   db:
-    image: mysql:8.4
+    # El mismo motor que en producción. Ya costó una vez tener test en SQLite y la
+    # aplicación en MySQL: el volcado del esquema de Solid Cache no era portable y
+    # la suite dejó de arrancar de golpe.
+    image: postgres:16
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: project_pokemon_dev
-      MYSQL_USER: andres
-      MYSQL_PASSWORD: pokemon
+      POSTGRES_DB: project_pokemon_dev
+      POSTGRES_USER: andres
+      POSTGRES_PASSWORD: pokemon
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - db_data:/var/lib/mysql
+      - db_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uandres", "-ppokemon"]
+      test: ["CMD-SHELL", "pg_isready -U andres -d project_pokemon_dev"]
       interval: 5s
       timeout: 5s
       retries: 30
@@ -25,7 +27,7 @@ services:
       RAILS_ENV: development
       # La gema `config` lee estas variables y sobrescribe config/settings/development.yml
       SETTINGS__DATABASE__DB_HOST: db
-      SETTINGS__DATABASE__DB_PORT: "3306"
+      SETTINGS__DATABASE__DB_PORT: "5432"
       SETTINGS__DATABASE__DB_NAME: project_pokemon_dev
       SETTINGS__DATABASE__DB_USERNAME: andres
       SETTINGS__DATABASE__DB_SOCKET: ""

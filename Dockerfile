@@ -1,14 +1,14 @@
 # syntax=docker/dockerfile:1
-# Imagen de desarrollo: sirve la aplicación con Puma contra el MySQL del compose.
+# Imagen de desarrollo: sirve la aplicación con Puma contra el PostgreSQL del compose.
 ARG RUBY_VERSION=3.4.9
 FROM docker.io/library/ruby:$RUBY_VERSION-slim
 
-# Dependencias del sistema: cabeceras de MySQL para compilar mysql2 y Node para
+# Dependencias del sistema: cabeceras de PostgreSQL para compilar `pg` y Node para
 # construir el CSS de Bootstrap con Dart Sass.
 RUN apt-get update -qq \
  && apt-get install --no-install-recommends -y \
-      build-essential ca-certificates curl default-mysql-client git \
-      libjemalloc2 libyaml-dev pkg-config default-libmysqlclient-dev tzdata \
+      build-essential ca-certificates curl postgresql-client git \
+      libjemalloc2 libyaml-dev pkg-config libpq-dev tzdata \
  && curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
  && apt-get install --no-install-recommends -y nodejs \
  && apt-get clean \

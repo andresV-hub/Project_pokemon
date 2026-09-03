@@ -11,7 +11,10 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[8.1].define(version: 2026_09_03_053443) do
-  create_table "inventory_items", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_catalog.plpgsql"
+
+  create_table "inventory_items", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "kind", null: false
     t.integer "quantity", default: 0, null: false
@@ -21,7 +24,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_03_053443) do
     t.index ["user_id"], name: "index_inventory_items_on_user_id"
   end
 
-  create_table "pokedex_sightings", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "pokedex_sightings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "num_pokedex", null: false
     t.datetime "updated_at", null: false
@@ -30,7 +33,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_03_053443) do
     t.index ["user_id"], name: "index_pokedex_sightings_on_user_id"
   end
 
-  create_table "pokemons", charset: "utf8mb3", force: :cascade do |t|
+  create_table "pokemons", force: :cascade do |t|
     t.string "ability"
     t.integer "atack"
     t.string "atack0"
@@ -67,46 +70,45 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_03_053443) do
     t.index ["user_id"], name: "index_pokemons_on_user_id"
   end
 
-  create_table "roles", charset: "utf8mb3", force: :cascade do |t|
-    t.datetime "created_at", null: false
+  create_table "roles", force: :cascade do |t|
+    t.datetime "created_at", precision: nil, null: false
     t.string "name"
     t.bigint "resource_id"
     t.string "resource_type"
-    t.datetime "updated_at", null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["name", "resource_type", "resource_id"], name: "index_roles_on_name_and_resource_type_and_resource_id"
     t.index ["name"], name: "index_roles_on_name"
     t.index ["resource_type", "resource_id"], name: "index_roles_on_resource_type_and_resource_id"
   end
 
-  create_table "solid_cache_entries", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "solid_cache_entries", force: :cascade do |t|
     t.integer "byte_size", null: false
     t.datetime "created_at", null: false
-    t.binary "key", limit: 1024, null: false
+    t.binary "key", null: false
     t.bigint "key_hash", null: false
-    t.binary "value", size: :long, null: false
+    t.binary "value", null: false
     t.index ["byte_size"], name: "index_solid_cache_entries_on_byte_size"
     t.index ["key_hash", "byte_size"], name: "index_solid_cache_entries_on_key_hash_and_byte_size"
     t.index ["key_hash"], name: "index_solid_cache_entries_on_key_hash", unique: true
   end
 
-  create_table "users", charset: "utf8mb3", force: :cascade do |t|
-    t.string "AddFieldsToUser"
-    t.datetime "created_at", null: false
+  create_table "users", force: :cascade do |t|
+    t.datetime "created_at", precision: nil, null: false
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "last_name"
     t.integer "money", default: 0, null: false
     t.string "name"
     t.integer "phone"
-    t.datetime "remember_created_at"
-    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at", precision: nil
+    t.datetime "reset_password_sent_at", precision: nil
     t.string "reset_password_token"
-    t.datetime "updated_at", null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  create_table "users_roles", id: false, charset: "utf8mb3", force: :cascade do |t|
+  create_table "users_roles", id: false, force: :cascade do |t|
     t.bigint "role_id"
     t.bigint "user_id"
     t.index ["role_id"], name: "index_users_roles_on_role_id"

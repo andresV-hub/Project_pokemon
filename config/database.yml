@@ -4,7 +4,7 @@
 # con respaldo en la variable de entorno DB_PASSWORD.
 default: &default
   adapter:      <%= Settings.database.db_adapter %>
-  encoding:     utf8mb4
+  encoding:     unicode
   pool:         <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
   host:         <%= Settings.database.db_host %>
   port:         <%= Settings.database.db_port %>
@@ -14,6 +14,11 @@ default: &default
 <% if Settings.database.db_socket.present? %>
   socket:       <%= Settings.database.db_socket %>
 <% end %>
+
+# En producción manda `DATABASE_URL`, que es lo que inyectan las plataformas de
+# despliegue —Fly.io incluido— al enlazar una base de datos. Rails la usa por
+# encima de estos valores, así que producción no necesita saber nada de Settings.
+
 
 development:
   <<: *default

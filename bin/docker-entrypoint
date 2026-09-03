@@ -1,29 +1,36 @@
 #!/bin/bash
 set -e
 
-# compose ya espera al healthcheck de MySQL, pero al reiniciar sólo el servicio
-# web conviene confirmar que la base acepta conexiones con estas credenciales.
-# --skip-ssl porque el cliente de MariaDB que trae Debian rechaza el certificado
-# autofirmado de MySQL 8.4; mysql2 sí se conecta sin verificarlo.
+# compose ya espera al healthcheck de la base, pero al reiniciar sólo el servicio
+# web conviene confirmar que acepta conexiones con estas credenciales.
+#
+# En producción no aplica: allí la conexión llega por `DATABASE_URL` y no por estas
+# variables, así que este bloque se salta solo.
 if [ -n "${SETTINGS__DATABASE__DB_HOST}" ]; then
-  echo "Esperando a MySQL en ${SETTINGS__DATABASE__DB_HOST}..."
-  until mysqladmin ping \
+  echo "Esperando a PostgreSQL en ${SETTINGS__DATABASE__DB_HOST}..."
+  until pg_isready \
       --host="${SETTINGS__DATABASE__DB_HOST}" \
-      --user="${SETTINGS__DATABASE__DB_USERNAME}" \
-      --password="${DB_PASSWORD}" \
-      --skip-ssl --silent 2>/dev/null; do
+      --username="${SETTINGS__DATABASE__DB_USERNAME}" \
+      --quiet; do
     sleep 1
   done
-  echo "MySQL disponible."
+  echo "PostgreSQL disponible."
 fi
 
-# Sólo para el arranque del servidor: crea la base si no existe, aplica las
-# migraciones pendientes y compila los assets.
+# Sólo para el arranque del servidor: crea la base si no existe y aplica las
+# migraciones pendientes.
 if [ "${1}" = "./bin/rails" ] && [ "${2}" = "server" ]; then
-  # tmp/ es un volumen persistente: un pid antiguo impediría arrancar Puma.
+  # tmp/ es un volumen persistente en desarrollo: un pid antiguo impediría
+  # arrancar Puma.
   rm -f tmp/pids/server.pid
   ./bin/rails db:prepare
-  npm run build:css
+
+  # El CSS se construye al arrancar sólo en desarrollo. En producción ya viene
+  # compilado dentro de la imagen, y allí ni siquiera hay `node_modules`: hacerlo
+  # aquí retrasaría la primera petición de una máquina que despierta.
+  if [ "${RAILS_ENV}" != "production" ]; then
+    npm run build:css
+  fi
 fi
 
 exec "${@}"

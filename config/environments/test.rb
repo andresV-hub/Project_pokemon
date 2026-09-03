@@ -18,7 +18,12 @@ Rails.application.configure do
 
   # Show full error reports.
   config.consider_all_requests_local = true
-  config.cache_store = :null_store
+  # En memoria y no `:null_store`. Desde que el estado del encuentro vive en el
+  # caché —salió de la cookie, donde no cabía—, un caché que no guarda nada hace
+  # que ningún combate llegue a existir durante los tests. `:memory_store` se tira
+  # al acabar cada proceso, así que sigue sin haber estado compartido entre
+  # ejecuciones, que es lo que `:null_store` venía a garantizar.
+  config.cache_store = :memory_store
 
   # Render exception templates for rescuable exceptions and raise for other exceptions.
   config.action_dispatch.show_exceptions = :rescuable

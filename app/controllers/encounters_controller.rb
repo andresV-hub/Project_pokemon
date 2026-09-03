@@ -1,7 +1,9 @@
 # Encuentros salvajes: la única vía para descubrir y capturar Pokémon nuevos.
 #
-# El estado del encuentro vive en `session[:encounter]`. Es efímero por diseño:
-# cerrar la pestaña lo pierde, igual que en el juego, y no merece una tabla.
+# El estado del encuentro vive en `Encounters::Store`, que lo guarda en el caché.
+# Estuvo en la cookie de sesión y no cabía: son 4 KB para dos equipos con sus
+# movimientos, y desbordó dos veces. Sigue siendo efímero, pero por tiempo y no por
+# pestaña.
 class EncountersController < ApplicationController
 
 	before_action :require_party, only: %i[new create]
@@ -32,7 +34,7 @@ class EncountersController < ApplicationController
 				alert: 'We could not reach the PokeAPI. Try again in a few seconds.', status: :see_other
 		end
 
-		session[:encounter] = result.value
+		::Encounters::Store.write(current_user, result.value)
 		# Encontrarse una especie es lo que la registra en la Pokédex: ya no basta
 		# con abrir su ficha.
 		record_sighting(result.value['num_pokedex'])
@@ -50,12 +52,12 @@ class EncountersController < ApplicationController
 				alert: 'We could not reach the PokeAPI. Try again in a few seconds.', status: :see_other
 		end
 
-		session[:encounter] = result.value
+		::Encounters::Store.write(current_user, result.value)
 		redirect_to user_encounter_path(user_id: current_user.id), status: :see_other
 	end
 
 	def show
-		@state = session[:encounter]
+		@state = encounter_state
 		@wild = ::Pokeapi::FindPokemon.execute(id: @state['num_pokedex']).value
 		@trainer_pokemon = lead_pokemon
 	end
@@ -103,7 +105,7 @@ class EncountersController < ApplicationController
 			end
 		end
 
-		session[:encounter] = state
+		::Encounters::Store.write(current_user, state)
 		finish_if_over
 
 		redirect_to user_encounter_path(user_id: current_user.id), status: :see_other
@@ -116,7 +118,7 @@ class EncountersController < ApplicationController
 		# además dejaría al entrenador sin equipo a mitad de combate.
 		if state['kind'] == 'trainer'
 			state['log'] = ["You can't catch another trainer's Pokémon!"]
-			session[:encounter] = state
+			::Encounters::Store.write(current_user, state)
 			return redirect_to user_encounter_path(user_id: current_user.id), status: :see_other
 		end
 
@@ -125,7 +127,7 @@ class EncountersController < ApplicationController
 
 		if spent.error == :out_of_stock
 			state['log'] = ["You have no #{::Shop::Catalog.name(kind) || 'balls'} left!"]
-			session[:encounter] = state
+			::Encounters::Store.write(current_user, state)
 			return redirect_to user_encounter_path(user_id: current_user.id), status: :see_other
 		end
 
@@ -145,14 +147,14 @@ class EncountersController < ApplicationController
 			# gastarte una bola, y convenía debilitar al rival y rematarlo.
 			gained = grant_experience(state)
 			store_captured(state)
-			session.delete(:encounter)
+			::Encounters::Store.clear(current_user)
 			return redirect_to user_pokemon_index_path(user_id: current_user.id),
 				notice: ["Gotcha! #{state['name']} was caught and sent to your PC.", *gained].join(' '),
 				status: :see_other
 		end
 
 		state['log'] = ["You threw a #{::Shop::Catalog.name(kind)}…", "Oh no! #{state['name']} broke free!"]
-		session[:encounter] = state
+		::Encounters::Store.write(current_user, state)
 		finish_if_over
 
 		redirect_to user_encounter_path(user_id: current_user.id), status: :see_other
@@ -168,7 +170,7 @@ class EncountersController < ApplicationController
 
 		if result.error
 			state['log'] = [item_error_message(result.error)]
-			session[:encounter] = state
+			::Encounters::Store.write(current_user, state)
 			return redirect_to user_encounter_path(user_id: current_user.id), status: :see_other
 		end
 
@@ -189,7 +191,7 @@ class EncountersController < ApplicationController
 		state['log'] = usado + Array(state['log'])
 		persist_damage(state)
 
-		session[:encounter] = state
+		::Encounters::Store.write(current_user, state)
 		finish_if_over
 		redirect_to user_encounter_path(user_id: current_user.id), status: :see_other
 	end
@@ -202,7 +204,7 @@ class EncountersController < ApplicationController
 		if result.error
 			state = encounter_state
 			state['log'] = [switch_error_message(result.error)]
-			session[:encounter] = state
+			::Encounters::Store.write(current_user, state)
 			return redirect_to user_encounter_path(user_id: current_user.id), status: :see_other
 		end
 
@@ -218,13 +220,13 @@ class EncountersController < ApplicationController
 		state['log'] = entrada + Array(state['log'])
 		persist_damage(state)
 
-		session[:encounter] = state
+		::Encounters::Store.write(current_user, state)
 		finish_if_over
 		redirect_to user_encounter_path(user_id: current_user.id), status: :see_other
 	end
 
 	def flee
-		session.delete(:encounter)
+		::Encounters::Store.clear(current_user)
 		redirect_to user_explore_path(user_id: current_user.id),
 			notice: 'You got away safely.', status: :see_other
 	end
@@ -232,7 +234,7 @@ class EncountersController < ApplicationController
 	private
 
 	def encounter_state
-		session[:encounter]
+		::Encounters::Store.read(current_user)
 	end
 
 	# El relevo entra con sus propios movimientos, no con los del que ha caído.
@@ -284,7 +286,7 @@ class EncountersController < ApplicationController
 	# Quien está combatiendo: durante un combate lo dice el estado, porque puede
 	# haber relevado al primero del equipo.
 	def lead_pokemon
-		current = session[:encounter] && session[:encounter]['trainer_pokemon_id']
+		current = encounter_state && encounter_state['trainer_pokemon_id']
 		pokemon = current && current_user.pokemon.find_by(id: current)
 		pokemon ||= current_user.pokemon.in_party.first
 		pokemon && ::Pokemons::PokemonDecorator.decorate(pokemon)
@@ -316,7 +318,7 @@ class EncountersController < ApplicationController
 	end
 
 	def require_encounter
-		return if session[:encounter].present?
+		return if encounter_state.present?
 
 		redirect_to user_explore_path(user_id: current_user.id), status: :see_other
 	end
@@ -370,9 +372,9 @@ class EncountersController < ApplicationController
 	end
 
 	def finish_if_over
-		return if session[:encounter].blank? || session[:encounter]['over'].blank?
+		return if encounter_state.blank? || encounter_state['over'].blank?
 
-		session[:encounter]['closing'] = true
+		::Encounters::Store.write(current_user, encounter_state.merge('closing' => true))
 	end
 
 	def store_captured(state)
